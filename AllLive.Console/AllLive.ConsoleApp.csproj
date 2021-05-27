@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AllLive.Api\AllLive.Core.csproj" />
+    <ProjectReference Include="..\AllLive.Core\AllLive.Core.csproj" />
   </ItemGroup>
 
 </Project>
