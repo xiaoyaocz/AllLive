@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "AllLive.ConsoleApp": {
+      "commandName": "Project",
+      "commandLineArgs": "-d https://www.douyu.com/22222"
+    }
+  }
+}

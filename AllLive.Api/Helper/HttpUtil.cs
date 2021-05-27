@@ -35,8 +35,14 @@ namespace AllLive.Core.Helper
                         httpClient.DefaultRequestHeaders.Add(item.Key, item.Value);
                     }
                 }
-                StringContent stringContent = new StringContent(data);
-                var result = await httpClient.PostAsync(url, stringContent);
+                List<KeyValuePair<string, string>> body = new List<KeyValuePair<string, string>>();
+                foreach (var item in data.Split('&'))
+                {
+                    var splits = item.Split('=');
+                    body.Add(new KeyValuePair<string, string>(splits[0], splits[1]));
+                }
+                FormUrlEncodedContent content = new FormUrlEncodedContent(body);
+                var result = await httpClient.PostAsync(url, content);
                 result.EnsureSuccessStatusCode();
                 return await result.Content.ReadAsStringAsync();
             }

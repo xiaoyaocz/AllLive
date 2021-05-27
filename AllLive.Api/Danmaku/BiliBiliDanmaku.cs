@@ -22,7 +22,7 @@ namespace AllLive.Core.Danmaku
     {
         public event EventHandler<LiveMessage> NewMessage;
         public event EventHandler<string> OnClose;
-        public int HeartbeatTime => 60*1000;
+        public int HeartbeatTime => 60 * 1000;
         private int roomId = 0;
         private readonly string ServerUrl = "wss://broadcastlv.chat.bilibili.com/sub";
         Timer timer;
@@ -114,9 +114,10 @@ namespace AllLive.Core.Danmaku
             if (operation == 3)
             {
                 var online = BitConverter.ToInt32(body.Reverse().ToArray(), 0);
-                NewMessage?.Invoke(this, new LiveMessage() { 
-                    Data= online,
-                    Type= LiveMessageType.Online,
+                NewMessage?.Invoke(this, new LiveMessage()
+                {
+                    Data = online,
+                    Type = LiveMessageType.Online,
                 });
             }
             else if (operation == 5)
@@ -216,23 +217,22 @@ namespace AllLive.Core.Danmaku
         private byte[] DecompressData(byte[] data)
         {
             using (MemoryStream outBuffer = new MemoryStream())
+            using (System.IO.Compression.DeflateStream compressedzipStream = new System.IO.Compression.DeflateStream(new MemoryStream(data, 2, data.Length - 2), System.IO.Compression.CompressionMode.Decompress))
             {
-                using (System.IO.Compression.DeflateStream compressedzipStream = new System.IO.Compression.DeflateStream(new MemoryStream(data, 2, data.Length - 2), System.IO.Compression.CompressionMode.Decompress))
-                {
 
-                    byte[] block = new byte[1024];
-                    while (true)
-                    {
-                        int bytesRead = compressedzipStream.Read(block, 0, block.Length);
-                        if (bytesRead <= 0)
-                            break;
-                        else
-                            outBuffer.Write(block, 0, bytesRead);
-                    }
-                    compressedzipStream.Close();
-                    return outBuffer.ToArray();
+                byte[] block = new byte[1024];
+                while (true)
+                {
+                    int bytesRead = compressedzipStream.Read(block, 0, block.Length);
+                    if (bytesRead <= 0)
+                        break;
+                    else
+                        outBuffer.Write(block, 0, bytesRead);
                 }
+                compressedzipStream.Close();
+                return outBuffer.ToArray();
             }
+
 
         }
     }

@@ -43,7 +43,7 @@ namespace AllLive.Core.Interface
         /// </summary>
         /// <param name="room">房间</param>
         /// <returns></returns>
-        Task<LiveRoomDetail> GetRoomDetail(LiveRoomItem room);
+        Task<LiveRoomDetail> GetRoomDetail(object roomId);
         /// <summary>
         /// 读取播放清晰度
         /// </summary>

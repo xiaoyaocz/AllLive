@@ -32,7 +32,7 @@ namespace AllLive.Core.Danmaku
         private readonly string ServerUrl = "wss://danmuproxy.douyu.com:8506";
         Timer timer;
         WebSocket ws;
-        int roomId;
+        string roomId;
         public DouyuDanmaku()
         {
             heartBeatData = Convert.FromBase64String("FAAAABQAAACxAgAAdHlwZUA9bXJrbC8A");
@@ -110,7 +110,7 @@ namespace AllLive.Core.Danmaku
 
         public async Task Start(object args)
         {
-            this.roomId = (int)args;
+            this.roomId =  args.ToString();
             await Task.Run(() =>
             {
                 ws.Connect();
@@ -125,7 +125,7 @@ namespace AllLive.Core.Danmaku
             });
         }
 
-        private  byte[] SerializeDouyu(string body)
+        private byte[] SerializeDouyu(string body)
         {
             const short ClientSendToServer = 689;
             const byte Encrypted = 0;
@@ -159,21 +159,21 @@ namespace AllLive.Core.Danmaku
             try
             {
                 using (var ms = new MemoryStream(bytes, 0, bytes.Length, writable: false))
-                {
-                    using (var reader = new BinaryReader(ms))
-                    {
-                        int fullMsgLength = reader.ReadInt32();
-                        int fullMsgLength2 = reader.ReadInt32();
 
-                        int bodyLength = fullMsgLength - 1 - 4 - 4;
-                        short packType = reader.ReadInt16();
-                        short encrypted = reader.ReadByte();
-                        short reserved = reader.ReadByte();
-                        var _bytes = reader.ReadBytes(bodyLength);
-                        byte zero = reader.ReadByte();
-                        return Encoding.UTF8.GetString(_bytes);
-                    }
+                using (var reader = new BinaryReader(ms))
+                {
+                    int fullMsgLength = reader.ReadInt32();
+                    int fullMsgLength2 = reader.ReadInt32();
+
+                    int bodyLength = fullMsgLength - 1 - 4 - 4;
+                    short packType = reader.ReadInt16();
+                    short encrypted = reader.ReadByte();
+                    short reserved = reader.ReadByte();
+                    var _bytes = reader.ReadBytes(bodyLength);
+                    byte zero = reader.ReadByte();
+                    return Encoding.UTF8.GetString(_bytes);
                 }
+
             }
             catch (Exception)
             {
@@ -182,7 +182,7 @@ namespace AllLive.Core.Danmaku
             }
 
         }
-
+        //辣鸡STT
         private JToken SttToJObject(string str)
         {
             if (str.Contains("//"))
@@ -215,7 +215,7 @@ namespace AllLive.Core.Danmaku
                 return UnscapeSlashAt(str);
             }
 
-           
+
         }
         private string UnscapeSlashAt(string str)
         {

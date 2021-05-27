@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="QuickJS.NET" Version="0.0.3" />
     <PackageReference Include="websocketsharp.core" Version="1.0.0" />
   </ItemGroup>
 

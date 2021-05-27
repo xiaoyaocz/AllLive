@@ -84,9 +84,9 @@ namespace AllLive.Core
             }
             return categoryResult;
         }
-        public async Task<LiveRoomDetail> GetRoomDetail(LiveRoomItem room)
+        public async Task<LiveRoomDetail> GetRoomDetail(object roomId)
         {
-            var result = await HttpUtil.GetString($"https://api.live.bilibili.com/xlive/web-room/v1/index/getH5InfoByRoom?room_id={room.RoomID}");
+            var result = await HttpUtil.GetString($"https://api.live.bilibili.com/xlive/web-room/v1/index/getH5InfoByRoom?room_id={ roomId}");
             var obj = JObject.Parse(result);
 
             return new LiveRoomDetail()

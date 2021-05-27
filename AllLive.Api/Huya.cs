@@ -106,23 +106,23 @@ namespace AllLive.Core
             categoryResult.HasMore = (int)obj["data"]["page"] < (int)obj["data"]["totalPage"];
             return categoryResult;
         }
-        public async Task<LiveRoomDetail> GetRoomDetail(LiveRoomItem room)
+        public async Task<LiveRoomDetail> GetRoomDetail(object roomId)
         {
             Dictionary<string, string> headers = new Dictionary<string, string>();
             headers.Add("user-agent", "Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1 Edg/91.0.4472.69");
-            var result = await HttpUtil.GetString($"https://m.huya.com/{room.RoomID}");
+            var result = await HttpUtil.GetString($"https://m.huya.com/{roomId}",headers);
             return new LiveRoomDetail()
             {
-                Cover = room.Cover,
-                Online = int.Parse(MatchText(result, @"totalCount:.'(\d+)'")),
-                RoomID = room.RoomID,
-                Title = room.Title,
-                UserName = room.UserName,
+                Cover = result.MatchText(@"picURL.=.'(.*?)'",""),
+                Online = int.Parse(result.MatchText(@"totalCount:.'(\d+)'")),
+                RoomID = result.MatchText(@"<h2 class=""roomid"">.*?(\d+)</h2>"),
+                Title = result.MatchText(@"liveRoomName.=.'(.*?)'", ""),
+                UserName = result.MatchText(@"ANTHOR_NICK.=.'(.*?)'", ""),
                 Introduction = "",
-                Notice = "",
-                Status = bool.Parse(MatchText(result, @"ISLIVE.=.(\w+);", "true")),
-                Data = Encoding.UTF8.GetString(Convert.FromBase64String(MatchText(result, @"liveLineUrl.=.""(.*?)"";"))),
-                DanmakuData = new HuyaDanmakuArgs(long.Parse(MatchText(result, @"ayyuid:.'(\d+)',")), long.Parse(MatchText(result, @"TOPSID.=.'(\d+)';")), long.Parse(MatchText(result, @"SUBSID.=.'(\d+)';")))
+                Notice = result.MatchTextSingleline(@"<div class=""notice_content"">(.*?)</div>", "").Trim(' '),
+                Status = bool.Parse(result.MatchText( @"ISLIVE.=.(\w+);", "true")),
+                Data = Encoding.UTF8.GetString(Convert.FromBase64String(result.MatchText( @"liveLineUrl.=.""(.*?)"";"))),
+                DanmakuData = new HuyaDanmakuArgs(long.Parse(result.MatchText( @"ayyuid:.'(\d+)',")), long.Parse(result.MatchText( @"TOPSID.=.'(\d+)';")), long.Parse(result.MatchText( @"SUBSID.=.'(\d+)';")))
             };
         }
         public async Task<LiveSearchResult> Search(string keyword, int page = 1)
@@ -153,6 +153,7 @@ namespace AllLive.Core
         {
             List<LivePlayQuality> qualities = new List<LivePlayQuality>();
             var url = roomDetail.Data.ToString();
+            //四条线路
             var tx_url = Regex.Replace(url, @".*?\.hls\.huya\.com", "https://tx.hls.huya.com");
             var bd_url = Regex.Replace(url, @".*?\.hls\.huya\.com", "https://bd.hls.huya.com");
             var ali_url = Regex.Replace(url, @".*?\.hls\.huya\.com", "https://al.hls.huya.com");
@@ -161,7 +162,7 @@ namespace AllLive.Core
             {
                 Quality = "720P",
                 Data = new List<string>() {
-                    tx_url,
+                   tx_url,
                    bd_url,
                    ali_url,
                    migu_url,
@@ -185,17 +186,6 @@ namespace AllLive.Core
         }
 
 
-        private static string MatchText(string input, string pattern, string _default = "0")
-        {
-            try
-            {
-                return Regex.Match(input, pattern).Groups[1].Value;
-            }
-            catch (Exception)
-            {
-                return _default;
-            }
-
-        }
+      
     }
 }

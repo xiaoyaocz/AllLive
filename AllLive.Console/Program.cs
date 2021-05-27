@@ -1,8 +1,11 @@
 ﻿using AllLive.Core;
 using AllLive.Core.Danmaku;
+using AllLive.Core.Helper;
 using AllLive.Core.Interface;
 using Newtonsoft.Json;
+using QuickJS;
 using System;
+using System.Text.RegularExpressions;
 
 namespace AllLive.ConsoleApp
 {
@@ -10,37 +13,104 @@ namespace AllLive.ConsoleApp
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
-            Huya biliBili = new Huya();
-           // var result= biliBili.GetCategores().Result;
-           // var result2 = biliBili.GetCategoryRooms(result[0].Children[0]).Result;
-            var result3 = biliBili.GetRecommendRooms().Result;
-            var result4 = biliBili.GetRoomDetail(result3.Rooms[0]).Result;
-            Console.WriteLine(JsonConvert.SerializeObject(result4));
-
-            foreach (var item in biliBili.GetPlayQuality(result4).Result)
+            if (args.Length < 1)
             {
-                Console.WriteLine($"清晰度 {item.Quality}：");
-                var urls = biliBili.GetPlayUrls(result4, item).Result;
-                foreach (var item2 in urls)
+                Console.WriteLine("输入错误");
+                return;
+            }
+           
+            var action = args[0];
+            
+            try
+            {
+                if (args.Length==1)
                 {
-                    Console.WriteLine(item2);
+                    if(action == "h" || action == "-h" || action == "?")
+                    {
+                        Console.WriteLine("-i [URL] ：获取直播间信息及播放直链");
+                        Console.WriteLine("-d [URL] ：持续输出直播间弹幕");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"未知指令：{action}");
+                    }
+                    return;
+                }
+                var url = args[1];
+                var parseData = ParseUrl(url);
+                var site = parseData.Item1;
+                var roomId = parseData.Item2;
+                if (action == "i"|| action == "-i")
+                {
+                    var detail = site.GetRoomDetail(roomId).Result;
+                    Console.WriteLine($"来源：{site.Name}");
+                    Console.WriteLine($"房间号：{detail.RoomID}");
+                    Console.WriteLine($"房间标题：{detail.Title}");
+                    Console.WriteLine($"直播用户：{detail.UserName}");
+                    Console.WriteLine($"人气值：{detail.Online}");
+                    Console.WriteLine($"可用清晰度：");
+                    var quality= site.GetPlayQuality(detail).Result;
+                   
+                    for (int i = 0; i < quality.Count; i++)
+                    {
+                        Console.WriteLine($"【{i}】{quality[i].Quality}");
+                    }
+                    Console.WriteLine($"请输入【】内数字，获取对应清晰度的直链");
+                    var input = Console.ReadLine();
+                    Console.WriteLine($"正在获取直链...");
+                    if (int.TryParse(input,out var index))
+                    {
+                        var urls= site.GetPlayUrls(detail, quality[index]).Result;
+                        for (int i = 0; i < urls.Count; i++)
+                        {
+                            Console.WriteLine($"线路{i+1}:\r\n{urls[i]}");
+                        }
+                    }
+                }
+                else if (action == "d"||action == "-d")
+                {
+                    Console.WriteLine($"正在获取房间信息...");
+                    var detail = site.GetRoomDetail(roomId).Result;
+                    Console.WriteLine($"房间标题：{detail.Title}");
+                    Console.WriteLine($"直播用户：{detail.UserName}");
+                    var danmaku = site.GetDanmaku();
+                    danmaku.NewMessage += Danmaku_NewMessage;
+                    danmaku.OnClose += Danmaku_OnClose;
+                    Console.WriteLine($"【开始获取弹幕，按任意键结束】");
+                    danmaku.Start(detail.DanmakuData).Wait();
+                    Console.ReadLine();
+                }
+                else
+                {
+                    Console.WriteLine($"未知指令：{action}");
                 }
             }
-            //  var result5 = biliBili.Search("王者").Result;
-            //BiliBili
-            //ILiveDanmaku danmaku = new Core.Danmaku.BiliBiliDanmaku();
-            //ILiveDanmaku danmaku = new HuyaDanmaku();
-            //ILiveDanmaku danmaku = new DouyuDanmaku();
-            //danmaku.NewMessage += Danmaku_NewMessage;
-            // danmaku.OnClose += Danmaku_OnClose;
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex.StackTrace);
+            }
 
-            //danmaku.Start(6154037);
-            //danmaku.Start(new HuyaDanmakuArgs(1199515480194, 1199515480194, 1199515480194));
-            // danmaku.Start(101).Wait();
-            Console.ReadLine();
-            //danmaku.Stop().Wait();
-           
+        }
+
+        private static (ILiveSite, string) ParseUrl(string url)
+        {
+            if (url.Contains("bilibili.com"))
+            {
+                var id = Regex.Match(url, @"bilibili\.com/([\d|\w]+)").Groups[1].Value;
+                return (new BiliBili(), id);
+            }
+            if (url.Contains("huya.com"))
+            {
+                var id = Regex.Match(url, @"huya\.com/([\d|\w]+)").Groups[1].Value;
+                return (new Huya(), id);
+            }
+            if (url.Contains("douyu.com"))
+            {
+                var id = Regex.Match(url, @"douyu\.com/([\d|\w]+)").Groups[1].Value;
+                return (new Douyu(), id);
+            }
+            throw new Exception("链接解析失败");
         }
 
         private static void Danmaku_OnClose(object sender, string e)
@@ -50,9 +120,9 @@ namespace AllLive.ConsoleApp
 
         private static void Danmaku_NewMessage(object sender, Core.Models.LiveMessage e)
         {
-            if(e.Type== Core.Models.LiveMessageType.Chat)
+            if (e.Type == Core.Models.LiveMessageType.Chat)
             {
-                Console.WriteLine($"{e.UserName}:{e.Message}");
+                Console.WriteLine($"[{e.UserName}]：{e.Message}");
             }
             if (e.Type == Core.Models.LiveMessageType.Online)
             {
