@@ -14,6 +14,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AllLive.DanmakuHelper", "AllLive.DanmakuHelper\AllLive.DanmakuHelper.csproj", "{CDA681CE-4F93-4219-8918-6B976D0DA4F2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -94,6 +96,26 @@ Global
 		{3B298253-83AC-4C40-9605-F1A0F220E2A3}.Release|x64.Build.0 = Release|Any CPU
 		{3B298253-83AC-4C40-9605-F1A0F220E2A3}.Release|x86.ActiveCfg = Release|Any CPU
 		{3B298253-83AC-4C40-9605-F1A0F220E2A3}.Release|x86.Build.0 = Release|Any CPU
+		{CDA681CE-4F93-4219-8918-6B976D0DA4F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CDA681CE-4F93-4219-8918-6B976D0DA4F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CDA681CE-4F93-4219-8918-6B976D0DA4F2}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{CDA681CE-4F93-4219-8918-6B976D0DA4F2}.Debug|ARM.Build.0 = Debug|Any CPU
+		{CDA681CE-4F93-4219-8918-6B976D0DA4F2}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{CDA681CE-4F93-4219-8918-6B976D0DA4F2}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{CDA681CE-4F93-4219-8918-6B976D0DA4F2}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{CDA681CE-4F93-4219-8918-6B976D0DA4F2}.Debug|x64.Build.0 = Debug|Any CPU
+		{CDA681CE-4F93-4219-8918-6B976D0DA4F2}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{CDA681CE-4F93-4219-8918-6B976D0DA4F2}.Debug|x86.Build.0 = Debug|Any CPU
+		{CDA681CE-4F93-4219-8918-6B976D0DA4F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CDA681CE-4F93-4219-8918-6B976D0DA4F2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CDA681CE-4F93-4219-8918-6B976D0DA4F2}.Release|ARM.ActiveCfg = Release|Any CPU
+		{CDA681CE-4F93-4219-8918-6B976D0DA4F2}.Release|ARM.Build.0 = Release|Any CPU
+		{CDA681CE-4F93-4219-8918-6B976D0DA4F2}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{CDA681CE-4F93-4219-8918-6B976D0DA4F2}.Release|ARM64.Build.0 = Release|Any CPU
+		{CDA681CE-4F93-4219-8918-6B976D0DA4F2}.Release|x64.ActiveCfg = Release|Any CPU
+		{CDA681CE-4F93-4219-8918-6B976D0DA4F2}.Release|x64.Build.0 = Release|Any CPU
+		{CDA681CE-4F93-4219-8918-6B976D0DA4F2}.Release|x86.ActiveCfg = Release|Any CPU
+		{CDA681CE-4F93-4219-8918-6B976D0DA4F2}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

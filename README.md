@@ -2,6 +2,15 @@
 
 使用.NET实现的聚合直播。
 
+TODO:
+虎牙直播 √
+斗鱼直播 √
+哔哩哔哩 √
+企鹅电竞 ×
+ConsoleApp √
+UWP ×
+DanmakuHelper ×
+
 ## AllLive.Core
 
 项目核心，.NET Standard 2.0类库。用于获取各个网站的信息及弹幕实现。
@@ -26,6 +35,9 @@ AllLive.ConsoleApp -d [URL]
 
 UWP客户端，可以在线观看各个网站直播。
 
+## AllLive.DanmakuHelper
+
+弹幕助手，实时显示弹幕。
 
 ## 参考及引用
 [https://github.com/wbt5/real-url](https://github.com/wbt5/real-url)
