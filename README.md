@@ -1,15 +1,23 @@
 # AllLive
 
-使用.NET实现的聚合直播。
+获取各个网站的直播信息及弹幕。
 
-TODO:
-虎牙直播 √
-斗鱼直播 √
-哔哩哔哩 √
-企鹅电竞 ×
-ConsoleApp √
-UWP ×
-DanmakuHelper ×
+支持以下网站：
+
+- 虎牙直播
+
+- 斗鱼直播
+
+- 哔哩哔哩直播
+
+## TODO:
+
+
+- 企鹅电竞 [×]
+
+- UWP [×]
+
+- DanmakuHelper [×]
 
 ## AllLive.Core
 
