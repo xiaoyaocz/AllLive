@@ -155,7 +155,7 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AllLive.Api\AllLive.Core.csproj">
+    <ProjectReference Include="..\AllLive.Core\AllLive.Core.csproj">
       <Project>{b00dc113-7b3a-46c3-9661-eda0de11b882}</Project>
       <Name>AllLive.Core</Name>
     </ProjectReference>

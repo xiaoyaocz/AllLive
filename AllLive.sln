@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.31025.194
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AllLive.UWP", "AllLive.UWP\AllLive.UWP.csproj", "{10694A88-BC36-4C31-9C1D-49B316320765}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AllLive.Core", "AllLive.Api\AllLive.Core.csproj", "{B00DC113-7B3A-46C3-9661-EDA0DE11B882}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AllLive.Core", "AllLive.Core\AllLive.Core.csproj", "{B00DC113-7B3A-46C3-9661-EDA0DE11B882}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AllLive.ConsoleApp", "AllLive.Console\AllLive.ConsoleApp.csproj", "{3B298253-83AC-4C40-9605-F1A0F220E2A3}"
 EndProject
