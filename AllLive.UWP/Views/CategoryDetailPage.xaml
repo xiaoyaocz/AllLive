@@ -1,0 +1,100 @@
+﻿<Page
+    x:Class="AllLive.UWP.Views.CategoryDetailPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:AllLive.UWP.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    xmlns:viewmodels="using:AllLive.UWP.ViewModels" 
+    xmlns:controls="using:AllLive.UWP.Controls" 
+    xmlns:models="using:AllLive.Core.Models" 
+    xmlns:toolkit="using:Microsoft.Toolkit.Uwp.UI.Controls" 
+    xmlns:Windows10version1809="http://schemas.microsoft.com/winfx/2006/xaml/presentation?IsApiContractPresent(Windows.Foundation.UniversalApiContract, 7)"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="48"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid Background="{ThemeResource TopPaneBackground}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Button x:Name="btnBack" Click="btnBack_Click" Background="Transparent" Height="48" Width="56">
+                <SymbolIcon Symbol="Back"></SymbolIcon>
+            </Button>
+            <TextBlock x:Name="txtTitle" Margin="8 0" Grid.Column="1" VerticalAlignment="Center" FontSize="16"></TextBlock>
+        </Grid>
+        <Grid Grid.Row="1">
+            <Grid>
+                <controls:MyAdaptiveGridView
+                            OneRowModeEnabled="False"
+                            ItemClick="MyAdaptiveGridView_ItemClick"
+                            StretchContentForSingleRow="False"
+                            ItemsSource="{x:Bind Path=categoryDetailVM.Items,Mode=OneWay}"
+                            ItemHeight="196" DesiredWidth="260" 
+                            Padding="8"
+                            LoadMoreCommand="{x:Bind Path=categoryDetailVM.LoadMoreCommand,Mode=OneWay}"
+                            CanLoadMore="{x:Bind Path=categoryDetailVM.CanLoadMore,Mode=OneWay}"
+                            LoadMoreBottomOffset="0"
+                            SelectionMode="None" IsItemClickEnabled="True">
+                    <controls:MyAdaptiveGridView.ItemContainerStyle>
+                        <Style TargetType="GridViewItem">
+                            <Setter Property="Margin" Value="4"></Setter>
+                        </Style>
+                    </controls:MyAdaptiveGridView.ItemContainerStyle>
+                    <controls:MyAdaptiveGridView.ItemTemplate>
+                        <DataTemplate x:DataType="models:LiveRoomItem">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition />
+                                    <RowDefinition Height="24" />
+                                    <RowDefinition Height="24" />
+                                </Grid.RowDefinitions>
+                                <Border >
+                                    <Grid>
+                                        <toolkit:ImageEx IsCacheEnabled="True" PlaceholderSource="ms-appx:///Assets/Placeholder/Placeholder.png" MinHeight="140" Width="260" Stretch="UniformToFill" Source="{x:Bind Path=Cover}"></toolkit:ImageEx>
+                                        <Grid VerticalAlignment="Bottom" Padding="8">
+                                            <Grid.Background>
+                                                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                                    <GradientStop Color="#CC000005" Offset="0.993" />
+                                                    <GradientStop Color="#00000000" Offset="0" />
+                                                </LinearGradientBrush>
+                                            </Grid.Background>
+                                            <StackPanel Orientation="Horizontal" >
+                                                <TextBlock FontSize="12" Foreground="White">人气:<Run Text="{x:Bind Path=Online,Converter={StaticResource numberToStringConvert}}"/></TextBlock>
+                                            </StackPanel>
+
+                                        </Grid>
+
+
+                                    </Grid>
+                                </Border>
+                                <TextBlock Grid.Row="1" Margin="4 4 4 0" MaxLines="1" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" Text="{x:Bind Path=Title}"></TextBlock>
+                                <TextBlock Grid.Row="2" Margin="4 0 4 4" TextWrapping="Wrap" FontSize="12" Foreground="Gray" TextTrimming="CharacterEllipsis" Text="{x:Bind Path=UserName}"></TextBlock>
+                            </Grid>
+                        </DataTemplate>
+                    </controls:MyAdaptiveGridView.ItemTemplate>
+                    <controls:MyAdaptiveGridView.Footer>
+                        <Grid>
+                            <HyperlinkButton Command="{x:Bind Path=categoryDetailVM.LoadMoreCommand}" HorizontalAlignment="Center" Visibility="{x:Bind Path=categoryDetailVM.CanLoadMore,Mode=OneWay}">
+                                <TextBlock>加载更多</TextBlock>
+                            </HyperlinkButton>
+                            <ProgressRing  IsActive="True" Visibility="{x:Bind Path=categoryDetailVM.Loading,Mode=OneWay}"  VerticalAlignment="Center" Width="24"></ProgressRing>
+                        </Grid>
+                    </controls:MyAdaptiveGridView.Footer>
+                </controls:MyAdaptiveGridView>
+
+                <Button Command="{x:Bind Path=categoryDetailVM.RefreshCommand}" Windows10version1809:CornerRadius="24" Visibility="{x:Bind Path=categoryDetailVM.Loading,Mode=OneWay,Converter={StaticResource displayConvert}}" Padding="0" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="12" BorderThickness="0" Background="Transparent">
+                    <Border Width="48" Height="48" CornerRadius="24" Background="#33000000">
+                        <SymbolIcon Symbol="Refresh" Foreground="White"></SymbolIcon>
+                    </Border>
+                </Button>
+
+            </Grid>
+        </Grid>
+    </Grid>
+</Page>

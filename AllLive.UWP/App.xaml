@@ -2,6 +2,22 @@
     x:Class="AllLive.UWP.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:AllLive.UWP">
-
+    xmlns:local="using:AllLive.UWP" xmlns:convert="using:AllLive.UWP.Converters">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
+            </ResourceDictionary.MergedDictionaries>
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Light">
+                    <Color x:Key="TopPaneBackground">#FFF7F7F7</Color>
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Dark">
+                    <Color x:Key="TopPaneBackground">#FF3B3B3B</Color>
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
+            <convert:NumberToStringConvert x:Key="numberToStringConvert"></convert:NumberToStringConvert>
+            <convert:DisplayConvert x:Key="displayConvert"></convert:DisplayConvert>
+        </ResourceDictionary>
+    </Application.Resources>
 </Application>

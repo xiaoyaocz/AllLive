@@ -89,7 +89,7 @@ namespace AllLive.Core
             {
                 categoryResult.Rooms.Add(new LiveRoomItem()
                 {
-                    Cover = item["rs1"].ToString(),
+                    Cover = item["rs16"].ToString(),
                     Online = (int)item["ol"],
                     RoomID = item["rid"].ToString(),
                     Title = item["rn"].ToString(),
@@ -112,7 +112,7 @@ namespace AllLive.Core
             {
                 categoryResult.Rooms.Add(new LiveRoomItem()
                 {
-                    Cover = item["rs1"].ToString(),
+                    Cover = item["rs16"].ToString(),
                     Online = (int)item["ol"],
                     RoomID = item["rid"].ToString(),
                     Title = item["rn"].ToString(),
@@ -137,6 +137,7 @@ namespace AllLive.Core
                 RoomID = obj["rid"].ToString(),
                 Title = obj["roomName"].ToString(),
                 UserName = obj["nickname"].ToString(),
+                UserAvatar = obj["avatar"].ToString(),
                 Introduction = "",
                 Notice = obj["notice"].ToString(),
                 Status = (int)obj["isLive"] == 1,

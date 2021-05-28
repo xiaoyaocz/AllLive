@@ -70,9 +70,14 @@ namespace AllLive.Core
             var obj = JObject.Parse(result);
             foreach (var item in obj["data"]["datas"])
             {
+                var cover = item["screenshot"].ToString();
+                if (!cover.Contains("?x-oss-process"))
+                {
+                    cover += "?x-oss-process=style/w338_h190&";
+                }
                 categoryResult.Rooms.Add(new LiveRoomItem()
                 {
-                    Cover = item["screenshot"].ToString(),
+                    Cover = cover,
                     Online = (int)item["totalCount"],
                     RoomID = item["profileRoom"].ToString(),
                     Title = item["roomName"].ToString(),
@@ -94,9 +99,14 @@ namespace AllLive.Core
 
             foreach (var item in obj["data"]["datas"])
             {
+                var cover = item["screenshot"].ToString();
+                if (!cover.Contains("?x-oss-process"))
+                {
+                    cover += "?x-oss-process=style/w338_h190&";
+                }
                 categoryResult.Rooms.Add(new LiveRoomItem()
                 {
-                    Cover = item["screenshot"].ToString(),
+                    Cover = cover,
                     Online = (int)item["totalCount"],
                     RoomID = item["profileRoom"].ToString(),
                     Title = item["roomName"].ToString(),
@@ -118,6 +128,7 @@ namespace AllLive.Core
                 RoomID = result.MatchText(@"<h2 class=""roomid"">.*?(\d+)</h2>"),
                 Title = result.MatchText(@"liveRoomName.=.'(.*?)'", ""),
                 UserName = result.MatchText(@"ANTHOR_NICK.=.'(.*?)'", ""),
+                UserAvatar=  result.MatchTextSingleline(@"<span class=""pic-clip"">.*?<img src=""(.*?)"".*?</span>").Trim(' '),
                 Introduction = "",
                 Notice = result.MatchTextSingleline(@"<div class=""notice_content"">(.*?)</div>", "").Trim(' '),
                 Status = bool.Parse(result.MatchText( @"ISLIVE.=.(\w+);", "true")),
@@ -137,9 +148,14 @@ namespace AllLive.Core
 
             foreach (var item in obj["response"]["3"]["docs"])
             {
+                var cover = item["game_screenshot"].ToString();
+                if (!cover.Contains("?x-oss-process"))
+                {
+                    cover += "?x-oss-process=style/w338_h190&";
+                }
                 searchResult.Rooms.Add(new LiveRoomItem()
                 {
-                    Cover = item["game_screenshot"].ToString(),
+                    Cover = cover,
                     Online = (int)item["game_total_count"],
                     RoomID = item["room_id"].ToString(),
                     Title = item["game_roomName"].ToString(),

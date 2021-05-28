@@ -25,7 +25,7 @@ namespace AllLive.Core
                 foreach (var subItem in item["list"])
                 {
                     subs.Add(new LiveSubCategory() { 
-                        Pic= subItem["pic"].ToString(),
+                        Pic= subItem["pic"].ToString() + "@100w.jpg",
                         ID= subItem["id"].ToString(),
                         ParentID= subItem["parent_id"].ToString(),
                         Name =subItem["name"].ToString(),
@@ -52,7 +52,7 @@ namespace AllLive.Core
             foreach (var item in obj["data"]["list"])
             {
                 categoryResult.Rooms.Add(new LiveRoomItem() { 
-                    Cover= item["cover"].ToString(),
+                    Cover= item["cover"].ToString() + "@300w.jpg",
                     Online= (int)item["online"],
                     RoomID= item["roomid"].ToString(),
                     Title = item["title"].ToString(),
@@ -75,7 +75,7 @@ namespace AllLive.Core
             {
                 categoryResult.Rooms.Add(new LiveRoomItem()
                 {
-                    Cover = item["cover"].ToString(),
+                    Cover = item["cover"].ToString() + "@300w.jpg",
                     Online = (int)item["online"],
                     RoomID = item["roomid"].ToString(),
                     Title = item["title"].ToString(),
@@ -97,6 +97,7 @@ namespace AllLive.Core
                 Title = obj["data"]["room_info"]["title"].ToString(),
                 UserName = obj["data"]["anchor_info"]["base_info"]["uname"].ToString(),
                 Introduction= obj["data"]["room_info"]["description"].ToString(),
+                UserAvatar = obj["data"]["anchor_info"]["base_info"]["face"].ToString()+"@100w.jpg",
                 Notice = "",
                 Status = (int)obj["data"]["room_info"]["live_status"] ==1,
                 DanmakuData= (int)obj["data"]["room_info"]["room_id"]
@@ -116,7 +117,7 @@ namespace AllLive.Core
             {
                 searchResult.Rooms.Add(new LiveRoomItem()
                 {
-                    Cover = "https:"+item["cover"].ToString(),
+                    Cover = "https:"+item["cover"].ToString() + "@300w.jpg",
                     Online = (int)item["online"],
                     RoomID = item["roomid"].ToString(),
                     Title = item["title"].ToString(),

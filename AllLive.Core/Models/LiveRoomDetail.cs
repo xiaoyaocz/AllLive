@@ -23,6 +23,10 @@ namespace AllLive.Core.Models
         /// </summary>
         public string UserName { get; set; }
         /// <summary>
+        /// 用户头像
+        /// </summary>
+        public string UserAvatar { get; set; }
+        /// <summary>
         /// 在线人数/人气
         /// </summary>
         public int Online { get; set; }

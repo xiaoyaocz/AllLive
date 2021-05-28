@@ -48,24 +48,29 @@ namespace AllLive.ConsoleApp
                     Console.WriteLine($"房间标题：{detail.Title}");
                     Console.WriteLine($"直播用户：{detail.UserName}");
                     Console.WriteLine($"人气值：{detail.Online}");
-                    Console.WriteLine($"可用清晰度：");
-                    var quality= site.GetPlayQuality(detail).Result;
-                   
-                    for (int i = 0; i < quality.Count; i++)
+                    Console.WriteLine($"状态：{(detail.Status?"直播中":"未开播")}");
+                    if (detail.Status)
                     {
-                        Console.WriteLine($"【{i}】{quality[i].Quality}");
-                    }
-                    Console.WriteLine($"请输入【】内数字，获取对应清晰度的直链");
-                    var input = Console.ReadLine();
-                    Console.WriteLine($"正在获取直链...");
-                    if (int.TryParse(input,out var index))
-                    {
-                        var urls= site.GetPlayUrls(detail, quality[index]).Result;
-                        for (int i = 0; i < urls.Count; i++)
+                        Console.WriteLine($"可用清晰度：");
+                        var quality = site.GetPlayQuality(detail).Result;
+
+                        for (int i = 0; i < quality.Count; i++)
                         {
-                            Console.WriteLine($"线路{i+1}:\r\n{urls[i]}");
+                            Console.WriteLine($"【{i}】{quality[i].Quality}");
+                        }
+                        Console.WriteLine($"请输入【】内数字，获取对应清晰度的直链");
+                        var input = Console.ReadLine();
+                        Console.WriteLine($"正在获取直链...");
+                        if (int.TryParse(input, out var index))
+                        {
+                            var urls = site.GetPlayUrls(detail, quality[index]).Result;
+                            for (int i = 0; i < urls.Count; i++)
+                            {
+                                Console.WriteLine($"线路{i + 1}:\r\n{urls[i]}");
+                            }
                         }
                     }
+                    
                 }
                 else if (action == "d"||action == "-d")
                 {

@@ -1,4 +1,5 @@
 ﻿using AllLive.Core.Helper;
+using AllLive.UWP.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -24,13 +25,26 @@ namespace AllLive.UWP
     /// </summary>
     public sealed partial class MainPage : Page
     {
+      
         public MainPage()
         {
+            this.NavigationCacheMode = NavigationCacheMode.Enabled;
             this.InitializeComponent();
         }
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
+            
+        }
+
+        private void NavigationView_SelectionChanged(Microsoft.UI.Xaml.Controls.NavigationView sender, Microsoft.UI.Xaml.Controls.NavigationViewSelectionChangedEventArgs args)
+        {
+            var item = args.SelectedItem as Microsoft.UI.Xaml.Controls.NavigationViewItem;
+            if (item.Tag.ToString() == "设置"|| item.Tag.ToString() == "Settings")
+            {
+                item.Tag = "SettingsPage";
+            }
+            frame.Navigate(Type.GetType("AllLive.UWP.Views." + item.Tag));
         }
     }
 }
