@@ -20,18 +20,35 @@
                         <ComboBoxItem>深色</ComboBoxItem>
                     </ComboBox.Items>
                 </ComboBox>
-
+                <ToggleSwitch x:Name="swMouseClosePage" Header="鼠标侧键返回" Margin="0 12 0 0"></ToggleSwitch>
                 <TextBlock FontSize="20" FontWeight="Bold" Margin="0 12 0 0">播放</TextBlock>
-                <ToggleSwitch Header="强制软解" Margin="0 12 0 0"></ToggleSwitch>
-                <ToggleSwitch Header="新窗口打开直播间" Margin="0 12 0 0"></ToggleSwitch>
+                <ToggleSwitch x:Name="swHardwareDecode" Header="硬件解码" Margin="0 12 0 0"></ToggleSwitch>
+                <ToggleSwitch x:Name="swNewWindow" Header="新窗口打开直播间" Margin="0 12 0 0"></ToggleSwitch>
                 <TextBlock FontSize="20" FontWeight="Bold" Margin="0 12 0 0">互动</TextBlock>
-                <ToggleSwitch Header="开启弹幕" Margin="0 12 0 0"></ToggleSwitch>
+                <ToggleSwitch x:Name="DanmuSettingState"  Header="开启弹幕" Margin="0 12 0 0"></ToggleSwitch>
                 <TextBlock Margin="0 12 0 0">互动自动清理</TextBlock>
-                <my:NumberBox Margin="0 4 0 0" PlaceholderText="请输入整数" Minimum="0" HorizontalAlignment="Left" Width="280" SpinButtonPlacementMode="Compact"/>
+                <my:NumberBox x:Name="numCleanCount" Margin="0 4 0 0" PlaceholderText="请输入整数" Minimum="0" HorizontalAlignment="Left" Width="280" SpinButtonPlacementMode="Compact"/>
                 <TextBlock Margin="0 12 0 0">屏蔽关键字</TextBlock>
-                <AutoSuggestBox HorizontalAlignment="Left" Margin="0 4 0 0" QueryIcon="Add" PlaceholderText="输入关键字" Width="280"></AutoSuggestBox>
-                <ListView Margin="0 4 0 0" Background="#19808080" Height="240" Width="280" HorizontalAlignment="Left">
-                    
+                <AutoSuggestBox x:Name="LiveDanmuSettingTxtWord" QuerySubmitted="LiveDanmuSettingTxtWord_QuerySubmitted" HorizontalAlignment="Left" Margin="0 4 0 0" QueryIcon="Add" PlaceholderText="输入关键字" Width="280"></AutoSuggestBox>
+                <ListView x:Name="LiveDanmuSettingListWords" Margin="0 4 0 0" Background="#19808080" Height="240" Width="280" HorizontalAlignment="Left">
+                    <ListView.ItemContainerStyle>
+                        <Style  TargetType="ListViewItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch"></Setter>
+                            <Setter Property="Padding" Value="0"></Setter>
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Margin="8 0" VerticalAlignment="Center" Text="{Binding}"></TextBlock>
+                                <AppBarButton Click="RemoveLiveDanmuWord_Click" Grid.Column="1" Height="40" Width="40" Icon="Delete"></AppBarButton>
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
                 </ListView>
                 <TextBlock FontSize="20" FontWeight="Bold" Margin="0 12 0 0">关于</TextBlock>
                 <TextBlock Margin="0 12 0 0">AllLive.UWP </TextBlock>

@@ -4,97 +4,226 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:AllLive.UWP.Views"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls" xmlns:models="using:AllLive.Core.Models"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls" xmlns:models="using:AllLive.Core.Models" xmlns:my="using:Microsoft.UI.Xaml.Controls" xmlns:controls1="using:NSDanmaku.Controls" xmlns:convert="using:AllLive.UWP.Converters"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-
+    <Page.Resources>
+        <convert:DanmakuStyleConvert x:Key="styleConvert"></convert:DanmakuStyleConvert>
+    </Page.Resources>
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="Auto" x:Name="BottomInfo"/>
+        </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
-            <ColumnDefinition Width="280" MinWidth="200"/>
+            <ColumnDefinition x:Name="ColumnRight" Width="280" MinWidth="100"/>
         </Grid.ColumnDefinitions>
-        <Grid Background="Black" RequestedTheme="Dark">
-            <Grid  VerticalAlignment="Top">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <Grid.Background>
-                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                        <GradientStop Color="#00000000" Offset="1"/>
-                        <GradientStop Color="#C8000000" Offset="0"/>
-                    </LinearGradientBrush>
-                </Grid.Background>
-                <Button x:Name="btnBack" Click="btnBack_Click" Width="48" ToolTipService.ToolTip="返回" Background="Transparent" Height="48">
-                    <FontIcon FontSize="16" FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE112;" />
-                </Button>
-                <TextBlock Grid.Column="1" FontSize="16" Margin="8 0" VerticalAlignment="Center" Text="{x:Bind Path=liveRoomVM.Title,Mode=OneWay}"></TextBlock>
-                <StackPanel Grid.Column="2" Orientation="Horizontal">
-
-                    <Button ToolTipService.ToolTip="截图" Width="48" Background="Transparent" Height="48">
-                        <SymbolIcon Symbol="Camera"></SymbolIcon>
-                    </Button>
-                    <Button ToolTipService.ToolTip="分享" Width="48" Background="Transparent" Height="48">
-                        <SymbolIcon Symbol="Share"></SymbolIcon>
-                    </Button>
-                </StackPanel>
+        <Button x:Name="BtnFoucs" Width="0" Height="0" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="-8 -8 0 0" Background="Transparent" BorderThickness="0"></Button>
+        <Grid Background="Black" RequestedTheme="Dark"
+              PointerMoved="Grid_PointerMoved"   
+              PointerEntered="Grid_PointerEntered" 
+              PointerExited="Grid_PointerExited"
+              ManipulationMode="TranslateY,TranslateRailsY"
+              ManipulationCompleted="Grid_ManipulationCompleted"
+              ManipulationDelta="Grid_ManipulationDelta"
+              ManipulationStarted="Grid_ManipulationStarted">
+            <MediaPlayerElement x:Name="player" ></MediaPlayerElement>
+            <!--弹幕-->
+            <Grid Tapped="Grid_Tapped">
+                <controls1:Danmaku x:Name="DanmuControl" />
             </Grid>
-            <Grid Height="48" VerticalAlignment="Bottom">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <Grid.Background>
-                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                        <GradientStop Color="#00000000"/>
-                        <GradientStop Color="#C8000000" Offset="1"/>
-                    </LinearGradientBrush>
-                </Grid.Background>
-                <StackPanel Orientation="Horizontal">
-                    <Button Width="48" ToolTipService.ToolTip="播放" Background="Transparent" Height="48">
-                        <PathIcon Data="F1 M 17.82814 10.183601 L 4.07814 2.054672 C 2.96093 1.394539 1.25 2.035141 1.25 3.667984 L 1.25 19.921875 C 1.25 21.386719 2.839851 22.269516 4.07814 21.535149 L 17.82814 13.410149 C 19.05468 12.687492 19.058609 10.906258 17.82814 10.183601 Z " VerticalAlignment="Center" HorizontalAlignment="Center" />
-                    </Button>
-                    <Button Width="48" ToolTipService.ToolTip="暂停" Background="Transparent" Height="48">
-                        <PathIcon Data="F1 M 6.875 20.507812 C 7.910156 20.507812 8.75 19.667969 8.75 18.632812 L 8.75 4.882812 C 8.75 3.847656 7.910156 3.007812 6.875 3.007812 L 3.125 3.007812 C 2.089844 3.007812 1.25 3.847656 1.25 4.882812 L 1.25 18.632812 C 1.25 19.667969 2.089844 20.507812 3.125 20.507812 Z M 18.75 18.632812 L 18.75 4.882812 C 18.75 3.847656 17.910156 3.007812 16.875 3.007812 L 13.125 3.007812 C 12.089844 3.007812 11.25 3.847656 11.25 4.882812 L 11.25 18.632812 C 11.25 19.667969 12.089844 20.507812 13.125 20.507812 L 16.875 20.507812 C 17.910156 20.507812 18.75 19.667969 18.75 18.632812 Z " VerticalAlignment="Center" HorizontalAlignment="Center" />
-                    </Button>
-                    <Button Width="48" ToolTipService.ToolTip="音量" Background="Transparent" Height="48">
-                        <PathIcon Data="F1 M 7.14962 4.572258 L 3.674202 8.046875 L -0.3125 8.046875 C -0.83046 8.046875 -1.25 8.466415 -1.25 8.984375 L -1.25 14.609375 C -1.25 15.126953 -0.83046 15.546875 -0.3125 15.546875 L 3.674202 15.546875 L 7.14962 19.021492 C 7.736702 19.608612 8.75 19.196091 8.75 18.358612 L 8.75 5.235138 C 8.75 4.396858 7.735939 3.985939 7.14962 4.572258 Z M 16.263657 2.576942 C 15.827332 2.290611 15.241013 2.411346 14.954681 2.848434 C 14.667969 3.28476 14.789848 3.871078 15.226173 4.15741 C 17.814827 5.856247 19.359779 8.71212 19.359779 11.797256 C 19.359779 14.882431 17.814827 17.738266 15.226173 19.437103 C 14.789848 19.723053 14.667969 20.309753 14.954681 20.745697 C 15.229683 21.164055 15.81131 21.314468 16.263657 21.017189 C 19.385529 18.967972 21.25 15.520706 21.25 11.796875 C 21.25 8.073044 19.385529 4.62616 16.263657 2.576942 Z M 17.5 11.796875 C 17.5 9.315224 16.247673 7.033577 14.149628 5.693741 C 13.712502 5.414848 13.13282 5.544548 12.855873 5.985146 C 12.578888 6.425781 12.708206 7.008972 13.145294 7.288284 C 14.698029 8.280067 15.625 9.965248 15.625 11.796875 C 15.625 13.628502 14.698029 15.313683 13.145294 16.305466 C 12.708206 16.584358 12.578888 17.167587 12.855873 17.608604 C 13.110161 18.013268 13.680878 18.199997 14.149628 17.900009 C 16.247673 16.560173 17.5 14.278908 17.5 11.796875 Z M 11.962128 8.794136 C 11.509781 8.546867 10.939064 8.709755 10.688286 9.163284 C 10.43869 9.616814 10.603905 10.186729 11.057434 10.437126 C 11.561737 10.714073 11.875 11.235542 11.875 11.796875 C 11.875 12.358589 11.561737 12.879677 11.057816 13.156624 C 10.604286 13.407021 10.439072 13.976936 10.688667 14.430466 C 10.939827 14.885941 11.510925 15.047646 11.962509 14.799614 C 13.065224 14.1922 13.750381 13.041801 13.750381 11.796494 C 13.750381 10.551186 13.065224 9.401169 11.962128 8.794136 Z " VerticalAlignment="Center" HorizontalAlignment="Center" />
-                    </Button>
-                    <Button Width="48" ToolTipService.ToolTip="音量" Background="Transparent" Height="48">
-                        <PathIcon Data="F1 M 8.39962 4.572258 L 4.924202 8.046875 L 0.9375 8.046875 C 0.41954 8.046875 0 8.466415 0 8.984375 L 0 14.609375 C 0 15.126953 0.41954 15.546875 0.9375 15.546875 L 4.924202 15.546875 L 8.39962 19.021492 C 8.986702 19.608612 10 19.196091 10 18.358612 L 10 5.235138 C 10 4.396858 8.985939 3.985939 8.39962 4.572258 Z M 18.032799 11.796875 L 19.815636 10.014076 C 20.061722 9.767952 20.061722 9.368744 19.815636 9.122658 L 18.924217 8.231239 C 18.678131 7.985153 18.278923 7.985153 18.032799 8.231239 L 16.25 10.014076 L 14.467201 8.231239 C 14.221077 7.985153 13.821869 7.985153 13.575783 8.231239 L 12.684364 9.122658 C 12.438278 9.368744 12.438278 9.767952 12.684364 10.014076 L 14.467201 11.796875 L 12.684784 13.579292 C 12.43866 13.825378 12.43866 14.224625 12.684784 14.470711 L 13.576164 15.362091 C 13.82225 15.608215 14.221497 15.608215 14.467583 15.362091 L 16.25 13.579674 L 18.032799 15.362511 C 18.278923 15.608597 18.678131 15.608597 18.924217 15.362511 L 19.815636 14.471092 C 20.061722 14.225006 20.061722 13.825798 19.815636 13.579674 Z " VerticalAlignment="Center" HorizontalAlignment="Center" />
-                    </Button>
-                </StackPanel>
-
-
-                <StackPanel Grid.Column="2" Orientation="Horizontal">
-                    <ComboBox x:Name="BottomCBLine" FontSize="16" MinWidth="80" DisplayMemberPath="name" ToolTipService.ToolTip="线路" HorizontalContentAlignment="Center"  Foreground="White" BorderThickness="0" VerticalAlignment="Center" Background="Transparent">
-                        <ComboBoxItem IsSelected="True" Content="高清 1080P"/>
-                    </ComboBox>
-                    <ComboBox x:Name="BottomCBQuality" FontSize="16" Margin="8 0 0 0" MinWidth="80" DisplayMemberPath="name" ToolTipService.ToolTip="线路" HorizontalContentAlignment="Center"  Foreground="White" BorderThickness="0"  VerticalAlignment="Center" Background="Transparent">
-                        <ComboBoxItem IsSelected="True" Content="备用线路1"/>
-                    </ComboBox>
-                    <Button ToolTipService.ToolTip="小窗" Width="48" Background="Transparent" Height="48">
-                        <PathIcon Data="F1 M 18.125 1.796875 L 5.625 1.796875 C 4.589844 1.796875 3.75 2.636719 3.75 3.671875 L 3.75 5.546875 L 1.875 5.546875 C 0.839844 5.546875 0 6.386719 0 7.421875 L 0 19.921875 C 0 20.957031 0.839844 21.796875 1.875 21.796875 L 14.375 21.796875 C 15.410156 21.796875 16.25 20.957031 16.25 19.921875 L 16.25 18.046875 L 18.125 18.046875 C 19.160156 18.046875 20 17.207031 20 16.171875 L 20 3.671875 C 20 2.636719 19.160156 1.796875 18.125 1.796875 Z M 14.375 19.921875 L 1.875 19.921875 L 1.875 11.796875 L 14.375 11.796875 Z M 18.125 16.171875 L 16.25 16.171875 L 16.25 7.421875 C 16.25 6.386719 15.410156 5.546875 14.375 5.546875 L 5.625 5.546875 L 5.625 3.671875 L 18.125 3.671875 Z " VerticalAlignment="Center" HorizontalAlignment="Center" />
-                    </Button>
-                    <Button ToolTipService.ToolTip="铺满窗口" Width="48" Background="Transparent" Height="48">
-                        <PathIcon Data="F1 M 18.125 3.046875 L 1.875 3.046875 C 0.839844 3.046875 0 3.886719 0 4.921875 L 0 18.671875 C 0 19.707031 0.839844 20.546875 1.875 20.546875 L 18.125 20.546875 C 19.160156 20.546875 20 19.707031 20 18.671875 L 20 4.921875 C 20 3.886719 19.160156 3.046875 18.125 3.046875 Z M 18.125 18.4375 C 18.125 18.566399 18.019524 18.671875 17.890625 18.671875 L 2.109375 18.671875 C 1.980476 18.671875 1.875 18.566399 1.875 18.4375 L 1.875 9.296875 L 18.125 9.296875 Z " VerticalAlignment="Center" HorizontalAlignment="Center" />
-                    </Button>
-                    <Button ToolTipService.ToolTip="取消铺满窗口" Width="48" Background="Transparent" Height="48">
-                        <PathIcon Data="F1 M 18.125 3.046875 L 1.875 3.046875 C 0.839462 3.046875 0 3.886337 0 4.921875 L 0 18.671875 C 0 19.707413 0.839462 20.546875 1.875 20.546875 L 18.125 20.546875 C 19.160538 20.546875 20 19.707413 20 18.671875 L 20 4.921875 C 20 3.886337 19.160538 3.046875 18.125 3.046875 Z M 8.75 18.046875 L 2.5 18.046875 L 2.5 8.046875 L 8.75 8.046875 Z M 17.5 18.046875 L 11.25 18.046875 L 11.25 8.046875 L 17.5 8.046875 Z " VerticalAlignment="Center" HorizontalAlignment="Center" />
-                    </Button>
-                    <Button ToolTipService.ToolTip="全屏" Width="48" Background="Transparent" Height="48">
-                        <PathIcon Data="F1 M 1.25 8.828125 C 1.25 9.085922 1.460953 9.296875 1.71875 9.296875 L 3.28125 9.296875 C 3.539047 9.296875 3.75 9.085922 3.75 8.828125 L 3.75 5.546875 L 7.03125 5.546875 C 7.289047 5.546875 7.5 5.335922 7.5 5.078125 L 7.5 3.515625 C 7.5 3.257828 7.289047 3.046875 7.03125 3.046875 L 2.1875 3.046875 C 1.667976 3.046875 1.25 3.464851 1.25 3.984375 Z M 12.5 3.515625 L 12.5 5.078125 C 12.5 5.335922 12.710953 5.546875 12.96875 5.546875 L 16.25 5.546875 L 16.25 8.828125 C 16.25 9.085922 16.460953 9.296875 16.71875 9.296875 L 18.28125 9.296875 C 18.539047 9.296875 18.75 9.085922 18.75 8.828125 L 18.75 3.984375 C 18.75 3.464851 18.332024 3.046875 17.8125 3.046875 L 12.96875 3.046875 C 12.710953 3.046875 12.5 3.257828 12.5 3.515625 Z M 18.28125 14.296875 L 16.71875 14.296875 C 16.460953 14.296875 16.25 14.507828 16.25 14.765625 L 16.25 18.046875 L 12.96875 18.046875 C 12.710953 18.046875 12.5 18.257828 12.5 18.515625 L 12.5 20.078125 C 12.5 20.335922 12.710953 20.546875 12.96875 20.546875 L 17.8125 20.546875 C 18.332024 20.546875 18.75 20.128899 18.75 19.609375 L 18.75 14.765625 C 18.75 14.507828 18.539047 14.296875 18.28125 14.296875 Z M 7.5 20.078125 L 7.5 18.515625 C 7.5 18.257828 7.289047 18.046875 7.03125 18.046875 L 3.75 18.046875 L 3.75 14.765625 C 3.75 14.507828 3.539047 14.296875 3.28125 14.296875 L 1.71875 14.296875 C 1.460953 14.296875 1.25 14.507828 1.25 14.765625 L 1.25 19.609375 C 1.25 20.128899 1.667976 20.546875 2.1875 20.546875 L 7.03125 20.546875 C 7.289047 20.546875 7.5 20.335922 7.5 20.078125 Z " VerticalAlignment="Center" HorizontalAlignment="Center" />
-                    </Button>
-                    <Button ToolTipService.ToolTip="退出全屏" Width="48" Background="Transparent" Height="48">
-                        <PathIcon Data="F1 M 18.28125 9.296875 C 18.539047 9.296875 18.75 9.085922 18.75 8.828125 L 18.75 7.265625 C 18.75 7.007828 18.539047 6.796875 18.28125 6.796875 L 15 6.796875 L 15 3.515625 C 15 3.257828 14.789047 3.046875 14.53125 3.046875 L 12.96875 3.046875 C 12.710953 3.046875 12.5 3.257828 12.5 3.515625 L 12.5 8.359375 C 12.5 8.878899 12.917976 9.296875 13.4375 9.296875 Z M 7.5 8.359375 L 7.5 3.515625 C 7.5 3.257828 7.289047 3.046875 7.03125 3.046875 L 5.46875 3.046875 C 5.210953 3.046875 5 3.257828 5 3.515625 L 5 6.796875 L 1.71875 6.796875 C 1.460953 6.796875 1.25 7.007828 1.25 7.265625 L 1.25 8.828125 C 1.25 9.085922 1.460953 9.296875 1.71875 9.296875 L 6.5625 9.296875 C 7.082024 9.296875 7.5 8.878899 7.5 8.359375 Z M 7.5 20.078125 L 7.5 15.234375 C 7.5 14.714851 7.082024 14.296875 6.5625 14.296875 L 1.71875 14.296875 C 1.460953 14.296875 1.25 14.507828 1.25 14.765625 L 1.25 16.328125 C 1.25 16.585922 1.460953 16.796875 1.71875 16.796875 L 5 16.796875 L 5 20.078125 C 5 20.335922 5.210953 20.546875 5.46875 20.546875 L 7.03125 20.546875 C 7.289047 20.546875 7.5 20.335922 7.5 20.078125 Z M 15 20.078125 L 15 16.796875 L 18.28125 16.796875 C 18.539047 16.796875 18.75 16.585922 18.75 16.328125 L 18.75 14.765625 C 18.75 14.507828 18.539047 14.296875 18.28125 14.296875 L 13.4375 14.296875 C 12.917976 14.296875 12.5 14.714851 12.5 15.234375 L 12.5 20.078125 C 12.5 20.335922 12.710953 20.546875 12.96875 20.546875 L 14.53125 20.546875 C 14.789047 20.546875 15 20.335922 15 20.078125 Z " VerticalAlignment="Center" HorizontalAlignment="Center" />
-                    </Button>
-                </StackPanel>
-            </Grid>
+            <!--亮度-->
+            <Grid x:Name="BrightnessShield" Tapped="Grid_Tapped" Background="#99000000" Opacity="0"></Grid>
             <TextBlock VerticalAlignment="Center" Visibility="{x:Bind Path=liveRoomVM.Living,Mode=OneWay,Converter={StaticResource displayConvert}}" HorizontalAlignment="Center" Foreground="Gray" FontSize="24">暂未开播</TextBlock>
+            <StackPanel x:Name="PlayerLoading" Visibility="Collapsed" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <ProgressRing IsActive="True" Width="56" Height="56"></ProgressRing>
+                <TextBlock x:Name="PlayerLoadText" TextAlignment="Center" Margin="0 8" Foreground="Gray">加载中</TextBlock>
+            </StackPanel>
+            <Border x:Name="ToolTip" Visibility="Collapsed" VerticalAlignment="Center" HorizontalAlignment="Center" CornerRadius="8" Padding="16" Background="#CCFFFFFF">
+                <TextBlock x:Name="TxtToolTip" Foreground="Black" FontSize="20" Text=""></TextBlock>
+            </Border>
+            <Grid x:Name="control">
+                <Grid x:Name="StandardControl">
+                    <Grid  VerticalAlignment="Top">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.Background>
+                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                <GradientStop Color="#00000000" Offset="1"/>
+                                <GradientStop Color="#C8000000" Offset="0"/>
+                            </LinearGradientBrush>
+                        </Grid.Background>
+                        <Button x:Name="btnBack" Click="btnBack_Click" Width="48" ToolTipService.ToolTip="返回" Background="Transparent" Height="48">
+                            <FontIcon FontSize="16" FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE112;" />
+                        </Button>
+                        <TextBlock Grid.Column="1" FontSize="16"  VerticalAlignment="Center" Text="{x:Bind Path=liveRoomVM.Title,Mode=OneWay}"></TextBlock>
+                        <StackPanel Grid.Column="2" Orientation="Horizontal">
+
+                            <Button x:Name="PlayTopBtnScreenshot" ToolTipService.ToolTip="截图" Width="48" Background="Transparent" Height="48">
+                                <PathIcon Data="F1 M 20 7.421875 C 20 6.386719 19.160156 5.546875 18.125 5.546875 L 14.6875 5.546875 L 14.20311 4.261703 C 13.929672 3.531265 13.230476 3.046875 12.449226 3.046875 L 7.546883 3.046875 C 6.765633 3.046875 6.066399 3.531265 5.792961 4.261703 L 5.3125 5.546875 L 1.875 5.546875 C 0.839844 5.546875 0 6.386719 0 7.421875 L 0 18.671875 C 0 19.707031 0.839844 20.546875 1.875 20.546875 L 18.125 20.546875 C 19.160156 20.546875 20 19.707031 20 18.671875 Z M 14.6875 13.046875 C 14.6875 15.63282 12.585945 17.734375 10 17.734375 C 7.414055 17.734375 5.3125 15.63282 5.3125 13.046875 C 5.3125 10.46093 7.414055 8.359375 10 8.359375 C 12.585945 8.359375 14.6875 10.46093 14.6875 13.046875 Z M 13.4375 13.046875 C 13.4375 11.152344 11.894531 9.609375 10 9.609375 C 8.105469 9.609375 6.5625 11.152344 6.5625 13.046875 C 6.5625 14.941406 8.105469 16.484375 10 16.484375 C 11.894531 16.484375 13.4375 14.941406 13.4375 13.046875 Z " VerticalAlignment="Center" HorizontalAlignment="Center" />
+                            </Button>
+
+                        </StackPanel>
+                    </Grid>
+                    <Grid Height="48" VerticalAlignment="Bottom">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.Background>
+                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                <GradientStop Color="#00000000"/>
+                                <GradientStop Color="#C8000000" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Grid.Background>
+                        <StackPanel Orientation="Horizontal">
+                            <Button x:Name="PlayBtnPlay" Width="48" ToolTipService.ToolTip="播放" Background="Transparent" Height="48">
+                                <PathIcon Data="{StaticResource ResourceKey=IconPlay}" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                            </Button>
+                            <Button x:Name="PlayBtnPause" Visibility="Collapsed" Width="48" ToolTipService.ToolTip="暂停" Background="Transparent" Height="48">
+                                <PathIcon Data="{StaticResource ResourceKey=IconPause}" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                            </Button>
+                            <Button x:Name="PlayBtnSettingsDanmaku"  Width="48" ToolTipService.ToolTip="弹幕设置" Background="Transparent" Height="48">
+                                <PathIcon Data="{StaticResource ResourceKey=IconSetting}" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                <Button.Flyout>
+                                    <Flyout>
+                                        <StackPanel Width="280">
+                                            <TextBlock Margin="0 4 0 0">弹幕顶部距离 <Run Text="{x:Bind Path=DanmuControl.Margin.Top,Mode=OneWay,Converter={StaticResource numberToStringConvert}}"/></TextBlock>
+                                            <Slider  x:Name="DanmuTopMargin" Value="0" Minimum="0" StepFrequency="4"></Slider>
+                                            <TextBlock Margin="0 4 0 0">弹幕显示区域 <Run Text="{x:Bind Path=DanmuControl.DanmakuArea,Mode=OneWay,Converter={StaticResource numberToStringConvert}}"/></TextBlock>
+                                            <Slider x:Name="DanmuSettingArea" Value="{x:Bind Path=DanmuControl.DanmakuArea,Mode=TwoWay}" Minimum="0.1" Maximum="1" StepFrequency="0.1"></Slider>
+                                            <TextBlock Margin="0 4 0 0">弹幕缩放 <Run Text="{x:Bind Path=DanmuControl.DanmakuSizeZoom,Mode=OneWay,Converter={StaticResource numberToStringConvert}}"/></TextBlock>
+                                            <Slider x:Name="DanmuSettingFontZoom" Value="{x:Bind Path=DanmuControl.DanmakuSizeZoom,Mode=TwoWay}" Minimum="0.1" Maximum="2" StepFrequency="0.05"></Slider>
+                                            <TextBlock Margin="0 4 0 0">弹幕速度 <Run Text="{x:Bind Path=DanmuControl.DanmakuDuration,Mode=OneWay,Converter={StaticResource numberToStringConvert}}"/></TextBlock>
+                                            <Slider x:Name="DanmuSettingSpeed" Value="{x:Bind Path=DanmuControl.DanmakuDuration,Mode=TwoWay}" Minimum="1" Maximum="25" StepFrequency="1"></Slider>
+                                            <TextBlock Margin="0 4 0 0">弹幕透明度 <Run Text="{x:Bind Path=DanmuControl.Opacity,Mode=OneWay,Converter={StaticResource numberToStringConvert}}"/></TextBlock>
+                                            <Slider  x:Name="DanmuSettingOpacity" Value="{x:Bind Path=DanmuControl.Opacity,Mode=TwoWay}" Minimum="0.1" Maximum="1" StepFrequency="0.1"></Slider>
+                                            <TextBlock  Margin="0 4">弹幕样式</TextBlock>
+                                            <ComboBox  x:Name="DanmuSettingStyle"  SelectedIndex="{x:Bind Path=DanmuControl.DanmakuStyle,Converter={StaticResource styleConvert},Mode=TwoWay}" HorizontalAlignment="Stretch">
+                                                <ComboBox.Items>
+                                                    <ComboBoxItem>重叠</ComboBoxItem>
+                                                    <ComboBoxItem>无边</ComboBoxItem>
+                                                    <ComboBoxItem>阴影</ComboBoxItem>
+                                                    <ComboBoxItem>描边</ComboBoxItem>
+                                                </ComboBox.Items>
+                                            </ComboBox>
+                                            <ToggleSwitch x:Name="DanmuSettingBold" Margin="0 8 0 0"  IsOn="{x:Bind Path=DanmuControl.DanmakuBold,Mode=TwoWay}">
+                                                <ToggleSwitch.Header>
+                                                    <TextBlock >字体加粗</TextBlock>
+                                                </ToggleSwitch.Header>
+                                            </ToggleSwitch>
+
+
+
+                                        </StackPanel>
+                                    </Flyout>
+                                </Button.Flyout>
+                            </Button>
+                            <ToggleSwitch x:Name="PlaySWDanmu" Margin="8 2 8 0" Width="110" OffContent="关闭弹幕" VerticalAlignment="Center" OnContent="开启弹幕"></ToggleSwitch>
+
+                        </StackPanel>
+
+
+                        <StackPanel Grid.Column="2" Orientation="Horizontal">
+                            <Button x:Name="PlayBtnVolume"  Width="48" ToolTipService.ToolTip="音量" Background="Transparent" Height="48">
+                                <PathIcon Data="{StaticResource ResourceKey=IconVolume}" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                <Button.Flyout>
+                                    <Flyout>
+                                        <StackPanel>
+                                            <TextBlock>音量</TextBlock>
+                                            <Slider x:Name="SliderVolume" Value="1" Width="200" Minimum="0" Maximum="1" StepFrequency="0.1"></Slider>
+                                        </StackPanel>
+                                    </Flyout>
+                                </Button.Flyout>
+                            </Button>
+                            
+                            <ComboBox x:Name="PlayQuality" FontSize="16" MinWidth="80" DisplayMemberPath="name" ToolTipService.ToolTip="线路" HorizontalContentAlignment="Center"  Foreground="White" BorderThickness="0" VerticalAlignment="Center" Background="Transparent">
+                                <ComboBoxItem IsSelected="True" Content="高清 1080P"/>
+                            </ComboBox>
+                            <ComboBox x:Name="PlayLine" FontSize="16" Margin="8 0 0 0" MinWidth="80" DisplayMemberPath="name" ToolTipService.ToolTip="线路" HorizontalContentAlignment="Center"  Foreground="White" BorderThickness="0"  VerticalAlignment="Center" Background="Transparent">
+                                <ComboBoxItem IsSelected="True" Content="备用线路1"/>
+                            </ComboBox>
+                            <Button x:Name="PlayBtnMinWindow" Click="PlayBtnMinWindow_Click" ToolTipService.ToolTip="小窗" Width="48" Background="Transparent" Height="48">
+                                <PathIcon Data="{StaticResource ResourceKey=IconMiniWindow}" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                            </Button>
+                            <Button x:Name="PlayBtnFullWindow" Click="PlayBtnFullWindow_Click" ToolTipService.ToolTip="铺满窗口" Width="48" Background="Transparent" Height="48">
+                                <PathIcon Data="{StaticResource ResourceKey=IconFullWindow}" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                            </Button>
+                            <Button x:Name="PlayBtnExitFullWindow" Click="PlayBtnExitFullWindow_Click" Visibility="Collapsed" ToolTipService.ToolTip="取消铺满窗口" Width="48" Background="Transparent" Height="48">
+                                <PathIcon Data="{StaticResource ResourceKey=IconExitFullWindow}" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                            </Button>
+                            <Button x:Name="PlayBtnFullScreen" Click="PlayBtnFullScreen_Click" ToolTipService.ToolTip="全屏" Width="48" Background="Transparent" Height="48">
+                                <PathIcon Data="{StaticResource ResourceKey=IconFullScreen}" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                            </Button>
+                            <Button x:Name="PlayBtnExitFullScreen" Click="PlayBtnExitFullScreen_Click" Visibility="Collapsed" ToolTipService.ToolTip="退出全屏" Width="48" Background="Transparent" Height="48">
+                                <PathIcon Data="{StaticResource ResourceKey=IconExitFullScreen}" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+                </Grid>
+                <Grid x:Name="MiniControl" Visibility="Collapsed" VerticalAlignment="Bottom">
+                    <Grid.Background>
+                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                            <GradientStop Color="#00000000"/>
+                            <GradientStop Color="#C8000000" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Grid.Background>
+                    <StackPanel VerticalAlignment="Bottom" Orientation="Horizontal" HorizontalAlignment="Left">
+                        <HyperlinkButton  Visibility="{Binding ElementName=PlayBtnPause,Path=Visibility,Mode=OneWay}" Foreground="White" Padding="8" Width="48" Height="48">
+                            <PathIcon Data="{StaticResource ResourceKey=IconPause}" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                        </HyperlinkButton>
+                        <HyperlinkButton  Visibility="{Binding ElementName=PlayBtnPlay,Path=Visibility,Mode=OneWay}" Foreground="White" Padding="8" Width="48" Height="48">
+                            <PathIcon Data="{StaticResource ResourceKey=IconPlay}" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                        </HyperlinkButton>
+
+                        <ToggleSwitch IsOn="{Binding ElementName=PlaySWDanmu,Path=IsOn,Mode=TwoWay}" Margin="8 2 8 0" Width="110" OffContent="关闭弹幕" VerticalAlignment="Center" OnContent="开启弹幕"></ToggleSwitch>
+
+                    </StackPanel>
+                    <HyperlinkButton x:Name="BottomBtnExitMiniWindows" HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="BottomBtnExitMiniWindows_Click"  ToolTipService.ToolTip="恢复窗口" Foreground="White" Padding="8" Width="48" Height="48">
+                        <PathIcon Data="{StaticResource ResourceKey=IconFullWindow}" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                    </HyperlinkButton>
+                </Grid>
+            </Grid>
+          
         </Grid>
-        <Grid  Grid.Column="1">
+        <Grid Grid.Row="1" Background="{ThemeResource NavigationViewTopPaneBackground}" Height="56">
+            <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
+                <AppBarButton Label="收藏">
+                    <AppBarButton.Icon>
+                        <PathIcon Data="{StaticResource ResourceKey=IconStarOutline}" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                    </AppBarButton.Icon>
+                </AppBarButton>
+                <AppBarButton Label="刷新">
+                    <AppBarButton.Icon>
+                        <PathIcon Data="{StaticResource ResourceKey=IconRefresh}" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                    </AppBarButton.Icon>
+                </AppBarButton>
+            </StackPanel>
+            <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+
+                <AppBarButton Label="分享">
+                    <AppBarButton.Icon>
+                        <PathIcon Data="{StaticResource ResourceKey=IconShare}" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                    </AppBarButton.Icon>
+                </AppBarButton>
+                <AppBarButton Label="浏览器">
+                    <AppBarButton.Icon>
+                        <PathIcon Data="{StaticResource ResourceKey=IconBrowser}" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                    </AppBarButton.Icon>
+                </AppBarButton>
+                <AppBarButton Label="直链">
+                    <AppBarButton.Icon>
+                        <PathIcon Data="{StaticResource ResourceKey=IconLink}" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                    </AppBarButton.Icon>
+                </AppBarButton>
+            </StackPanel>
+        </Grid>
+        <Grid x:Name="GridRight" Grid.Column="1" Grid.RowSpan="2">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition/>
@@ -108,28 +237,32 @@
                 <PersonPicture Width="48" ProfilePicture="{x:Bind Path=liveRoomVM.Photo,Mode=OneWay}" Height="48" Background="Blue"></PersonPicture>
                 <StackPanel Grid.Column="1" VerticalAlignment="Center" Orientation="Vertical" Margin="8 0 0 0">
                     <TextBlock Text="{x:Bind Path=liveRoomVM.Name,Mode=OneWay}"></TextBlock>
-                    <TextBlock  FontSize="12" Margin="0 4 0 0" Foreground="Gray" IsTextSelectionEnabled="True">房间号:<Run Text="{x:Bind Path=liveRoomVM.RoomID,Mode=OneWay}"/></TextBlock>
-
+                    <StackPanel Orientation="Horizontal" Margin="0 4 0 0">
+                        <Image Width="18" Height="18" Margin="0 0 4 0" Source="{x:Bind Path=liveRoomVM.SiteLogo,Mode=OneWay}"></Image>
+                        <TextBlock  VerticalAlignment="Center" Opacity=".6" FontSize="12" Text="{x:Bind Path=liveRoomVM.SiteName,Mode=OneWay}"></TextBlock>
+                    </StackPanel>
                 </StackPanel>
-                <AppBarButton Grid.Column="2" Width="48" Icon="OutlineStar" Label="收藏">
-                    
-                </AppBarButton>
+                <StackPanel Orientation="Horizontal" Grid.Column="2">
+                    <Viewbox VerticalAlignment="Center" Width="14">
+                        <PathIcon Data="{StaticResource ResourceKey=IconHot}" Foreground="OrangeRed" ></PathIcon>
+                    </Viewbox>
+
+                    <TextBlock Margin="4 0 0 0" 
+                               Text="{x:Bind Path=liveRoomVM.Online,Mode=OneWay,Converter={StaticResource numberToStringConvert}}"
+                               VerticalAlignment="Center" 
+                               FontSize="13" 
+                               Opacity=".6"></TextBlock>
+                </StackPanel>
             </Grid>
             <Pivot Grid.Row="1">
                 <PivotItem Margin="0">
                     <PivotItem.Header>
-                        <TextBlock FontSize="15">互动 (<Run Text="{x:Bind Path=liveRoomVM.Online,Mode=OneWay,Converter={StaticResource numberToStringConvert}}"/>)</TextBlock>
+                        <TextBlock FontSize="15">互动</TextBlock>
                     </PivotItem.Header>
                     <ListView ItemsSource="{x:Bind Path=liveRoomVM.Messages}" SelectionMode="None" IsItemClickEnabled="False">
                         <ListView.ItemTemplate>
                             <DataTemplate x:DataType="models:LiveMessage">
-                                <RichTextBlock TextWrapping="Wrap" Margin="4 0" LineHeight="24">
-                                    <Paragraph>
-                                        <Run Foreground="Gray" Text="{Binding UserName}"></Run>
-                                        <Run Foreground="Gray" Text=":"></Run>
-                                        <Run Text="{Binding Message}"></Run>
-                                    </Paragraph>
-                                </RichTextBlock>
+                                <TextBlock TextWrapping="Wrap" IsTextSelectionEnabled="True" Margin="4 0" LineHeight="24"><Run Foreground="Gray" Text="{Binding UserName}"></Run><Run Text="：" Foreground="Gray"/><Run Text="{Binding Message}"></Run></TextBlock>
                             </DataTemplate>
                         </ListView.ItemTemplate>
                         <ListView.ItemsPanel>
@@ -149,15 +282,49 @@
                 </PivotItem>
                 <PivotItem Margin="0">
                     <PivotItem.Header>
-                        <TextBlock FontSize="15">设置</TextBlock>
+                        <TextBlock FontSize="15">设置与屏蔽</TextBlock>
                     </PivotItem.Header>
+                    <ScrollViewer>
+                        <StackPanel Margin="12">
+
+                            <ToggleSwitch x:Name="swHardwareDecode" Header="硬件解码" Margin="0 12 0 0"></ToggleSwitch>
+
+
+                            <TextBlock Margin="0 12 0 0">互动自动清理</TextBlock>
+                            <my:NumberBox x:Name="numCleanCount" Margin="0 4 0 0" PlaceholderText="请输入整数" Minimum="0"  SpinButtonPlacementMode="Compact"/>
+                            <TextBlock Margin="0 12 0 0">屏蔽关键字</TextBlock>
+                            <AutoSuggestBox x:Name="LiveDanmuSettingTxtWord" QuerySubmitted="LiveDanmuSettingTxtWord_QuerySubmitted" HorizontalAlignment="Left" Margin="0 4 0 0" QueryIcon="Add" PlaceholderText="输入关键字" Width="280"></AutoSuggestBox>
+                            <ListView x:Name="LiveDanmuSettingListWords" Margin="0 4 0 0" Background="#19808080" Height="240" Width="280" HorizontalAlignment="Left">
+                                <ListView.ItemContainerStyle>
+                                    <Style  TargetType="ListViewItem">
+                                        <Setter Property="HorizontalContentAlignment" Value="Stretch"></Setter>
+                                        <Setter Property="Padding" Value="0"></Setter>
+                                    </Style>
+                                </ListView.ItemContainerStyle>
+                                <ListView.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Margin="8 0" VerticalAlignment="Center" Text="{Binding}"></TextBlock>
+                                            <AppBarButton Click="RemoveLiveDanmuWord_Click" Grid.Column="1" Height="40" Width="40" Icon="Delete"></AppBarButton>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+                        </StackPanel>
+                    </ScrollViewer>
                 </PivotItem>
             </Pivot>
         </Grid>
+
         <controls:GridSplitter
             GripperCursor="Default"
             HorizontalAlignment="Left"
             Grid.Column="1"
+            Grid.RowSpan="2"
             ResizeDirection="Auto"
             Background="Transparent"
             ResizeBehavior="BasedOnAlignment"

@@ -123,9 +123,13 @@
       <DependentUpon>MessageToast.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\MyAdaptiveGridView.cs" />
+    <Compile Include="Converters\DanmakuStyleConvert.cs" />
     <Compile Include="Converters\DisplayConvert.cs" />
     <Compile Include="Converters\NumberToStringConvert.cs" />
+    <Compile Include="Helper\ExceptionHandler.cs" />
     <Compile Include="Helper\LogHelper.cs" />
+    <Compile Include="Helper\MessageCenter.cs" />
+    <Compile Include="Helper\SettingHelper.cs" />
     <Compile Include="Helper\Utils.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
@@ -139,6 +143,8 @@
     <Compile Include="ViewModels\LiveRoomVM.cs" />
     <Compile Include="ViewModels\MainVM.cs" />
     <Compile Include="ViewModels\RecomendVM.cs" />
+    <Compile Include="ViewModels\SearchVM.cs" />
+    <Compile Include="ViewModels\SettingVM.cs" />
     <Compile Include="Views\CategoryDetailPage.xaml.cs">
       <DependentUpon>CategoryDetailPage.xaml</DependentUpon>
     </Compile>
@@ -148,6 +154,9 @@
     <Compile Include="Views\FavoritePage.xaml.cs">
       <DependentUpon>FavoritePage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\HistoryPage.xaml.cs">
+      <DependentUpon>HistoryPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\LiveRoomPage.xaml.cs">
       <DependentUpon>LiveRoomPage.xaml</DependentUpon>
     </Compile>
@@ -156,6 +165,9 @@
     </Compile>
     <Compile Include="Views\RecomendPage.xaml.cs">
       <DependentUpon>RecomendPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SearchPage.xaml.cs">
+      <DependentUpon>SearchPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\SettingsPage.xaml.cs">
       <DependentUpon>SettingsPage.xaml</DependentUpon>
@@ -168,6 +180,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\Logo\bilibili.png" />
+    <Content Include="Assets\Logo\egame.png" />
     <Content Include="Assets\Logo\huya.png" />
     <Content Include="Assets\Logo\douyu.png" />
     <Content Include="Assets\Placeholder\Placeholder.png" />
@@ -180,6 +193,9 @@
     <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
     <Content Include="Assets\StoreLogo.png" />
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="$(SolutionDir)\FFmpegBuild\$(PlatformTarget)\bin\*.dll" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
@@ -206,6 +222,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\HistoryPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\LiveRoomPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -218,12 +238,19 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\SearchPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\SettingsPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="FFmpegInteropX">
+      <Version>0.9.2</Version>
+    </PackageReference>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
       <Version>6.2.11</Version>
     </PackageReference>

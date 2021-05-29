@@ -19,6 +19,21 @@ namespace AllLive.UWP.ViewModels
         ILiveSite Site;
         ILiveDanmaku LiveDanmaku;
 
+        private string _siteLogo= "ms-appx:///Assets/Placeholder/Placeholder1x1.png";
+
+        public string SiteLogo
+        {
+            get { return _siteLogo; }
+            set { _siteLogo = value; DoPropertyChanged("SiteLogo"); }
+        }
+
+        private string _siteName;
+        public string SiteName
+        {
+            get { return _siteName; }
+            set { _siteName = value; DoPropertyChanged("SiteName"); }
+        }
+
         object RoomId;
         //private LiveRoomDetail detail;
         //public LiveRoomDetail Detail
@@ -60,7 +75,7 @@ namespace AllLive.UWP.ViewModels
             get { return _title; }
             set { _title = value; DoPropertyChanged("Title"); }
         }
-        private bool _living;
+        private bool _living=true;
 
         public bool Living
         {
@@ -76,6 +91,7 @@ namespace AllLive.UWP.ViewModels
             {
                 Loading = true;
                 Site = site;
+              
                 RoomId = roomId;
                 var result = await Site.GetRoomDetail(roomId);
                 // detail = result;
@@ -125,7 +141,7 @@ namespace AllLive.UWP.ViewModels
             {
                 if (e.Type == LiveMessageType.Online)
                 {
-                    Online = (long)e.Data;
+                    Online = Convert.ToInt64(e.Data);
                     return;
                 }
                 if (e.Type == LiveMessageType.Chat)

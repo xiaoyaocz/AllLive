@@ -24,6 +24,22 @@ namespace AllLive.Core.Helper
                 return await result.Content.ReadAsStringAsync();
             }
         }
+        public static async Task<string> GetUtf8String(string url, IDictionary<string, string> headers = null)
+        {
+            using (HttpClient httpClient = new HttpClient())
+            {
+                if (headers != null)
+                {
+                    foreach (var item in headers)
+                    {
+                        httpClient.DefaultRequestHeaders.Add(item.Key, item.Value);
+                    }
+                }
+                var result = await httpClient.GetAsync(url);
+                result.EnsureSuccessStatusCode();
+                return Encoding.UTF8.GetString( await result.Content.ReadAsByteArrayAsync());
+            }
+        }
         public static async Task<string> PostString(string url, string data,IDictionary<string, string> headers = null)
         {
             using (HttpClient httpClient = new HttpClient())

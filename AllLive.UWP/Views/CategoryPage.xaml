@@ -6,9 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
     xmlns:viewmodels="using:AllLive.UWP.ViewModels" 
-    xmlns:controls="using:AllLive.UWP.Controls" 
     xmlns:models="using:AllLive.Core.Models" 
-    xmlns:toolkit="using:Microsoft.Toolkit.Uwp.UI.Controls" 
     xmlns:Windows10version1809="http://schemas.microsoft.com/winfx/2006/xaml/presentation?IsApiContractPresent(Windows.Foundation.UniversalApiContract, 7)"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
@@ -41,7 +39,7 @@
                                         <GroupStyle >
                                             <GroupStyle.HeaderTemplate>
                                                 <DataTemplate x:DataType="models:LiveCategory">
-                                                    <TextBlock Text="{x:Bind Name}" FontSize="20" FontWeight="Bold" Foreground="{ThemeResource ApplicationForegroundThemeBrush}" />
+                                                    <TextBlock  Text="{x:Bind Name}" FontSize="20" FontWeight="Bold" Foreground="{ThemeResource ApplicationForegroundThemeBrush}" />
                                                 </DataTemplate>
                                             </GroupStyle.HeaderTemplate>
                                         </GroupStyle>

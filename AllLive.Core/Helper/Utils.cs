@@ -64,5 +64,19 @@ namespace AllLive.Core.Helper
             }
 
         }
+        public static int ToInt32(this object input)
+        {
+        
+            if(int.TryParse(input.ToString(), out var result))
+            {
+                return result;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
+
     }
 }

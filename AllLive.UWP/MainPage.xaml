@@ -10,18 +10,18 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
    
     <Grid>
-        <muxc:NavigationView x:Name="navigationView" PaneTitle="聚合直播" PaneDisplayMode="Top" SelectionChanged="NavigationView_SelectionChanged" IsBackButtonVisible="Collapsed">
+        <muxc:NavigationView x:Name="navigationView" IsSettingsVisible="False" PaneTitle="聚合直播" PaneDisplayMode="Top" SelectionChanged="NavigationView_SelectionChanged" IsBackButtonVisible="Collapsed">
             <muxc:NavigationView.AutoSuggestBox>
-                <AutoSuggestBox QueryIcon="Find" PlaceholderText="搜索直播间" Width="160" AutomationProperties.Name="Search"></AutoSuggestBox>
+                <AutoSuggestBox x:Name="searchBox" QuerySubmitted="searchBox_QuerySubmitted" QueryIcon="Find" PlaceholderText="输入链接或关键字" Width="180"  AutomationProperties.Name="Search"></AutoSuggestBox>
             </muxc:NavigationView.AutoSuggestBox>
 
 
             <muxc:NavigationView.MenuItems>
                 <muxc:NavigationViewItem IsSelected="True" Icon="Home" Content="推荐" Tag="RecomendPage"></muxc:NavigationViewItem>
                 <muxc:NavigationViewItem Icon="ViewAll" Content="分类" Tag="CategoryPage"></muxc:NavigationViewItem>
-                <muxc:NavigationViewItem Icon="Link" Content="直链" Tag="ParsePage"></muxc:NavigationViewItem>
                 <muxc:NavigationViewItem Icon="OutlineStar" Content="收藏" Tag="FavoritePage"></muxc:NavigationViewItem>
                 <muxc:NavigationViewItem Icon="Clock" Content="观看记录" Tag="HistoryPage"></muxc:NavigationViewItem>
+                <muxc:NavigationViewItem Icon="Setting" Content="设置" Tag="SettingsPage"></muxc:NavigationViewItem>
             </muxc:NavigationView.MenuItems>
             <muxc:NavigationView.Content>
                 <Frame x:Name="frame"></Frame>

@@ -90,13 +90,13 @@ namespace AllLive.Core
                 categoryResult.Rooms.Add(new LiveRoomItem()
                 {
                     Cover = item["rs16"].ToString(),
-                    Online = (int)item["ol"],
+                    Online = item["ol"].ToInt32(),
                     RoomID = item["rid"].ToString(),
                     Title = item["rn"].ToString(),
                     UserName = item["nn"].ToString(),
                 });
             }
-            categoryResult.HasMore = page < (int)obj["data"]["pgcnt"];
+            categoryResult.HasMore = page < obj["data"]["pgcnt"].ToInt32();
             return categoryResult;
         }
         public async Task<LiveCategoryResult> GetRecommendRooms(int page = 1)
@@ -113,13 +113,13 @@ namespace AllLive.Core
                 categoryResult.Rooms.Add(new LiveRoomItem()
                 {
                     Cover = item["rs16"].ToString(),
-                    Online = (int)item["ol"],
+                    Online = item["ol"].ToInt32(),
                     RoomID = item["rid"].ToString(),
                     Title = item["rn"].ToString(),
                     UserName = item["nn"].ToString(),
                 });
             }
-            categoryResult.HasMore = page < (int)obj["data"]["pgcnt"];
+            categoryResult.HasMore = page < obj["data"]["pgcnt"].ToInt32();
             return categoryResult;
         }
         public async Task<LiveRoomDetail> GetRoomDetail(object roomId)
@@ -140,7 +140,7 @@ namespace AllLive.Core
                 UserAvatar = obj["avatar"].ToString(),
                 Introduction = "",
                 Notice = obj["notice"].ToString(),
-                Status = (int)obj["isLive"] == 1,
+                Status = obj["isLive"].ToInt32() == 1,
                 DanmakuData = obj["rid"].ToString(),
                 Data =GetPlayArgs(result, obj["rid"].ToString()),
             };
@@ -188,11 +188,11 @@ namespace AllLive.Core
             var obj = JObject.Parse(result);
 
             foreach (var item in obj["data"]["relateShow"])
-            {
+            { 
                 searchResult.Rooms.Add(new LiveRoomItem()
                 {
                     Cover = item["roomSrc"].ToString(),
-                    Online =  int.Parse(item["hot"].ToString()),
+                    Online = ParseHotNum(item["hot"].ToString()),
                     RoomID = item["rid"].ToString(),
                     Title = item["roomName"].ToString(),
                     UserName = item["nickName"].ToString(),
@@ -218,7 +218,7 @@ namespace AllLive.Core
                 qualities.Add(new LivePlayQuality()
                 {
                     Quality = item["name"].ToString(),
-                    Data =new KeyValuePair<int,List<string>>((int)item["rate"], cdns),
+                    Data =new KeyValuePair<int,List<string>>(item["rate"].ToInt32(), cdns),
                 });
             }
             return qualities;

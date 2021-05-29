@@ -25,7 +25,7 @@ namespace AllLive.Core
                 foreach (var subItem in item["list"])
                 {
                     subs.Add(new LiveSubCategory() { 
-                        Pic= subItem["pic"].ToString() + "@100w.jpg",
+                        Pic= subItem["pic"].ToString() + "@100w.png",
                         ID= subItem["id"].ToString(),
                         ParentID= subItem["parent_id"].ToString(),
                         Name =subItem["name"].ToString(),
@@ -48,12 +48,12 @@ namespace AllLive.Core
             };
             var result = await HttpUtil.GetString($"https://api.live.bilibili.com/xlive/web-interface/v1/second/getList?platform=web&parent_area_id={category.ParentID}&area_id={category.ID}&sort_type=&page={page}");
             var obj = JObject.Parse(result);
-            categoryResult.HasMore = (int)obj["data"]["has_more"] == 1;
+            categoryResult.HasMore =obj["data"]["has_more"].ToInt32() == 1;
             foreach (var item in obj["data"]["list"])
             {
                 categoryResult.Rooms.Add(new LiveRoomItem() { 
                     Cover= item["cover"].ToString() + "@300w.jpg",
-                    Online= (int)item["online"],
+                    Online= item["online"].ToInt32(),
                     RoomID= item["roomid"].ToString(),
                     Title = item["title"].ToString(),
                     UserName = item["uname"].ToString(),
@@ -76,7 +76,7 @@ namespace AllLive.Core
                 categoryResult.Rooms.Add(new LiveRoomItem()
                 {
                     Cover = item["cover"].ToString() + "@300w.jpg",
-                    Online = (int)item["online"],
+                    Online = item["online"].ToInt32(),
                     RoomID = item["roomid"].ToString(),
                     Title = item["title"].ToString(),
                     UserName = item["uname"].ToString(),
@@ -92,15 +92,15 @@ namespace AllLive.Core
             return new LiveRoomDetail()
             {
                 Cover = obj["data"]["room_info"]["cover"].ToString(),
-                Online = (int)obj["data"]["room_info"]["online"],
+                Online = obj["data"]["room_info"]["online"].ToInt32(),
                 RoomID = obj["data"]["room_info"]["room_id"].ToString(),
                 Title = obj["data"]["room_info"]["title"].ToString(),
                 UserName = obj["data"]["anchor_info"]["base_info"]["uname"].ToString(),
                 Introduction= obj["data"]["room_info"]["description"].ToString(),
                 UserAvatar = obj["data"]["anchor_info"]["base_info"]["face"].ToString()+"@100w.jpg",
                 Notice = "",
-                Status = (int)obj["data"]["room_info"]["live_status"] ==1,
-                DanmakuData= (int)obj["data"]["room_info"]["room_id"]
+                Status = obj["data"]["room_info"]["live_status"].ToInt32() ==1,
+                DanmakuData= obj["data"]["room_info"]["room_id"].ToInt32()
             };
         }
         public async Task<LiveSearchResult> Search(string keyword, int page = 1)
@@ -118,13 +118,13 @@ namespace AllLive.Core
                 searchResult.Rooms.Add(new LiveRoomItem()
                 {
                     Cover = "https:"+item["cover"].ToString() + "@300w.jpg",
-                    Online = (int)item["online"],
+                    Online = item["online"].ToInt32(),
                     RoomID = item["roomid"].ToString(),
                     Title = item["title"].ToString(),
                     UserName = item["uname"].ToString(),
                 });
             }
-            searchResult.HasMore = ((JArray)obj["data"]["result"]["live_room"]).Count > 0;
+            searchResult.HasMore = searchResult.Rooms.Count > 0;
             return searchResult;
         }
         public async Task<List<LivePlayQuality>> GetPlayQuality(LiveRoomDetail roomDetail)
@@ -136,7 +136,7 @@ namespace AllLive.Core
             {
                 qualities.Add(new LivePlayQuality() { 
                     Quality= item["desc"].ToString(),
-                    Data = (int)item["qn"],
+                    Data = item["qn"].ToInt32(),
                 });
             }
             return qualities;

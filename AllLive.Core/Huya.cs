@@ -78,13 +78,13 @@ namespace AllLive.Core
                 categoryResult.Rooms.Add(new LiveRoomItem()
                 {
                     Cover = cover,
-                    Online = (int)item["totalCount"],
+                    Online = item["totalCount"].ToInt32(),
                     RoomID = item["profileRoom"].ToString(),
                     Title = item["roomName"].ToString(),
                     UserName = item["nick"].ToString(),
                 });
             }
-            categoryResult.HasMore = (int)obj["data"]["page"] < (int)obj["data"]["totalPage"];
+            categoryResult.HasMore = obj["data"]["page"].ToInt32() < obj["data"]["totalPage"].ToInt32();
             return categoryResult;
         }
         public async Task<LiveCategoryResult> GetRecommendRooms(int page = 1)
@@ -107,13 +107,13 @@ namespace AllLive.Core
                 categoryResult.Rooms.Add(new LiveRoomItem()
                 {
                     Cover = cover,
-                    Online = (int)item["totalCount"],
+                    Online = item["totalCount"].ToInt32(),
                     RoomID = item["profileRoom"].ToString(),
                     Title = item["roomName"].ToString(),
                     UserName = item["nick"].ToString(),
                 });
             }
-            categoryResult.HasMore = (int)obj["data"]["page"] < (int)obj["data"]["totalPage"];
+            categoryResult.HasMore = obj["data"]["page"].ToInt32() < obj["data"]["totalPage"].ToInt32();
             return categoryResult;
         }
         public async Task<LiveRoomDetail> GetRoomDetail(object roomId)
@@ -143,7 +143,7 @@ namespace AllLive.Core
                 Rooms = new List<LiveRoomItem>(),
 
             };
-            var result = await HttpUtil.GetString($"https://search.cdn.huya.com/?m=Search&do=getSearchContent&q={ Uri.EscapeDataString(keyword)}&uid=0&v=4&typ=-5&livestate=0&rows=20&start={(page - 1) * 20}");
+            var result = await HttpUtil.GetUtf8String($"https://search.cdn.huya.com/?m=Search&do=getSearchContent&q={ Uri.EscapeDataString(keyword)}&uid=0&v=4&typ=-5&livestate=0&rows=20&start={(page - 1) * 20}");
             var obj = JObject.Parse(result);
 
             foreach (var item in obj["response"]["3"]["docs"])
@@ -156,13 +156,13 @@ namespace AllLive.Core
                 searchResult.Rooms.Add(new LiveRoomItem()
                 {
                     Cover = cover,
-                    Online = (int)item["game_total_count"],
+                    Online = item["game_total_count"].ToInt32(),
                     RoomID = item["room_id"].ToString(),
                     Title = item["game_roomName"].ToString(),
                     UserName = item["game_nick"].ToString(),
                 });
             }
-            searchResult.HasMore = (int)obj["response"]["3"]["numFound"] > (page * 20);
+            searchResult.HasMore = obj["response"]["3"]["numFound"].ToInt32() > (page * 20);
             return searchResult;
         }
         public async Task<List<LivePlayQuality>> GetPlayQuality(LiveRoomDetail roomDetail)

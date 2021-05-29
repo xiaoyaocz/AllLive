@@ -1,4 +1,5 @@
-﻿using AllLive.Core.Interface;
+﻿using AllLive.Core.Helper;
+using AllLive.Core.Interface;
 using AllLive.Core.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -75,7 +76,7 @@ namespace AllLive.Core.Danmaku
 
         public async Task Start(object args)
         {
-            roomId = (int)args;
+            roomId = args.ToInt32();
             await Task.Run(() =>
             {
                 ws.Connect();
