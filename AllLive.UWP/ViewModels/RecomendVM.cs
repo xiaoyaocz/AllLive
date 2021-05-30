@@ -45,11 +45,13 @@ namespace AllLive.UWP.ViewModels
             {
                 Loading = true;
                 CanLoadMore = false;
+                IsEmpty = false;
                 var result = await site.LiveSite.GetRecommendRooms(Page);
                 foreach (var item in result.Rooms)
                 {
                     Items.Add(item);
                 }
+                IsEmpty = Items.Count == 0;
                 CanLoadMore = result.HasMore;
                 Page++;
             }

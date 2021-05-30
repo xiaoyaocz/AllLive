@@ -62,7 +62,7 @@
                         <SymbolIcon Symbol="Refresh" Foreground="White"></SymbolIcon>
                     </Border>
                 </Button>
-
+                <TextBlock Visibility="{x:Bind Path=categoryDetailVM.IsEmpty,Mode=OneWay}" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="Gray">什么都没有~</TextBlock>
             </Grid>
         </Grid>
     </Grid>

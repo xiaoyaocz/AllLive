@@ -36,7 +36,7 @@ namespace AllLive.UWP
         {
 
             this.InitializeComponent();
-
+           
             App.Current.UnhandledException += App_UnhandledException;
             FFmpegInteropLogging.SetLogLevel(LogLevel.Info);
             FFmpegInteropLogging.SetLogProvider(this);
@@ -84,8 +84,10 @@ namespace AllLive.UWP
         /// 将在启动应用程序以打开特定文件等情况下使用。
         /// </summary>
         /// <param name="e">有关启动请求和过程的详细信息。</param>
-        protected override void OnLaunched(LaunchActivatedEventArgs e)
+        protected async override void OnLaunched(LaunchActivatedEventArgs e)
         {
+            //初始化数据库
+            await DatabaseHelper.InitializeDatabase();
 
             Windows.UI.Core.SystemNavigationManager.GetForCurrentView().BackRequested += App_BackRequested;
             Frame rootFrame = Window.Current.Content as Frame;
@@ -121,7 +123,7 @@ namespace AllLive.UWP
                 // 确保当前窗口处于活动状态
                 Window.Current.Activate();
             }
-
+         
             SetTitleBar();
         }
 

@@ -41,6 +41,14 @@ namespace AllLive.UWP.ViewModels
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
 
+        private bool _empty=false;
+        public bool IsEmpty
+        {
+            get { return _empty; }
+            set { _empty = value; DoPropertyChanged("IsEmpty"); }
+        }
+
+
         public virtual void Refresh()
         {
             Page = 1;
@@ -50,7 +58,7 @@ namespace AllLive.UWP.ViewModels
 
         }
 
-        public virtual void HandleError(Exception ex)
+        public virtual void HandleError(Exception ex,string message="出现错误，已记录")
         {
             if (LogHelper.IsNetworkError(ex))
             {
@@ -59,7 +67,7 @@ namespace AllLive.UWP.ViewModels
             else
             {
                 LogHelper.Log(ex.Message, LogType.ERROR, ex);
-                Utils.ShowMessageToast("请检查网络连接情况");
+                Utils.ShowMessageToast(message);
             }
         }
 

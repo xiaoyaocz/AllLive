@@ -66,11 +66,7 @@ namespace AllLive.UWP.Views
         {
             var item = e.ClickedItem as AllLive.Core.Models.LiveRoomItem;
             var vm = (sender as MyAdaptiveGridView).DataContext as SearchItemVM;
-            (Window.Current.Content as Frame).Navigate(typeof(LiveRoomPage), new PageArgs()
-            {
-                Site = vm.site.LiveSite,
-                Data = item
-            });
+            MessageCenter.OpenLiveRoom(vm.site.LiveSite, item);
         }
 
         private void searchBox_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)

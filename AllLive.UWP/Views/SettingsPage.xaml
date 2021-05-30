@@ -22,12 +22,14 @@
                 </ComboBox>
                 <ToggleSwitch x:Name="swMouseClosePage" Header="鼠标侧键返回" Margin="0 12 0 0"></ToggleSwitch>
                 <TextBlock FontSize="20" FontWeight="Bold" Margin="0 12 0 0">播放</TextBlock>
-                <ToggleSwitch x:Name="swHardwareDecode" Header="硬件解码" Margin="0 12 0 0"></ToggleSwitch>
+                <ToggleSwitch x:Name="swSoftwareDecode" Header="强制软解" Margin="0 12 0 0"></ToggleSwitch>
                 <ToggleSwitch x:Name="swNewWindow" Header="新窗口打开直播间" Margin="0 12 0 0"></ToggleSwitch>
                 <TextBlock FontSize="20" FontWeight="Bold" Margin="0 12 0 0">互动</TextBlock>
                 <ToggleSwitch x:Name="DanmuSettingState"  Header="开启弹幕" Margin="0 12 0 0"></ToggleSwitch>
+                <TextBlock Margin="0 12 0 0">互动文字大小</TextBlock>
+                <my:NumberBox x:Name="numFontsize" Margin="0 4 0 0" PlaceholderText="请输入文字大小" Minimum="10" Maximum="64" HorizontalAlignment="Left" Width="280" SpinButtonPlacementMode="Compact"/>
                 <TextBlock Margin="0 12 0 0">互动自动清理</TextBlock>
-                <my:NumberBox x:Name="numCleanCount" Margin="0 4 0 0" PlaceholderText="请输入整数" Minimum="0" HorizontalAlignment="Left" Width="280" SpinButtonPlacementMode="Compact"/>
+                <my:NumberBox x:Name="numCleanCount" Margin="0 4 0 0" PlaceholderText="请输入整数" Minimum="40" HorizontalAlignment="Left" Width="280" SpinButtonPlacementMode="Compact"/>
                 <TextBlock Margin="0 12 0 0">屏蔽关键字</TextBlock>
                 <AutoSuggestBox x:Name="LiveDanmuSettingTxtWord" QuerySubmitted="LiveDanmuSettingTxtWord_QuerySubmitted" HorizontalAlignment="Left" Margin="0 4 0 0" QueryIcon="Add" PlaceholderText="输入关键字" Width="280"></AutoSuggestBox>
                 <ListView x:Name="LiveDanmuSettingListWords" Margin="0 4 0 0" Background="#19808080" Height="240" Width="280" HorizontalAlignment="Left">
@@ -52,7 +54,8 @@
                 </ListView>
                 <TextBlock FontSize="20" FontWeight="Bold" Margin="0 12 0 0">关于</TextBlock>
                 <TextBlock Margin="0 12 0 0">AllLive.UWP </TextBlock>
-                <TextBlock >版本: 1.0.1</TextBlock>
+                <TextBlock >版本: <Run x:Name="version"/></TextBlock>
+                <HyperlinkButton x:Name="btnCheckUpdate" Click="btnCheckUpdate_Click">检查更新</HyperlinkButton>
                 <HyperlinkButton NavigateUri="https://github.com/xiaoyaocz/AllLive">开源地址</HyperlinkButton>
             </StackPanel>
         </ScrollViewer>

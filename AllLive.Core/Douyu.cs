@@ -143,6 +143,7 @@ namespace AllLive.Core
                 Status = obj["isLive"].ToInt32() == 1,
                 DanmakuData = obj["rid"].ToString(),
                 Data =GetPlayArgs(result, obj["rid"].ToString()),
+                Url= "https://www.douyu.com/" + roomId
             };
         }
 

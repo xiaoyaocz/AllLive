@@ -23,6 +23,12 @@ using Windows.UI.ViewManagement;
 using Windows.UI.Popups;
 using FFmpegInterop;
 using Windows.System.Display;
+using System.Threading.Tasks;
+using Windows.Storage;
+using Windows.Graphics.Imaging;
+using Windows.UI.Xaml.Media.Imaging;
+using Windows.Graphics.Display;
+using Windows.UI;
 
 // https://go.microsoft.com/fwlink/?LinkId=234238 上介绍了“空白页”项模板
 
@@ -44,14 +50,19 @@ namespace AllLive.UWP.Views
         private bool isMini = false;
         DispatcherTimer timer_focus;
         DispatcherTimer controlTimer;
+       
         public LiveRoomPage()
         {
             this.InitializeComponent();
-            liveRoomVM = new LiveRoomVM();
             settingVM = new SettingVM();
+            liveRoomVM = new LiveRoomVM(settingVM);
+           
             dispRequest = new DisplayRequest();
             _config = new FFmpegInteropConfig();
-           
+            _config.FFmpegOptions.Add("rtsp_transport", "tcp");
+            Window.Current.CoreWindow.KeyDown += CoreWindow_KeyDown;
+            liveRoomVM.ChangedPlayUrl += LiveRoomVM_ChangedPlayUrl;
+            liveRoomVM.AddDanmaku += LiveRoomVM_AddDanmaku;
             //每过2秒就设置焦点
             timer_focus = new DispatcherTimer() { Interval = TimeSpan.FromSeconds(2) };
             timer_focus.Tick += Timer_focus_Tick;
@@ -65,7 +76,164 @@ namespace AllLive.UWP.Views
             mediaPlayer.MediaOpened += MediaPlayer_MediaOpened;
             mediaPlayer.MediaEnded += MediaPlayer_MediaEnded; ;
             mediaPlayer.MediaFailed += MediaPlayer_MediaFailed;
+
+            timer_focus.Start();
+            controlTimer.Start();
+
             LoadSetting();
+        }
+
+        private void LiveRoomVM_AddDanmaku(object sender, string e)
+        {
+            if (DanmuControl.Visibility == Visibility.Visible)
+            {
+               
+                DanmuControl.AddLiveDanmu(e, false, Colors.White);
+            }
+        }
+
+        private async void CoreWindow_KeyDown(Windows.UI.Core.CoreWindow sender, Windows.UI.Core.KeyEventArgs args)
+        {
+            var elent = FocusManager.GetFocusedElement();
+            if (elent is TextBox || elent is AutoSuggestBox)
+            {
+                args.Handled = false;
+                return;
+            }
+            args.Handled = true;
+            switch (args.VirtualKey)
+            {
+                //case Windows.System.VirtualKey.Space:
+                //    if (mediaPlayer.PlaybackSession.CanPause)
+                //    {
+                //        mediaPlayer.Pause();
+                //    }
+                //    else
+                //    {
+                //        mediaPlayer.Play();
+                //    }
+                //    break;
+
+                case Windows.System.VirtualKey.Up:
+                    mediaPlayer.Volume += 0.1;
+                    TxtToolTip.Text = "音量:" + mediaPlayer.Volume.ToString("P");
+                    ToolTip.Visibility = Visibility.Visible;
+                    await Task.Delay(2000);
+                    ToolTip.Visibility = Visibility.Collapsed;
+                    break;
+
+                case Windows.System.VirtualKey.Down:
+                    mediaPlayer.Volume -= 0.1;
+                    if (mediaPlayer.Volume == 0)
+                    {
+                        TxtToolTip.Text = "静音";
+                    }
+                    else
+                    {
+                        TxtToolTip.Text = "音量:" + mediaPlayer.Volume.ToString("P");
+                    }
+                    ToolTip.Visibility = Visibility.Visible;
+                    await Task.Delay(2000);
+                    ToolTip.Visibility = Visibility.Collapsed;
+                    break;
+                case Windows.System.VirtualKey.Escape:
+                    SetFullScreen(false);
+
+                    break;
+                case Windows.System.VirtualKey.F8:
+                case Windows.System.VirtualKey.T:
+                    //小窗播放
+                    MiniWidnows(BottomBtnExitMiniWindows.Visibility == Visibility.Visible);
+
+                    break;
+                case Windows.System.VirtualKey.F12:
+                case Windows.System.VirtualKey.W:
+                    SetFullWindow(PlayBtnFullWindow.Visibility == Visibility.Visible);
+                    break;
+                case Windows.System.VirtualKey.F11:
+                case Windows.System.VirtualKey.F:
+                case Windows.System.VirtualKey.Enter:
+                    SetFullScreen(PlayBtnFullScreen.Visibility == Visibility.Visible);
+                    break;
+                case Windows.System.VirtualKey.F10:
+                    await CaptureVideo();
+                    break;
+                case Windows.System.VirtualKey.F9:
+                case Windows.System.VirtualKey.D:
+                    //if (DanmuControl.Visibility == Visibility.Visible)
+                    //{
+                    //    DanmuControl.Visibility = Visibility.Collapsed;
+
+                    //}
+                    //else
+                    //{
+                    //    DanmuControl.Visibility = Visibility.Visible;
+                    //}
+                    PlaySWDanmu.IsOn = DanmuControl.Visibility != Visibility.Visible;
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+
+        private async void LiveRoomVM_ChangedPlayUrl(object sender, string e)
+        {
+            await SetPlayer(e);
+        }
+        private async Task SetPlayer(string url)
+        {
+            try
+            {
+                PlayerLoading.Visibility = Visibility.Visible;
+                PlayerLoadText.Text = "加载中";
+                if (mediaPlayer != null)
+                {
+                    mediaPlayer.Pause();
+                    mediaPlayer.Source = null;
+                }
+                if (interopMSS != null)
+                {
+                    interopMSS.Dispose();
+                    interopMSS = null;
+                }
+                interopMSS = await FFmpegInteropMSS.CreateFromUriAsync(url, _config);
+                mediaPlayer.AutoPlay = true;
+                mediaPlayer.Source = interopMSS.CreateMediaPlaybackItem();
+                player.SetMediaPlayer(mediaPlayer);
+            }
+            catch (Exception ex)
+            {
+                Utils.ShowMessageToast("播放失败" + ex.Message);
+            }
+
+        }
+        private void StopPlay()
+        {
+           
+            timer_focus.Stop();
+            controlTimer.Stop();
+            Window.Current.CoreWindow.PointerCursor = new Windows.UI.Core.CoreCursor(Windows.UI.Core.CoreCursorType.Arrow, 0);
+            if (mediaPlayer != null)
+            {
+                mediaPlayer.Pause();
+                mediaPlayer.Source = null;
+            }
+            if (interopMSS != null)
+            {
+                interopMSS.Dispose();
+                interopMSS = null;
+            }
+            liveRoomVM?.Stop();
+            //取消屏幕常亮
+            if (dispRequest != null)
+            {
+                dispRequest = null;
+            }
+         
+            SetFullScreen(false);
+            MiniWidnows(false);
         }
         private void ControlTimer_Tick(object sender, object e)
         {
@@ -103,6 +271,17 @@ namespace AllLive.UWP.Views
                 this.Frame.GoBack();
             }
         }
+        protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
+        {
+            if (e.NavigationMode == NavigationMode.Back)
+            {
+                StopPlay();
+                Window.Current.CoreWindow.KeyDown -= CoreWindow_KeyDown;
+
+            }
+               
+            base.OnNavigatingFrom(e);
+        }
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
@@ -112,7 +291,6 @@ namespace AllLive.UWP.Views
                 var siteInfo = MainVM.Sites.FirstOrDefault(x => x.LiveSite.Equals(pageArgs.Site));
                 if (siteInfo.Name == "哔哩哔哩直播")
                 {
-                    _config.FFmpegOptions.Add("rtsp_transport", "tcp");
                     _config.FFmpegOptions.Add("user_agent", "Mozilla/5.0 BiliDroid/1.12.0 (bbcallen@gmail.com)");
                     _config.FFmpegOptions.Add("referer", "https://live.bilibili.com/");
                 }
@@ -120,14 +298,42 @@ namespace AllLive.UWP.Views
                 liveRoomVM.SiteName = siteInfo.Name;
                 var data = pageArgs.Data as LiveRoomItem;
                 liveRoomVM.LoadData(pageArgs.Site,data.RoomID);
-
+               
             }
         }
-        protected override void OnNavigatedFrom(NavigationEventArgs e)
+
+        private async Task CaptureVideo()
         {
-            liveRoomVM.Stop();
-            base.OnNavigatedFrom(e);
+            try
+            {
+                string fileName = DateTime.Now.ToString("yyyyMMddHHmmss") + ".jpg";
+                StorageFolder applicationFolder = KnownFolders.PicturesLibrary;
+                StorageFolder folder = await applicationFolder.CreateFolderAsync("直播截图", CreationCollisionOption.OpenIfExists);
+                StorageFile saveFile = await folder.CreateFileAsync(fileName, CreationCollisionOption.OpenIfExists);
+                RenderTargetBitmap bitmap = new RenderTargetBitmap();
+                await bitmap.RenderAsync(player);
+                var pixelBuffer = await bitmap.GetPixelsAsync();
+                using (var fileStream = await saveFile.OpenAsync(FileAccessMode.ReadWrite))
+                {
+                    var encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, fileStream);
+                    encoder.SetPixelData(BitmapPixelFormat.Bgra8,
+                        BitmapAlphaMode.Ignore,
+                         (uint)bitmap.PixelWidth,
+                         (uint)bitmap.PixelHeight,
+                         DisplayInformation.GetForCurrentView().LogicalDpi,
+                         DisplayInformation.GetForCurrentView().LogicalDpi,
+                         pixelBuffer.ToArray());
+                    await encoder.FlushAsync();
+                }
+                Utils.ShowMessageToast("截图已经保存至图片库");
+            }
+            catch (Exception)
+            {
+                Utils.ShowMessageToast("截图失败");
+            }
         }
+
+
 
         private void LoadSetting()
         {
@@ -141,13 +347,31 @@ namespace AllLive.UWP.Views
                 }
                 SettingHelper.SetValue<double>(SettingHelper.RIGHT_DETAIL_WIDTH, args.NewSize.Width);
             });
-            //硬解视频
-            swHardwareDecode.IsOn = SettingHelper.GetValue<bool>(SettingHelper.HARDWARE_DECODING, true);
-            swHardwareDecode.Loaded += new RoutedEventHandler((sender, e) =>
+            //软解视频
+            swSoftwareDecode.IsOn = SettingHelper.GetValue<bool>(SettingHelper.SORTWARE_DECODING, false);
+            if (swSoftwareDecode.IsOn)
             {
-                swHardwareDecode.Toggled += new RoutedEventHandler((obj, args) =>
+                _config.VideoDecoderMode = VideoDecoderMode.ForceFFmpegSoftwareDecoder;
+            }
+            else
+            {
+                _config.VideoDecoderMode = VideoDecoderMode.Automatic;
+               
+            }
+            swSoftwareDecode.Loaded += new RoutedEventHandler((sender, e) =>
+            {
+                swSoftwareDecode.Toggled += new RoutedEventHandler((obj, args) =>
                 {
-                    SettingHelper.SetValue(SettingHelper.HARDWARE_DECODING, swHardwareDecode.IsOn);
+                    SettingHelper.SetValue(SettingHelper.SORTWARE_DECODING, swSoftwareDecode.IsOn);
+                    if (swSoftwareDecode.IsOn)
+                    {
+                        _config.VideoDecoderMode = VideoDecoderMode.ForceFFmpegSoftwareDecoder;
+                    }
+                    else
+                    {
+                        _config.VideoDecoderMode = VideoDecoderMode.Automatic;
+                    }
+                    Utils.ShowMessageToast("更改清晰度或刷新后生效");
                 });
             });
             //弹幕开关
@@ -179,9 +403,22 @@ namespace AllLive.UWP.Views
             {
                 numCleanCount.ValueChanged += new TypedEventHandler<NumberBox, NumberBoxValueChangedEventArgs>((obj, args) =>
                 {
+                    liveRoomVM.MessageCleanCount = SettingHelper.GetValue<int>(SettingHelper.LiveDanmaku.DANMU_CLEAN_COUNT, Convert.ToInt32(args.NewValue));
                     SettingHelper.SetValue(SettingHelper.LiveDanmaku.DANMU_CLEAN_COUNT, Convert.ToInt32(args.NewValue));
                 });
             });
+
+            //互动文字大小
+            numFontsize.Value = SettingHelper.GetValue<double>(SettingHelper.MESSAGE_FONTSIZE, 14.0);
+            numFontsize.Loaded += new RoutedEventHandler((sender, e) =>
+            {
+                numFontsize.ValueChanged += new TypedEventHandler<NumberBox, NumberBoxValueChangedEventArgs>((obj, args) =>
+                {
+                    SettingHelper.SetValue(SettingHelper.MESSAGE_FONTSIZE, args.NewValue);
+                });
+            });
+
+
             //弹幕关键词
             LiveDanmuSettingListWords.ItemsSource = settingVM.ShieldWords;
 
@@ -315,7 +552,7 @@ namespace AllLive.UWP.Views
                 //保持屏幕常亮
                 dispRequest.RequestActive();
                 PlayerLoading.Visibility = Visibility.Collapsed;
-              
+                SetMediaInfo();
             });
         }
        
@@ -347,6 +584,31 @@ namespace AllLive.UWP.Views
                 }
             });
         }
+
+
+        private void SetMediaInfo()
+        {
+            try
+            {
+                var str = $"Url: {liveRoomVM.CurrentLine?.Url??""}\r\n";
+                str += $"Quality: {liveRoomVM.CurrentQuality?.Quality??""}\r\n";
+                str += $"Video Codec: {interopMSS.CurrentVideoStream.CodecName}\r\nAudio Codec:{interopMSS.CurrentAudioStream.CodecName}\r\n";
+                str += $"Resolution: {interopMSS.CurrentVideoStream.PixelWidth} x {interopMSS.CurrentVideoStream.PixelHeight}\r\n";
+                str += $"FPS: {interopMSS.CurrentVideoStream.FramesPerSecond}\r\n";
+                str += $"Video Bitrate: {interopMSS.CurrentVideoStream.Bitrate / 1024} Kbps\r\n";
+                str += $"Audio Bitrate: {interopMSS.AudioStreams[0].Bitrate / 1024} Kbps\r\n";
+                str += $"Decoder Engine: {interopMSS.CurrentVideoStream.DecoderEngine.ToString()}";
+                txtInfo.Text = str;
+            }
+            catch (Exception ex)
+            {
+                txtInfo.Text = $"读取信息失败\r\n{ex.Message}";
+            }
+
+
+
+        }
+
         #endregion
 
 
@@ -547,6 +809,7 @@ namespace AllLive.UWP.Views
             {
                 PlayBtnFullScreen.Visibility = Visibility.Collapsed;
                 PlayBtnExitFullScreen.Visibility = Visibility.Visible;
+                
                 ColumnRight.Width = new GridLength(0, GridUnitType.Pixel);
                 ColumnRight.MinWidth = 0;
                 BottomInfo.Height = new GridLength(0, GridUnitType.Pixel);
@@ -560,6 +823,7 @@ namespace AllLive.UWP.Views
             {
                 PlayBtnFullScreen.Visibility = Visibility.Visible;
                 PlayBtnExitFullScreen.Visibility = Visibility.Collapsed;
+
                 ColumnRight.Width = new GridLength(280, GridUnitType.Pixel);
                 ColumnRight.MinWidth = 100;
                 BottomInfo.Height = GridLength.Auto;
@@ -582,8 +846,6 @@ namespace AllLive.UWP.Views
 
                 if (ApplicationView.GetForCurrentView().IsViewModeSupported(ApplicationViewMode.CompactOverlay))
                 {
-                    //隐藏标题栏
-                    this.Margin = new Thickness(0, -40, 0, 0);
                     await ApplicationView.GetForCurrentView().TryEnterViewModeAsync(ApplicationViewMode.CompactOverlay);
                     DanmuControl.DanmakuSizeZoom = 0.5;
                     DanmuControl.DanmakuDuration = 6;
@@ -593,7 +855,6 @@ namespace AllLive.UWP.Views
             else
             {
                 SetFullWindow(false);
-                this.Margin = new Thickness(0, 0, 0, 0);
                 StandardControl.Visibility = Visibility.Visible;
                 MiniControl.Visibility = Visibility.Collapsed;
                 await ApplicationView.GetForCurrentView().TryEnterViewModeAsync(ApplicationViewMode.Default);
@@ -608,8 +869,69 @@ namespace AllLive.UWP.Views
         {
             MiniWidnows(false);
         }
+
+        private async void PlayTopBtnScreenshot_Click(object sender, RoutedEventArgs e)
+        {
+            await CaptureVideo();
+        }
+
+        private void PlayBtnPlay_Click(object sender, RoutedEventArgs e)
+        {
+            mediaPlayer.Play();
+        }
+
+        private void PlayBtnPause_Click(object sender, RoutedEventArgs e)
+        {
+            mediaPlayer.Pause();
+        }
+
+
         #endregion
 
+        private void BottomBtnShare_Click(object sender, RoutedEventArgs e)
+        {
+            if (liveRoomVM.detail==null)
+            {
+                return;
+            }
+            Utils.SetClipboard(liveRoomVM.detail.Url);
+            Utils.ShowMessageToast("已复制链接到剪切板");
+        }
 
+        private async void BottomBtnOpenBrowser_Click(object sender, RoutedEventArgs e)
+        {
+            if (liveRoomVM.detail == null)
+            {
+                return;
+            }
+            await Windows.System.Launcher.LaunchUriAsync(new Uri(liveRoomVM.detail.Url));
+        }
+
+        private void BottomBtnPlayUrl_Click(object sender, RoutedEventArgs e)
+        {
+            if (liveRoomVM.CurrentLine == null)
+            {
+                return;
+            }
+            Utils.SetClipboard(liveRoomVM.CurrentLine.Url);
+            Utils.ShowMessageToast("已复制链接到剪切板");
+        }
+
+        private void BottomBtnRefresh_Click(object sender, RoutedEventArgs e)
+        {
+            if (liveRoomVM.Loading) return;
+            if (mediaPlayer != null)
+            {
+                mediaPlayer.Pause();
+                mediaPlayer.Source = null;
+            }
+            if (interopMSS != null)
+            {
+                interopMSS.Dispose();
+                interopMSS = null;
+            }
+            liveRoomVM?.Stop();
+            liveRoomVM.LoadData(pageArgs.Site, liveRoomVM.RoomID);
+        }
     }
 }

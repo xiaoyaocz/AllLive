@@ -29,7 +29,10 @@ namespace AllLive.UWP.Helper
         /// 主题,0为默认，1为浅色，2为深色
         /// </summary>
         public const string THEME = "theme";
-
+        /// <summary>
+        /// 互动文字大小
+        /// </summary>
+        public const string MESSAGE_FONTSIZE = "MessageFontSize";
         /// <summary>
         /// 右侧详情宽度
         /// </summary>
@@ -45,9 +48,9 @@ namespace AllLive.UWP.Helper
         public const string MOUSE_BACK = "MouseBack";
 
         /// <summary>
-        /// 硬解
+        /// 软解
         /// </summary>
-        public const string HARDWARE_DECODING = "hardwareDecoding";
+        public const string SORTWARE_DECODING = "sortwareDecoding";
 
         /// <summary>
         /// 音量

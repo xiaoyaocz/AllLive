@@ -36,13 +36,13 @@ namespace AllLive.UWP
             this.NavigationCacheMode = NavigationCacheMode.Enabled;
             this.InitializeComponent();
         }
-        protected override void OnNavigatedTo(NavigationEventArgs e)
+        protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
-
+            await Core.Helper.Utils.CheckVersion();
         }
 
-        private void NavigationView_SelectionChanged(Microsoft.UI.Xaml.Controls.NavigationView sender, Microsoft.UI.Xaml.Controls.NavigationViewSelectionChangedEventArgs args)
+        private  void NavigationView_SelectionChanged(Microsoft.UI.Xaml.Controls.NavigationView sender, Microsoft.UI.Xaml.Controls.NavigationViewSelectionChangedEventArgs args)
         {
             var item = args.SelectedItem as Microsoft.UI.Xaml.Controls.NavigationViewItem;
             if (item.Tag.ToString() == "设置" || item.Tag.ToString() == "Settings")
@@ -51,7 +51,7 @@ namespace AllLive.UWP
             }
             frame.Navigate(Type.GetType("AllLive.UWP.Views." + item.Tag));
         }
-
+        
         private void searchBox_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
         {
             if (string.IsNullOrEmpty(args.QueryText))

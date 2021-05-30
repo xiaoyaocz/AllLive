@@ -133,7 +133,8 @@ namespace AllLive.Core
                 Notice = result.MatchTextSingleline(@"<div class=""notice_content"">(.*?)</div>", "").Trim(' '),
                 Status = bool.Parse(result.MatchText( @"ISLIVE.=.(\w+);", "true")),
                 Data = Encoding.UTF8.GetString(Convert.FromBase64String(result.MatchText( @"liveLineUrl.=.""(.*?)"";"))),
-                DanmakuData = new HuyaDanmakuArgs(long.Parse(result.MatchText( @"ayyuid:.'(\d+)',")), long.Parse(result.MatchText( @"TOPSID.=.'(\d+)';")), long.Parse(result.MatchText( @"SUBSID.=.'(\d+)';")))
+                DanmakuData = new HuyaDanmakuArgs(long.Parse(result.MatchText( @"ayyuid:.'(\d+)',")), long.Parse(result.MatchText( @"TOPSID.=.'(\d+)';")), long.Parse(result.MatchText( @"SUBSID.=.'(\d+)';"))),
+                Url = "https://www.huya.com/" + roomId
             };
         }
         public async Task<LiveSearchResult> Search(string keyword, int page = 1)
@@ -174,24 +175,25 @@ namespace AllLive.Core
             var bd_url = Regex.Replace(url, @".*?\.hls\.huya\.com", "https://bd.hls.huya.com");
             var ali_url = Regex.Replace(url, @".*?\.hls\.huya\.com", "https://al.hls.huya.com");
             var migu_url = Regex.Replace(url, @".*?\.hls\.huya\.com", "https://migu-bd.hls.huya.com");
+           
             qualities.Add(new LivePlayQuality()
             {
-                Quality = "720P",
-                Data = new List<string>() {
-                   tx_url,
-                   bd_url,
-                   ali_url,
-                   migu_url,
-                }
-            });
-            qualities.Add(new LivePlayQuality()
-            {
-                Quality = "1080P",
+                Quality = "超清",
                 Data = new List<string>() {
                     tx_url.Replace("_2000", "").Replace("ratio=2000&", ""),
                     bd_url.Replace("_2000", "").Replace("ratio=2000&", ""),
                     ali_url.Replace("_2000", "").Replace("ratio=2000&", ""),
                     migu_url.Replace("_2000", "").Replace("ratio=2000&", ""),
+                }
+            });
+            qualities.Add(new LivePlayQuality()
+            {
+                Quality = "高清",
+                Data = new List<string>() {
+                   tx_url,
+                   bd_url,
+                   ali_url,
+                   migu_url,
                 }
             });
             return qualities;

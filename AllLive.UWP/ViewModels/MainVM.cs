@@ -9,6 +9,7 @@ namespace AllLive.UWP.ViewModels
 {
     public class MainVM
     {
+       
         public static List<Site> Sites = new List<Site>() { 
             new Site()
             {

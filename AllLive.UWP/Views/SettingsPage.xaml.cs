@@ -1,5 +1,6 @@
 ﻿using AllLive.UWP.Helper;
 using AllLive.UWP.ViewModels;
+using Microsoft.Toolkit.Uwp.Helpers;
 using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.Generic;
@@ -67,12 +68,21 @@ namespace AllLive.UWP.Views
                 });
             });
             //硬解视频
-            swHardwareDecode.IsOn = SettingHelper.GetValue<bool>(SettingHelper.HARDWARE_DECODING, true);
-            swHardwareDecode.Loaded += new RoutedEventHandler((sender, e) =>
+            swSoftwareDecode.IsOn = SettingHelper.GetValue<bool>(SettingHelper.SORTWARE_DECODING, false);
+            swSoftwareDecode.Loaded += new RoutedEventHandler((sender, e) =>
             {
-                swHardwareDecode.Toggled += new RoutedEventHandler((obj, args) =>
+                swSoftwareDecode.Toggled += new RoutedEventHandler((obj, args) =>
                 {
-                    SettingHelper.SetValue(SettingHelper.HARDWARE_DECODING, swHardwareDecode.IsOn);
+                    SettingHelper.SetValue(SettingHelper.SORTWARE_DECODING, swSoftwareDecode.IsOn);
+                });
+            });
+
+            numFontsize.Value = SettingHelper.GetValue<double>(SettingHelper.MESSAGE_FONTSIZE, 14.0);
+            numFontsize.Loaded += new RoutedEventHandler((sender, e) =>
+            {
+                numFontsize.ValueChanged += new TypedEventHandler<NumberBox, NumberBoxValueChangedEventArgs>((obj, args) =>
+                {
+                    SettingHelper.SetValue(SettingHelper.MESSAGE_FONTSIZE, args.NewValue);
                 });
             });
 
@@ -104,7 +114,11 @@ namespace AllLive.UWP.Views
             //弹幕关键词
             LiveDanmuSettingListWords.ItemsSource = settingVM.ShieldWords;
         }
-
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+            version.Text = $"{SystemInformation.ApplicationVersion.Major}.{SystemInformation.ApplicationVersion.Minor}.{SystemInformation.ApplicationVersion.Build}";
+        }
         private void RemoveLiveDanmuWord_Click(object sender, RoutedEventArgs e)
         {
             var word = (sender as AppBarButton).DataContext as string;
@@ -127,6 +141,11 @@ namespace AllLive.UWP.Views
 
             LiveDanmuSettingTxtWord.Text = "";
             SettingHelper.SetValue(SettingHelper.LiveDanmaku.SHIELD_WORD, settingVM.ShieldWords);
+        }
+
+        private async void btnCheckUpdate_Click(object sender, RoutedEventArgs e)
+        {
+            await Utils.CheckVersion();
         }
     }
 }

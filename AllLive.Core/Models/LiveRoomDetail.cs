@@ -50,5 +50,9 @@ namespace AllLive.Core.Models
         /// 弹幕数据
         /// </summary>
         public object DanmakuData { get; set; }
+        /// <summary>
+        /// 链接
+        /// </summary>
+        public string Url { get; set; }
     }
 }

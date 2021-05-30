@@ -44,11 +44,13 @@ namespace AllLive.UWP.ViewModels
                 _keyword = keyword;
                 Loading = true;
                 CanLoadMore = false;
+                IsEmpty = false;
                 var result = await site.LiveSite.Search(keyword);
                 foreach (var item in result.Rooms)
                 {
                     Items.Add(item);
                 }
+                IsEmpty = Items.Count == 0;
                 CanLoadMore = result.HasMore;
                 Page++;
             }

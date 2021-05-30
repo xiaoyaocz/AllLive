@@ -70,7 +70,7 @@
                             </controls:MyAdaptiveGridView.Footer>
                         </controls:MyAdaptiveGridView>
 
-                        
+                        <TextBlock Visibility="{x:Bind Path=IsEmpty,Mode=OneWay}" VerticalAlignment="Center"  HorizontalAlignment="Center" Foreground="Gray">什么都没有找到~</TextBlock>
 
                     </Grid>
                 </DataTemplate>

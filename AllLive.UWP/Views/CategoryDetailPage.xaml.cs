@@ -1,4 +1,5 @@
 ﻿using AllLive.Core.Models;
+using AllLive.UWP.Helper;
 using AllLive.UWP.Models;
 using AllLive.UWP.ViewModels;
 using System;
@@ -67,12 +68,8 @@ namespace AllLive.UWP.Views
         private void MyAdaptiveGridView_ItemClick(object sender, ItemClickEventArgs e)
         {
             var item = e.ClickedItem as AllLive.Core.Models.LiveRoomItem;
+            MessageCenter.OpenLiveRoom(pageArgs.Site, item);
            
-            (Window.Current.Content as Frame).Navigate(typeof(LiveRoomPage), new PageArgs()
-            {
-                Site = pageArgs.Site,
-                Data = item
-            });
         }
     }
 }
