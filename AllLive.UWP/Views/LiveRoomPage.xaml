@@ -314,8 +314,15 @@
                     <ScrollViewer>
                         <StackPanel Margin="12">
 
-                            <ToggleSwitch x:Name="swSoftwareDecode" Header="强制软解" Margin="0 12 0 0"></ToggleSwitch>
-
+                            <!--<ToggleSwitch x:Name="swSoftwareDecode" Header="强制软解" Margin="0 12 0 0"></ToggleSwitch>-->
+                            <TextBlock Margin="0 12 0 0">解码器(遇到播放失败尝试修改此项)</TextBlock>
+                            <ComboBox x:Name="cbDecode" Margin="0 8 0 0" MinWidth="200" >
+                                <ComboBox.Items>
+                                    <ComboBoxItem>自动</ComboBoxItem>
+                                    <ComboBoxItem>强制硬解</ComboBoxItem>
+                                    <ComboBoxItem>强制软解</ComboBoxItem>
+                                </ComboBox.Items>
+                            </ComboBox>
                             <TextBlock Margin="0 12 0 0">互动文字大小</TextBlock>
                             <my:NumberBox x:Name="numFontsize" Margin="0 4 0 0"  PlaceholderText="请输入文字大小" Minimum="10" Maximum="64" Width="140" HorizontalAlignment="Left" SpinButtonPlacementMode="Compact"/>
                             <TextBlock Margin="0 12 0 0">互动自动清理</TextBlock>

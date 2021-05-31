@@ -67,13 +67,21 @@ namespace AllLive.UWP.Views
                     SettingHelper.SetValue(SettingHelper.MOUSE_BACK, swMouseClosePage.IsOn);
                 });
             });
-            //硬解视频
-            swSoftwareDecode.IsOn = SettingHelper.GetValue<bool>(SettingHelper.SORTWARE_DECODING, false);
-            swSoftwareDecode.Loaded += new RoutedEventHandler((sender, e) =>
+            //视频解码
+            //swSoftwareDecode.IsOn = SettingHelper.GetValue<bool>(SettingHelper.SORTWARE_DECODING, false);
+            //swSoftwareDecode.Loaded += new RoutedEventHandler((sender, e) =>
+            //{
+            //    swSoftwareDecode.Toggled += new RoutedEventHandler((obj, args) =>
+            //    {
+            //        SettingHelper.SetValue(SettingHelper.SORTWARE_DECODING, swSoftwareDecode.IsOn);
+            //    });
+            //});
+            cbDecode.SelectedIndex = SettingHelper.GetValue<int>(SettingHelper.DECODE, 0);
+            cbDecode.Loaded += new RoutedEventHandler((sender, e) =>
             {
-                swSoftwareDecode.Toggled += new RoutedEventHandler((obj, args) =>
+                cbDecode.SelectionChanged += new SelectionChangedEventHandler((obj, args) =>
                 {
-                    SettingHelper.SetValue(SettingHelper.SORTWARE_DECODING, swSoftwareDecode.IsOn);
+                    SettingHelper.SetValue(SettingHelper.DECODE, cbDecode.SelectedIndex);
                 });
             });
 

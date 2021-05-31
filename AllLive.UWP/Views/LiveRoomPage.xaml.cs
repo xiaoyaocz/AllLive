@@ -212,7 +212,6 @@ namespace AllLive.UWP.Views
         }
         private void StopPlay()
         {
-
             timer_focus.Stop();
             controlTimer.Stop();
             Window.Current.CoreWindow.PointerCursor = new Windows.UI.Core.CoreCursor(Windows.UI.Core.CoreCursorType.Arrow, 0);
@@ -349,32 +348,57 @@ namespace AllLive.UWP.Views
                 SettingHelper.SetValue<double>(SettingHelper.RIGHT_DETAIL_WIDTH, args.NewSize.Width);
             });
             //软解视频
-            swSoftwareDecode.IsOn = SettingHelper.GetValue<bool>(SettingHelper.SORTWARE_DECODING, false);
-            if (swSoftwareDecode.IsOn)
+            cbDecode.SelectedIndex= SettingHelper.GetValue<int>(SettingHelper.DECODE, 0);
+            switch (cbDecode.SelectedIndex)
             {
-                _config.VideoDecoderMode = VideoDecoderMode.ForceFFmpegSoftwareDecoder;
+                case 1:
+                    _config.VideoDecoderMode = VideoDecoderMode.ForceSystemDecoder;
+                    break;
+                case 2:
+                    _config.VideoDecoderMode = VideoDecoderMode.ForceFFmpegSoftwareDecoder;
+                    break;
+                default:
+                    _config.VideoDecoderMode = VideoDecoderMode.Automatic;
+                    break;
             }
-            else
+            cbDecode.SelectedIndex = SettingHelper.GetValue<int>(SettingHelper.DECODE, 0);
+            cbDecode.Loaded += new RoutedEventHandler((sender, e) =>
             {
-                _config.VideoDecoderMode = VideoDecoderMode.Automatic;
-
-            }
-            swSoftwareDecode.Loaded += new RoutedEventHandler((sender, e) =>
-            {
-                swSoftwareDecode.Toggled += new RoutedEventHandler((obj, args) =>
+                cbDecode.SelectionChanged += new SelectionChangedEventHandler((obj, args) =>
                 {
-                    SettingHelper.SetValue(SettingHelper.SORTWARE_DECODING, swSoftwareDecode.IsOn);
-                    if (swSoftwareDecode.IsOn)
+                    SettingHelper.SetValue(SettingHelper.DECODE, cbDecode.SelectedIndex);
+                    switch (cbDecode.SelectedIndex)
                     {
-                        _config.VideoDecoderMode = VideoDecoderMode.ForceFFmpegSoftwareDecoder;
-                    }
-                    else
-                    {
-                        _config.VideoDecoderMode = VideoDecoderMode.Automatic;
+                        case 1:
+                            _config.VideoDecoderMode = VideoDecoderMode.ForceSystemDecoder;
+                            break;
+                        case 2:
+                            _config.VideoDecoderMode = VideoDecoderMode.ForceFFmpegSoftwareDecoder;
+                            break;
+                        default:
+                            _config.VideoDecoderMode = VideoDecoderMode.Automatic;
+                            break;
                     }
                     Utils.ShowMessageToast("更改清晰度或刷新后生效");
                 });
             });
+
+            //cbDecode.Loaded += new RoutedEventHandler((sender, e) =>
+            //{
+            //    cbDecode.Toggled += new RoutedEventHandler((obj, args) =>
+            //    {
+            //        SettingHelper.SetValue(SettingHelper.SORTWARE_DECODING, swSoftwareDecode.IsOn);
+            //        if (swSoftwareDecode.IsOn)
+            //        {
+            //            _config.VideoDecoderMode = VideoDecoderMode.ForceFFmpegSoftwareDecoder;
+            //        }
+            //        else
+            //        {
+            //            _config.VideoDecoderMode = VideoDecoderMode.Automatic;
+            //        }
+            //        Utils.ShowMessageToast("更改清晰度或刷新后生效");
+            //    });
+            //});
             //弹幕开关
             var state = SettingHelper.GetValue<Visibility>(SettingHelper.LiveDanmaku.SHOW, Visibility.Visible);
             DanmuControl.Visibility = state;

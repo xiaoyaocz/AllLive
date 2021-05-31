@@ -186,8 +186,6 @@ namespace AllLive.UWP.ViewModels
                     Message = "开始接收弹幕"
                 });
              
-
-
                 LiveDanmaku.NewMessage += LiveDanmaku_NewMessage;
                 LiveDanmaku.OnClose += LiveDanmaku_OnClose;
                 await LiveDanmaku.Start(result.DanmakuData);
@@ -289,8 +287,6 @@ namespace AllLive.UWP.ViewModels
         public CoreDispatcher Dispatcher { get; set; }
         private async void LiveDanmaku_NewMessage(object sender, LiveMessage e)
         {
-           
-         
             await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
                 if (e.Type == LiveMessageType.Online)
@@ -311,12 +307,9 @@ namespace AllLive.UWP.ViewModels
 
                     Messages.Add(e);
                     AddDanmaku?.Invoke(this, e.Message);
-
-
                     return;
                 }
             });
-
         }
 
         public async void Stop()

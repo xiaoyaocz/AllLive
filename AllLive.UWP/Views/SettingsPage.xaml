@@ -22,7 +22,15 @@
                 </ComboBox>
                 <ToggleSwitch x:Name="swMouseClosePage" Header="鼠标侧键返回" Margin="0 12 0 0"></ToggleSwitch>
                 <TextBlock FontSize="20" FontWeight="Bold" Margin="0 12 0 0">播放</TextBlock>
-                <ToggleSwitch x:Name="swSoftwareDecode" Header="强制软解" Margin="0 12 0 0"></ToggleSwitch>
+                <!--<ToggleSwitch x:Name="swSoftwareDecode" Visibility="Collapsed" Header="强制软解" Margin="0 12 0 0"></ToggleSwitch>-->
+                <TextBlock Margin="0 12 0 0">解码器(遇到播放失败尝试修改此项)</TextBlock>
+                <ComboBox x:Name="cbDecode" Margin="0 8 0 0" MinWidth="200" >
+                    <ComboBox.Items>
+                        <ComboBoxItem>自动</ComboBoxItem>
+                        <ComboBoxItem>强制硬解</ComboBoxItem>
+                        <ComboBoxItem>强制软解</ComboBoxItem>
+                    </ComboBox.Items>
+                </ComboBox>
                 <ToggleSwitch x:Name="swNewWindow" Header="新窗口打开直播间" Margin="0 12 0 0"></ToggleSwitch>
                 <TextBlock FontSize="20" FontWeight="Bold" Margin="0 12 0 0">互动</TextBlock>
                 <ToggleSwitch x:Name="DanmuSettingState"  Header="开启弹幕" Margin="0 12 0 0"></ToggleSwitch>

@@ -42,7 +42,6 @@ namespace AllLive.UWP.Helper
                     };
                 });
                 bool viewShown = await ApplicationViewSwitcher.TryShowAsStandaloneAsync(newViewId);
-
             }
             else
             {
