@@ -12,10 +12,7 @@
 
 ## TODO:
 
-
 - 企鹅电竞 [×]
-
-- UWP [×]
 
 - DanmakuHelper [×]
 
@@ -41,7 +38,11 @@ AllLive.ConsoleApp -d [URL]
 
 ## AllLive.UWP
 
-UWP客户端，可以在线观看各个网站直播。
+UWP客户端，简单看直播。
+
+![QQ截图20210531101630.png](https://i.loli.net/2021/05/31/eNOR7MWIbLBnYQu.jpg)
+
+![QQ截图20210531101726.png](https://i.loli.net/2021/05/31/3cq9MJFZRmQOHBW.jpg)
 
 ## AllLive.DanmakuHelper
 

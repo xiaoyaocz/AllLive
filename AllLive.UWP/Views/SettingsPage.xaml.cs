@@ -143,9 +143,5 @@ namespace AllLive.UWP.Views
             SettingHelper.SetValue(SettingHelper.LiveDanmaku.SHIELD_WORD, settingVM.ShieldWords);
         }
 
-        private async void btnCheckUpdate_Click(object sender, RoutedEventArgs e)
-        {
-            await Utils.CheckVersion();
-        }
     }
 }

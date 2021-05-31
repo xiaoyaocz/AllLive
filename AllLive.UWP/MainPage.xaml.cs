@@ -39,7 +39,7 @@ namespace AllLive.UWP
         protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
-            await Core.Helper.Utils.CheckVersion();
+            await Helper.Utils.CheckVersion();
         }
 
         private  void NavigationView_SelectionChanged(Microsoft.UI.Xaml.Controls.NavigationView sender, Microsoft.UI.Xaml.Controls.NavigationViewSelectionChangedEventArgs args)
@@ -50,6 +50,7 @@ namespace AllLive.UWP
                 item.Tag = "SettingsPage";
             }
             frame.Navigate(Type.GetType("AllLive.UWP.Views." + item.Tag));
+
         }
         
         private void searchBox_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
