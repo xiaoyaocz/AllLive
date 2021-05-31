@@ -617,7 +617,7 @@ namespace AllLive.UWP.Views
             {
                 var str = $"Url: {liveRoomVM.CurrentLine?.Url ?? ""}\r\n";
                 str += $"Quality: {liveRoomVM.CurrentQuality?.Quality ?? ""}\r\n";
-                str += $"Video Codec: {interopMSS.CurrentVideoStream.CodecName}\r\nAudio Codec:{interopMSS.CurrentAudioStream.CodecName}\r\n";
+                str += $"Video Codec: {interopMSS.CurrentVideoStream.CodecName}\r\nAudio Codec:{interopMSS.CurrentAudioStream?.CodecName??""}\r\n";
                 str += $"Resolution: {interopMSS.CurrentVideoStream.PixelWidth} x {interopMSS.CurrentVideoStream.PixelHeight}\r\n";
                 str += $"FPS: {interopMSS.CurrentVideoStream.FramesPerSecond}\r\n";
                 str += $"Video Bitrate: {interopMSS.CurrentVideoStream.Bitrate / 1024} Kbps\r\n";

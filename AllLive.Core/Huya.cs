@@ -8,6 +8,7 @@ using AllLive.Core.Helper;
 using Newtonsoft.Json.Linq;
 using System.Text.RegularExpressions;
 using System.Text;
+using System.Linq;
 
 namespace AllLive.Core
 {
@@ -120,20 +121,20 @@ namespace AllLive.Core
         {
             Dictionary<string, string> headers = new Dictionary<string, string>();
             headers.Add("user-agent", "Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1 Edg/91.0.4472.69");
-            var result = await HttpUtil.GetString($"https://m.huya.com/{roomId}",headers);
+            var result = await HttpUtil.GetString($"https://m.huya.com/{roomId}", headers);
             return new LiveRoomDetail()
             {
-                Cover = result.MatchText(@"picURL.=.'(.*?)'",""),
+                Cover = result.MatchText(@"picURL.=.'(.*?)'", ""),
                 Online = int.Parse(result.MatchText(@"totalCount:.'(\d+)'")),
                 RoomID = result.MatchText(@"<h2 class=""roomid"">.*?(\d+)</h2>"),
                 Title = result.MatchText(@"liveRoomName.=.'(.*?)'", ""),
                 UserName = result.MatchText(@"ANTHOR_NICK.=.'(.*?)'", ""),
-                UserAvatar=  result.MatchTextSingleline(@"<span class=""pic-clip"">.*?<img src=""(.*?)"".*?</span>").Trim(' '),
+                UserAvatar = result.MatchTextSingleline(@"<span class=""pic-clip"">.*?<img src=""(.*?)"".*?</span>").Trim(' '),
                 Introduction = "",
                 Notice = result.MatchTextSingleline(@"<div class=""notice_content"">(.*?)</div>", "").Trim(' '),
-                Status = bool.Parse(result.MatchText( @"ISLIVE.=.(\w+);", "true")),
-                Data = Encoding.UTF8.GetString(Convert.FromBase64String(result.MatchText( @"liveLineUrl.=.""(.*?)"";"))),
-                DanmakuData = new HuyaDanmakuArgs(long.Parse(result.MatchText( @"ayyuid:.'(\d+)',")), long.Parse(result.MatchText( @"TOPSID.=.'(\d+)';")), long.Parse(result.MatchText( @"SUBSID.=.'(\d+)';"))),
+                Status = bool.Parse(result.MatchText(@"ISLIVE.=.(\w+);", "true")),
+                Data = Encoding.UTF8.GetString(Convert.FromBase64String(result.MatchText(@"liveLineUrl.=.""(.*?)"";"))),
+                DanmakuData = new HuyaDanmakuArgs(long.Parse(result.MatchText(@"ayyuid:.'(\d+)',")), long.Parse(result.MatchText(@"TOPSID.=.'(\d+)';")), long.Parse(result.MatchText(@"SUBSID.=.'(\d+)';"))),
                 Url = "https://www.huya.com/" + roomId
             };
         }
@@ -171,30 +172,44 @@ namespace AllLive.Core
             List<LivePlayQuality> qualities = new List<LivePlayQuality>();
             var url = roomDetail.Data.ToString();
             //四条线路
-            var tx_url = Regex.Replace(url, @".*?\.hls\.huya\.com", "https://tx.hls.huya.com");
-            var bd_url = Regex.Replace(url, @".*?\.hls\.huya\.com", "https://bd.hls.huya.com");
-            var ali_url = Regex.Replace(url, @".*?\.hls\.huya\.com", "https://al.hls.huya.com");
-            var migu_url = Regex.Replace(url, @".*?\.hls\.huya\.com", "https://migu-bd.hls.huya.com");
-           
+            var lines = new List<string>() {
+                Regex.Replace(url, @".*?\.hls\.huya\.com", "https://tx.hls.huya.com"),
+                Regex.Replace(url, @".*?\.hls\.huya\.com", "https://bd.hls.huya.com"),
+                Regex.Replace(url, @".*?\.hls\.huya\.com", "https://al.hls.huya.com"),
+                Regex.Replace(url, @".*?\.hls\.huya\.com", "https://migu-bd.hls.huya.com"),
+            };
+
             qualities.Add(new LivePlayQuality()
             {
-                Quality = "超清",
-                Data = new List<string>() {
-                    tx_url.Replace("_2000", "").Replace("ratio=2000&", ""),
-                    bd_url.Replace("_2000", "").Replace("ratio=2000&", ""),
-                    ali_url.Replace("_2000", "").Replace("ratio=2000&", ""),
-                    migu_url.Replace("_2000", "").Replace("ratio=2000&", ""),
-                }
+                Quality = "原画",
+                Data = lines.Select(x =>
+                {
+                    x = x.Replace("hls.huya.com", "flv.huya.com").Replace("_2000", "").Replace("ratio=2000&", "").Replace(".m3u8",".flv");
+                    return x;
+                }).ToList()
+            });
+            qualities.Add(new LivePlayQuality()
+            {
+                Quality = "原画HLS",
+                Data = lines.Select(x =>
+                {
+                    x = x.Replace("_2000", "").Replace("ratio=2000&", "");
+                    return x;
+                }).ToList()
             });
             qualities.Add(new LivePlayQuality()
             {
                 Quality = "高清",
-                Data = new List<string>() {
-                   tx_url,
-                   bd_url,
-                   ali_url,
-                   migu_url,
-                }
+                Data = lines.Select(x =>
+                {
+                    x = x.Replace("hls.huya.com", "flv.huya.com").Replace(".m3u8", ".flv");
+                    return x;
+                }).ToList()
+            });
+            qualities.Add(new LivePlayQuality()
+            {
+                Quality = "高清HLS",
+                Data = lines
             });
             return qualities;
         }
@@ -204,6 +219,6 @@ namespace AllLive.Core
         }
 
 
-      
+
     }
 }
