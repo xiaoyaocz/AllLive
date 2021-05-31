@@ -9,6 +9,9 @@ using System.Collections.ObjectModel;
 using Windows.UI.Core;
 using AllLive.UWP.Helper;
 using System.Windows.Input;
+using Windows.UI.ViewManagement;
+using Windows.UI.Xaml;
+using Windows.ApplicationModel.Core;
 
 namespace AllLive.UWP.ViewModels
 {
@@ -272,7 +275,8 @@ namespace AllLive.UWP.ViewModels
 
         private async void LiveDanmaku_OnClose(object sender, string e)
         {
-            await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            
+            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
                 Messages.Add(new LiveMessage()
                 {
@@ -282,10 +286,12 @@ namespace AllLive.UWP.ViewModels
                 });
             });
         }
-
+        public CoreDispatcher Dispatcher { get; set; }
         private async void LiveDanmaku_NewMessage(object sender, LiveMessage e)
         {
-            await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+           
+         
+            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
                 if (e.Type == LiveMessageType.Online)
                 {

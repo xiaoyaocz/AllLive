@@ -29,6 +29,7 @@ using Windows.Graphics.Imaging;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.Graphics.Display;
 using Windows.UI;
+using Windows.ApplicationModel.Core;
 
 // https://go.microsoft.com/fwlink/?LinkId=234238 上介绍了“空白页”项模板
 
@@ -50,13 +51,13 @@ namespace AllLive.UWP.Views
         private bool isMini = false;
         DispatcherTimer timer_focus;
         DispatcherTimer controlTimer;
-       
+
         public LiveRoomPage()
         {
             this.InitializeComponent();
             settingVM = new SettingVM();
             liveRoomVM = new LiveRoomVM(settingVM);
-           
+            liveRoomVM.Dispatcher = this.Dispatcher;
             dispRequest = new DisplayRequest();
             _config = new FFmpegInteropConfig();
             _config.FFmpegOptions.Add("rtsp_transport", "tcp");
@@ -87,7 +88,7 @@ namespace AllLive.UWP.Views
         {
             if (DanmuControl.Visibility == Visibility.Visible)
             {
-               
+
                 DanmuControl.AddLiveDanmu(e, false, Colors.White);
             }
         }
@@ -211,7 +212,7 @@ namespace AllLive.UWP.Views
         }
         private void StopPlay()
         {
-           
+
             timer_focus.Stop();
             controlTimer.Stop();
             Window.Current.CoreWindow.PointerCursor = new Windows.UI.Core.CoreCursor(Windows.UI.Core.CoreCursorType.Arrow, 0);
@@ -231,7 +232,7 @@ namespace AllLive.UWP.Views
             {
                 dispRequest = null;
             }
-         
+
             SetFullScreen(false);
             MiniWidnows(false);
         }
@@ -273,19 +274,18 @@ namespace AllLive.UWP.Views
         }
         protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
         {
-            if (e.NavigationMode == NavigationMode.Back)
-            {
-                StopPlay();
-                Window.Current.CoreWindow.KeyDown -= CoreWindow_KeyDown;
+          
+            liveRoomVM.AddDanmaku -= LiveRoomVM_AddDanmaku;
+            StopPlay();
 
-            }
-               
+            Window.Current.CoreWindow.KeyDown -= CoreWindow_KeyDown;
+
             base.OnNavigatingFrom(e);
         }
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
-            if(e.NavigationMode== NavigationMode.New)
+            if (e.NavigationMode == NavigationMode.New)
             {
                 pageArgs = e.Parameter as PageArgs;
                 var siteInfo = MainVM.Sites.FirstOrDefault(x => x.LiveSite.Equals(pageArgs.Site));
@@ -297,8 +297,8 @@ namespace AllLive.UWP.Views
                 liveRoomVM.SiteLogo = siteInfo.Logo;
                 liveRoomVM.SiteName = siteInfo.Name;
                 var data = pageArgs.Data as LiveRoomItem;
-                liveRoomVM.LoadData(pageArgs.Site,data.RoomID);
-               
+                liveRoomVM.LoadData(pageArgs.Site, data.RoomID);
+
             }
         }
 
@@ -340,8 +340,9 @@ namespace AllLive.UWP.Views
             //右侧宽度
             var width = SettingHelper.GetValue<double>(SettingHelper.RIGHT_DETAIL_WIDTH, 280);
             ColumnRight.Width = new GridLength(width, GridUnitType.Pixel);
-            GridRight.SizeChanged += new SizeChangedEventHandler((sender, args) => {
-                if (args.NewSize.Width<=0)
+            GridRight.SizeChanged += new SizeChangedEventHandler((sender, args) =>
+            {
+                if (args.NewSize.Width <= 0)
                 {
                     return;
                 }
@@ -356,7 +357,7 @@ namespace AllLive.UWP.Views
             else
             {
                 _config.VideoDecoderMode = VideoDecoderMode.Automatic;
-               
+
             }
             swSoftwareDecode.Loaded += new RoutedEventHandler((sender, e) =>
             {
@@ -375,7 +376,7 @@ namespace AllLive.UWP.Views
                 });
             });
             //弹幕开关
-            var state = SettingHelper.GetValue<Visibility>(SettingHelper.LiveDanmaku.SHOW, Visibility.Visible) ;
+            var state = SettingHelper.GetValue<Visibility>(SettingHelper.LiveDanmaku.SHOW, Visibility.Visible);
             DanmuControl.Visibility = state;
             PlaySWDanmu.IsOn = state == Visibility.Visible;
             PlaySWDanmu.Toggled += new RoutedEventHandler((e, args) =>
@@ -384,7 +385,7 @@ namespace AllLive.UWP.Views
                 DanmuControl.Visibility = visibility;
                 SettingHelper.SetValue(SettingHelper.LiveDanmaku.SHOW, visibility);
             });
-           
+
             //音量
             mediaPlayer.Volume = SettingHelper.GetValue<double>(SettingHelper.PLAYER_VOLUME, 1.0);
             SliderVolume.Value = mediaPlayer.Volume;
@@ -555,7 +556,7 @@ namespace AllLive.UWP.Views
                 SetMediaInfo();
             });
         }
-       
+
         private async void PlaybackSession_PlaybackStateChanged(MediaPlaybackSession sender, object args)
         {
             await this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
@@ -590,8 +591,8 @@ namespace AllLive.UWP.Views
         {
             try
             {
-                var str = $"Url: {liveRoomVM.CurrentLine?.Url??""}\r\n";
-                str += $"Quality: {liveRoomVM.CurrentQuality?.Quality??""}\r\n";
+                var str = $"Url: {liveRoomVM.CurrentLine?.Url ?? ""}\r\n";
+                str += $"Quality: {liveRoomVM.CurrentQuality?.Quality ?? ""}\r\n";
                 str += $"Video Codec: {interopMSS.CurrentVideoStream.CodecName}\r\nAudio Codec:{interopMSS.CurrentAudioStream.CodecName}\r\n";
                 str += $"Resolution: {interopMSS.CurrentVideoStream.PixelWidth} x {interopMSS.CurrentVideoStream.PixelHeight}\r\n";
                 str += $"FPS: {interopMSS.CurrentVideoStream.FramesPerSecond}\r\n";
@@ -797,7 +798,7 @@ namespace AllLive.UWP.Views
             {
                 PlayBtnFullWindow.Visibility = Visibility.Visible;
                 PlayBtnExitFullWindow.Visibility = Visibility.Collapsed;
-                ColumnRight.Width = new GridLength(SettingHelper.GetValue<double>(SettingHelper.RIGHT_DETAIL_WIDTH,280), GridUnitType.Pixel);
+                ColumnRight.Width = new GridLength(SettingHelper.GetValue<double>(SettingHelper.RIGHT_DETAIL_WIDTH, 280), GridUnitType.Pixel);
                 ColumnRight.MinWidth = 100;
                 BottomInfo.Height = GridLength.Auto;
             }
@@ -809,7 +810,7 @@ namespace AllLive.UWP.Views
             {
                 PlayBtnFullScreen.Visibility = Visibility.Collapsed;
                 PlayBtnExitFullScreen.Visibility = Visibility.Visible;
-                
+
                 ColumnRight.Width = new GridLength(0, GridUnitType.Pixel);
                 ColumnRight.MinWidth = 0;
                 BottomInfo.Height = new GridLength(0, GridUnitType.Pixel);
@@ -863,7 +864,7 @@ namespace AllLive.UWP.Views
                 DanmuControl.ClearAll();
                 DanmuControl.Visibility = SettingHelper.GetValue<Visibility>(SettingHelper.LiveDanmaku.SHOW, Visibility.Visible);
             }
-           
+
         }
         private void BottomBtnExitMiniWindows_Click(object sender, RoutedEventArgs e)
         {
@@ -890,7 +891,7 @@ namespace AllLive.UWP.Views
 
         private void BottomBtnShare_Click(object sender, RoutedEventArgs e)
         {
-            if (liveRoomVM.detail==null)
+            if (liveRoomVM.detail == null)
             {
                 return;
             }

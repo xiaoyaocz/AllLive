@@ -30,7 +30,6 @@ namespace AllLive.UWP.Helper
                 int newViewId = 0;
                 await newView.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                 {
-                    var res = App.Current.Resources;
                     Frame frame = new Frame();
                     frame.Navigate(typeof(LiveRoomPage), arg);
                     Window.Current.Content = frame;
