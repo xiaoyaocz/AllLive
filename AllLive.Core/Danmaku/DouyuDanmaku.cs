@@ -1,4 +1,5 @@
-﻿using AllLive.Core.Interface;
+﻿using AllLive.Core.Helper;
+using AllLive.Core.Interface;
 using AllLive.Core.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -28,14 +29,12 @@ namespace AllLive.Core.Danmaku
 
         public event EventHandler<LiveMessage> NewMessage;
         public event EventHandler<string> OnClose;
-        readonly byte[] heartBeatData;
         private readonly string ServerUrl = "wss://danmuproxy.douyu.com:8506";
         Timer timer;
         WebSocket ws;
         string roomId;
         public DouyuDanmaku()
         {
-            heartBeatData = Convert.FromBase64String("FAAAABQAAACxAgAAdHlwZUA9bXJrbC8A");
             ws = new WebSocket(ServerUrl);
             ws.OnOpen += Ws_OnOpen;
             ws.OnError += Ws_OnError;
@@ -66,6 +65,7 @@ namespace AllLive.Core.Danmaku
                     var json = SttToJObject(result);
                     var type = json["type"]?.ToString();
                     //斗鱼好像不会返回人气值
+                    //有些直播间存在阴间弹幕，不知道什么情况
                     if (type == "chatmsg")
                     {
                         NewMessage?.Invoke(this, new LiveMessage()
@@ -104,7 +104,7 @@ namespace AllLive.Core.Danmaku
         {
             await Task.Run(() =>
             {
-                ws.Send(heartBeatData);
+                ws.Send(SerializeDouyu($"type@=mrkl/"));
             });
         }
 

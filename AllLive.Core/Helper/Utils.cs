@@ -68,7 +68,7 @@ namespace AllLive.Core.Helper
         public static int ToInt32(this object input)
         {
         
-            if(int.TryParse(input.ToString(), out var result))
+            if(int.TryParse(input?.ToString()??"0", out var result))
             {
                 return result;
             }
