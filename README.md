@@ -40,9 +40,9 @@ AllLive.ConsoleApp -d [URL]
 
 UWP客户端，简单看直播。
 
-![QQ截图20210531101630.png](https://i.loli.net/2021/05/31/eNOR7MWIbLBnYQu.jpg)
+![UWP1](https://raw.githubusercontent.com/xiaoyaocz/AllLive/master/Screenshots/UWP1.png)
 
-![QQ截图20210531101726.png](https://i.loli.net/2021/05/31/3cq9MJFZRmQOHBW.jpg)
+![UWP1](https://raw.githubusercontent.com/xiaoyaocz/AllLive/master/Screenshots/UWP2.png)
 
 ## AllLive.DanmakuHelper
 
