@@ -87,6 +87,7 @@ namespace AllLive.Core
             
             foreach (var item in obj["data"]["rl"])
             {
+                if(item["type"].ToInt32()==1)
                 categoryResult.Rooms.Add(new LiveRoomItem()
                 {
                     Cover = item["rs16"].ToString(),
