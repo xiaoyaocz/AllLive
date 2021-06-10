@@ -1,0 +1,29 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="AllLive.Avalonia.Views.LiveRoomWindow"
+        xmlns:vlc="clr-namespace:LibVLCSharp.Avalonia;assembly=LibVLCSharp.Avalonia"
+        Title="LiveRoomWindow">
+  <Grid>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition/>
+      <ColumnDefinition Width="280"/>
+    </Grid.ColumnDefinitions>
+    <Grid>
+      <Grid.RowDefinitions>
+        <RowDefinition/>
+        <RowDefinition Height="Auto"/>
+      </Grid.RowDefinitions>
+      <vlc:VideoView x:Name="videoView" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+    </Grid>
+    <ListBox x:Name="listChat" Grid.Column="1">
+      <ListBox.ItemTemplate>
+        <DataTemplate>
+          <TextBlock TextWrapping="Wrap" Text="{Binding}"></TextBlock>
+        </DataTemplate>
+      </ListBox.ItemTemplate>
+    </ListBox>
+  </Grid>
+</Window>

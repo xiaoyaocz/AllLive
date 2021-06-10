@@ -1,0 +1,12 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="AllLive.Avalonia.App">
+    <Application.Styles>
+        <FluentTheme Mode="Light"/>
+    </Application.Styles>
+  <Application.Resources>
+    <Geometry x:Key="IconHot">F1 M 10.9375 2.72892 C 10.9375 1.799202 9.740219 1.448822 9.212875 2.219543 C 4.375 9.291 11.25 9.609375 11.25 13.046875 C 11.25 14.438667 10.112877 15.564842 8.716812 15.546494 C 7.342987 15.528908 6.25 14.383583 6.25 13.009758 L 6.25 9.669533 C 6.25 8.821869 5.216026 8.41053 4.631653 9.025002 C 3.58593 10.123444 2.5 12.005081 2.5 14.296875 C 2.5 18.432426 5.864449 21.796875 10 21.796875 C 14.135551 21.796875 17.5 18.432426 17.5 14.296875 C 17.5 7.64492 10.9375 6.757812 10.9375 2.72892 Z </Geometry>
+    <Geometry x:Key="IconMenu">F1 M 20 6.25 L 0 6.25 L 0 5 L 20 5 L 20 6.25 Z M 20 16.25 L 0 16.25 L 0 15 L 20 15 L 20 16.25 Z M 20 11.25 L 0 11.25 L 0 10 L 20 10 L 20 11.25 Z </Geometry>
+  
+  </Application.Resources>
+</Application>

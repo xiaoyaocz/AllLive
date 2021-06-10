@@ -1,0 +1,83 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:ext="using:AllLive.Avalonia.Converters"
+             xmlns:controls="using:AllLive.Avalonia.Controls"
+             mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="450"
+             x:Class="AllLive.Avalonia.Views.RecommendView">
+  <UserControl.Resources>
+    <ext:BitmapAssetValueConverter x:Key="variableImage"/>
+    <ext:NumberToStringConverter x:Key="numberToString"/>
+  </UserControl.Resources>
+ 
+  <Grid>
+    <TabControl x:Name="tabControl" Padding="0">
+      <TabControl.ItemTemplate>
+        <DataTemplate>
+          <StackPanel Orientation="Horizontal">
+            <Image Source="{Binding Path=Site.Logo,Converter={StaticResource variableImage}}" VerticalAlignment="Center" HorizontalAlignment="Center" Width="20"  ></Image>
+            <TextBlock Margin="8 0 0 0" VerticalAlignment="Center" FontSize="15" Text="{Binding Path=Site.Name}"></TextBlock>
+          </StackPanel>
+        </DataTemplate>
+      </TabControl.ItemTemplate>
+      <TabControl.ContentTemplate>
+        <DataTemplate>
+          <Grid>
+            <Grid.RowDefinitions>
+              <RowDefinition/>
+              <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Button x:Name="testBtn" IsVisible="False" Command="{Binding OnClickCommand}"></Button>
+            <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" >
+              <StackPanel Orientation="Vertical">
+                <ItemsControl x:Name="list" Items="{Binding Items}" BorderThickness="0" Background="Transparent" >
+                  <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                      <WrapPanel/>
+                    </ItemsPanelTemplate>
+                  </ItemsControl.ItemsPanel>
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                      <Button Command="{Binding ElementName=testBtn,Path=Command}" CommandParameter="{Binding}" Padding="4" Margin="8 4" Width="{Binding ElementName=itemWidth,Path=Width,Mode=OneWay}" HorizontalContentAlignment="Stretch"  Background="Transparent" BorderThickness="0">
+                        <Grid Height="88" HorizontalAlignment="Stretch" >
+                          <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition/>
+                          </Grid.ColumnDefinitions>
+                          <Border CornerRadius="4" ClipToBounds="True">
+                            <controls:NetworkImage  Width="140" Height="88" Source="{Binding Path=Cover,Mode=OneWay}"></controls:NetworkImage>
+                            <!--<Image Source="/Assets/cover.jpg"  Width="140" Stretch="UniformToFill"></Image>-->
+                          </Border>
+
+                          <StackPanel Grid.Column="1" Margin="8 0 0 0">
+                            <TextBlock MaxLines="2" FontSize="14" TextWrapping="Wrap" Text="{Binding Title}"></TextBlock>
+                            <TextBlock FontSize="12" Margin="0 8 0 0" Foreground="Gray" Text="{Binding UserName}"></TextBlock>
+                            <StackPanel Orientation="Horizontal"  Margin="0 8 0 0" >
+                              <Viewbox HorizontalAlignment="Center" VerticalAlignment="Center" Width="16" >
+                                <PathIcon Foreground="OrangeRed" Data="{DynamicResource IconHot}" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                              </Viewbox>
+                              <TextBlock VerticalAlignment="Center"  Margin="4 2 0 0" FontSize="12" Foreground="Gray" Text="{Binding Path=Online,Converter={StaticResource numberToString}}"></TextBlock>
+                            </StackPanel>
+
+                          </StackPanel>
+                        </Grid>
+                      </Button>
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <Button Command="{Binding LoadMoreCommand}" HorizontalAlignment="Center" Background="Transparent">加载更多</Button>
+              </StackPanel>
+             
+            </ScrollViewer>
+            <ProgressBar IsVisible="{Binding Loading}" Width="56" MinWidth="56" IsIndeterminate="True"></ProgressBar>
+          
+          </Grid>
+        
+        </DataTemplate>
+      </TabControl.ContentTemplate>
+    </TabControl>
+    <Border Name="itemWidth" Width="400"></Border>
+  </Grid>
+  
+</UserControl>

@@ -16,6 +16,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AllLive.DanmakuHelper", "AllLive.DanmakuHelper\AllLive.DanmakuHelper.csproj", "{CDA681CE-4F93-4219-8918-6B976D0DA4F2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AllLive.Avalonia", "AllLive.Avalonia\AllLive.Avalonia.csproj", "{EC14E456-F593-494F-B52C-6E1D532305B7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -166,6 +168,36 @@ Global
 		{CDA681CE-4F93-4219-8918-6B976D0DA4F2}.Release|x64.Build.0 = Release|Any CPU
 		{CDA681CE-4F93-4219-8918-6B976D0DA4F2}.Release|x86.ActiveCfg = Release|Any CPU
 		{CDA681CE-4F93-4219-8918-6B976D0DA4F2}.Release|x86.Build.0 = Release|Any CPU
+		{EC14E456-F593-494F-B52C-6E1D532305B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC14E456-F593-494F-B52C-6E1D532305B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC14E456-F593-494F-B52C-6E1D532305B7}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{EC14E456-F593-494F-B52C-6E1D532305B7}.Debug|ARM.Build.0 = Debug|Any CPU
+		{EC14E456-F593-494F-B52C-6E1D532305B7}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{EC14E456-F593-494F-B52C-6E1D532305B7}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{EC14E456-F593-494F-B52C-6E1D532305B7}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{EC14E456-F593-494F-B52C-6E1D532305B7}.Debug|x64.Build.0 = Debug|Any CPU
+		{EC14E456-F593-494F-B52C-6E1D532305B7}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{EC14E456-F593-494F-B52C-6E1D532305B7}.Debug|x86.Build.0 = Debug|Any CPU
+		{EC14E456-F593-494F-B52C-6E1D532305B7}.Nuget_Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC14E456-F593-494F-B52C-6E1D532305B7}.Nuget_Release|Any CPU.Build.0 = Release|Any CPU
+		{EC14E456-F593-494F-B52C-6E1D532305B7}.Nuget_Release|ARM.ActiveCfg = Release|Any CPU
+		{EC14E456-F593-494F-B52C-6E1D532305B7}.Nuget_Release|ARM.Build.0 = Release|Any CPU
+		{EC14E456-F593-494F-B52C-6E1D532305B7}.Nuget_Release|ARM64.ActiveCfg = Release|Any CPU
+		{EC14E456-F593-494F-B52C-6E1D532305B7}.Nuget_Release|ARM64.Build.0 = Release|Any CPU
+		{EC14E456-F593-494F-B52C-6E1D532305B7}.Nuget_Release|x64.ActiveCfg = Release|Any CPU
+		{EC14E456-F593-494F-B52C-6E1D532305B7}.Nuget_Release|x64.Build.0 = Release|Any CPU
+		{EC14E456-F593-494F-B52C-6E1D532305B7}.Nuget_Release|x86.ActiveCfg = Release|Any CPU
+		{EC14E456-F593-494F-B52C-6E1D532305B7}.Nuget_Release|x86.Build.0 = Release|Any CPU
+		{EC14E456-F593-494F-B52C-6E1D532305B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC14E456-F593-494F-B52C-6E1D532305B7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EC14E456-F593-494F-B52C-6E1D532305B7}.Release|ARM.ActiveCfg = Release|Any CPU
+		{EC14E456-F593-494F-B52C-6E1D532305B7}.Release|ARM.Build.0 = Release|Any CPU
+		{EC14E456-F593-494F-B52C-6E1D532305B7}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{EC14E456-F593-494F-B52C-6E1D532305B7}.Release|ARM64.Build.0 = Release|Any CPU
+		{EC14E456-F593-494F-B52C-6E1D532305B7}.Release|x64.ActiveCfg = Release|Any CPU
+		{EC14E456-F593-494F-B52C-6E1D532305B7}.Release|x64.Build.0 = Release|Any CPU
+		{EC14E456-F593-494F-B52C-6E1D532305B7}.Release|x86.ActiveCfg = Release|Any CPU
+		{EC14E456-F593-494F-B52C-6E1D532305B7}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

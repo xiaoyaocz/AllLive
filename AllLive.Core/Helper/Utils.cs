@@ -77,7 +77,30 @@ namespace AllLive.Core.Helper
                 return 0;
             }
         }
+        public static long ToInt64(this object input)
+        {
 
+            if (long.TryParse(input?.ToString() ?? "0", out var result))
+            {
+                return result;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+        public static bool ToBool(this object input)
+        {
+
+            if (bool.TryParse(input?.ToString() ?? "false", out var result))
+            {
+                return result;
+            }
+            else
+            {
+                return false;
+            }
+        }
 
     }
 }

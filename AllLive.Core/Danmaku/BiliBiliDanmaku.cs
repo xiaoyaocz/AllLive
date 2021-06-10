@@ -145,7 +145,7 @@ namespace AllLive.Core.Danmaku
             {
                 var obj = JObject.Parse(jsonMessage);
                 var cmd = obj["cmd"].ToString();
-                if (cmd == "DANMU_MSG")
+                if (cmd.Contains("DANMU_MSG"))
                 {
                     if (obj["info"] != null && obj["info"].ToArray().Length != 0)
                     {

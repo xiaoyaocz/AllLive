@@ -125,16 +125,16 @@ namespace AllLive.Core
             return new LiveRoomDetail()
             {
                 Cover = result.MatchText(@"picURL.=.'(.*?)'", ""),
-                Online = int.Parse(result.MatchText(@"totalCount:.'(\d+)'")),
+                Online = result.MatchText(@"totalCount:.'(\d+)'").ToInt32(),
                 RoomID = result.MatchText(@"<h2 class=""roomid"">.*?(\d+)</h2>"),
                 Title = result.MatchText(@"liveRoomName.=.'(.*?)'", ""),
                 UserName = result.MatchText(@"ANTHOR_NICK.=.'(.*?)'", ""),
                 UserAvatar = result.MatchTextSingleline(@"<span class=""pic-clip"">.*?<img src=""(.*?)"".*?</span>").Trim(' '),
                 Introduction = "",
                 Notice = result.MatchTextSingleline(@"<div class=""notice_content"">(.*?)</div>", "").Trim(' '),
-                Status = bool.Parse(result.MatchText(@"ISLIVE.=.(\w+);", "true")),
+                Status = result.MatchText(@"ISLIVE.=.(\w+);", "true").ToBool(),
                 Data = Encoding.UTF8.GetString(Convert.FromBase64String(result.MatchText(@"liveLineUrl.=.""(.*?)"";"))),
-                DanmakuData = new HuyaDanmakuArgs(long.Parse(result.MatchText(@"ayyuid:.'(\d+)',")), long.Parse(result.MatchText(@"TOPSID.=.'(\d+)';")), long.Parse(result.MatchText(@"SUBSID.=.'(\d+)';"))),
+                DanmakuData = new HuyaDanmakuArgs(long.Parse(result.MatchText(@"ayyuid:.'(\d+)',")),result.MatchText(@"TOPSID.=.'(\d+)';").ToInt64(), result.MatchText(@"SUBSID.=.'(\d+)';").ToInt64()),
                 Url = "https://www.huya.com/" + roomId
             };
         }
