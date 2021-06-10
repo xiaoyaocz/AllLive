@@ -50,7 +50,7 @@ namespace AllLive.UWP.Helper
         /// <summary>
         /// 解码
         /// </summary>
-        //public const string SORTWARE_DECODING = "sortwareDecoding";
+        public const string SORTWARE_DECODING = "sortwareDecoding";
 
         public const string DECODE = "Decode";
 

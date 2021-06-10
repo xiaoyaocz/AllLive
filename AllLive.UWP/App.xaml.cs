@@ -1,5 +1,4 @@
 ﻿using AllLive.UWP.Helper;
-using FFmpegInterop;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -26,7 +25,7 @@ namespace AllLive.UWP
     /// <summary>
     /// 提供特定于应用程序的行为，以补充默认的应用程序类。
     /// </summary>
-    sealed partial class App : Application, ILogProvider
+    sealed partial class App : Application
     {
         /// <summary>
         /// 初始化单一实例应用程序对象。这是执行的创作代码的第一行，
@@ -38,8 +37,6 @@ namespace AllLive.UWP
             this.InitializeComponent();
            
             App.Current.UnhandledException += App_UnhandledException;
-            FFmpegInteropLogging.SetLogLevel(LogLevel.Info);
-            FFmpegInteropLogging.SetLogProvider(this);
             this.Suspending += OnSuspending;
         }
         private void RegisterExceptionHandlingSynchronizationContext()
@@ -74,10 +71,6 @@ namespace AllLive.UWP
 
         }
 
-        public void Log(LogLevel level, string message)
-        {
-            System.Diagnostics.Debug.WriteLine("FFmpeg ({0}): {1}", level, message);
-        }
 
         /// <summary>
         /// 在应用程序由最终用户正常启动时进行调用。

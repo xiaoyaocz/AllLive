@@ -4,7 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:AllLive.UWP.Views"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls" xmlns:models="using:AllLive.Core.Models" xmlns:my="using:Microsoft.UI.Xaml.Controls" xmlns:controls1="using:NSDanmaku.Controls" xmlns:convert="using:AllLive.UWP.Converters"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls" xmlns:models="using:AllLive.Core.Models" xmlns:my="using:Microsoft.UI.Xaml.Controls" xmlns:controls1="using:NSDanmaku.Controls" xmlns:convert="using:AllLive.UWP.Converters" xmlns:vlc="using:LibVLCSharp.Platforms.UWP"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
     <Page.Resources>
@@ -34,7 +34,9 @@
                     <TextBlock x:Name="txtInfo" TextWrapping="Wrap" MaxWidth="400" IsTextSelectionEnabled="True"></TextBlock>
                 </Flyout>
             </Grid.ContextFlyout>
-            <MediaPlayerElement x:Name="player" ></MediaPlayerElement>
+            <vlc:VideoView x:Name="player" Initialized="player_Initialized">
+               
+            </vlc:VideoView>
             <!--弹幕-->
             <Grid Tapped="Grid_Tapped">
                 <controls1:Danmaku x:Name="DanmuControl" />
@@ -314,15 +316,15 @@
                     <ScrollViewer>
                         <StackPanel Margin="12">
 
-                            <!--<ToggleSwitch x:Name="swSoftwareDecode" Header="强制软解" Margin="0 12 0 0"></ToggleSwitch>-->
-                            <TextBlock Margin="0 12 0 0">解码器(遇到播放失败尝试修改此项)</TextBlock>
+                            <ToggleSwitch x:Name="swSoftwareDecode" Header="强制软解" Margin="0 12 0 0"></ToggleSwitch>
+                            <!--<TextBlock Margin="0 12 0 0">解码器(遇到播放失败尝试修改此项)</TextBlock>
                             <ComboBox x:Name="cbDecode" Margin="0 8 0 0" MinWidth="200" >
                                 <ComboBox.Items>
                                     <ComboBoxItem>自动</ComboBoxItem>
                                     <ComboBoxItem>强制硬解</ComboBoxItem>
                                     <ComboBoxItem>强制软解</ComboBoxItem>
                                 </ComboBox.Items>
-                            </ComboBox>
+                            </ComboBox>-->
                             <TextBlock Margin="0 12 0 0">互动文字大小</TextBlock>
                             <my:NumberBox x:Name="numFontsize" Margin="0 4 0 0"  PlaceholderText="请输入文字大小" Minimum="10" Maximum="64" Width="140" HorizontalAlignment="Left" SpinButtonPlacementMode="Compact"/>
                             <TextBlock Margin="0 12 0 0">互动自动清理</TextBlock>

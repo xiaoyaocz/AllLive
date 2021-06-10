@@ -253,9 +253,6 @@
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="$(SolutionDir)\FFmpegBuild\$(PlatformTarget)\bin\*.dll" />
-  </ItemGroup>
-  <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -306,8 +303,8 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="FFmpegInteropX">
-      <Version>0.9.2</Version>
+    <PackageReference Include="LibVLCSharp">
+      <Version>3.5.1</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Data.Sqlite">
       <Version>5.0.6</Version>
@@ -335,6 +332,9 @@
     </PackageReference>
     <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3">
       <Version>2.0.4</Version>
+    </PackageReference>
+    <PackageReference Include="VideoLAN.LibVLC.UWP">
+      <Version>3.3.1</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
