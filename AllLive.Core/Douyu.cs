@@ -7,7 +7,9 @@ using AllLive.Core.Danmaku;
 using AllLive.Core.Helper;
 using Newtonsoft.Json.Linq;
 using System.Text.RegularExpressions;
+#if !WINDOWS_UWP
 using QuickJS;
+#endif
 /*
  * 参考：
  * https://github.com/wbt5/real-url/blob/master/douyu.py
@@ -67,7 +69,7 @@ namespace AllLive.Core
             {
                 subs.Add(new LiveSubCategory()
                 {
-                    Pic =item["squareIconUrlW"].ToString(),
+                    Pic = item["squareIconUrlW"].ToString(),
                     ID = item["cid2"].ToString(),
                     ParentID = item["cid1"].ToString(),
                     Name = item["cname2"].ToString(),
@@ -84,18 +86,18 @@ namespace AllLive.Core
             };
             var result = await HttpUtil.GetString($"https://www.douyu.com/gapi/rkc/directory/mixList/2_{ category.ID}/{page}");
             var obj = JObject.Parse(result);
-            
+
             foreach (var item in obj["data"]["rl"])
             {
-                if(item["type"].ToInt32()==1)
-                categoryResult.Rooms.Add(new LiveRoomItem()
-                {
-                    Cover = item["rs16"].ToString(),
-                    Online = item["ol"].ToInt32(),
-                    RoomID = item["rid"].ToString(),
-                    Title = item["rn"].ToString(),
-                    UserName = item["nn"].ToString(),
-                });
+                if (item["type"].ToInt32() == 1)
+                    categoryResult.Rooms.Add(new LiveRoomItem()
+                    {
+                        Cover = item["rs16"].ToString(),
+                        Online = item["ol"].ToInt32(),
+                        RoomID = item["rid"].ToString(),
+                        Title = item["rn"].ToString(),
+                        UserName = item["nn"].ToString(),
+                    });
             }
             categoryResult.HasMore = page < obj["data"]["pgcnt"].ToInt32();
             return categoryResult;
@@ -126,7 +128,7 @@ namespace AllLive.Core
         public async Task<LiveRoomDetail> GetRoomDetail(object roomId)
         {
             var result = await HttpUtil.GetString($"https://www.douyu.com/{roomId}");
-          
+
             Dictionary<string, string> headers = new Dictionary<string, string>();
             headers.Add("user-agent", "Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1 Edg/91.0.4472.69");
             var result_json = await HttpUtil.GetString($"https://m.douyu.com/{roomId}", headers);
@@ -143,21 +145,38 @@ namespace AllLive.Core
                 Notice = obj["notice"].ToString(),
                 Status = obj["isLive"].ToInt32() == 1,
                 DanmakuData = obj["rid"].ToString(),
-                Data =GetPlayArgs(result, obj["rid"].ToString()),
-                Url= "https://www.douyu.com/" + roomId
+                Data = await GetPlayArgs(result, obj["rid"].ToString()),
+                Url = "https://www.douyu.com/" + roomId
             };
         }
 
-        private  string GetPlayArgs(string html,string rid)
+        private async Task<string> GetPlayArgs(string html, string rid)
         {
+            //取加密的js
+            html = Regex.Match(html, @"(vdwdae325w_64we[\s\S]*function ub98484234[\s\S]*?)function").Groups[1].Value;
+            html = Regex.Replace(html, @"eval.*?;}", "strc;}");
+            var vaa= Environment.CurrentDirectory ;
+            
+#if WINDOWS_UWP
+            var jsonObj = new
+            {
+                html = html,
+                rid = rid
+            };
+            var result = await HttpUtil.PostJsonString("http://alive.nsapps.cn/api/AllLive/DouyuSign", Newtonsoft.Json.JsonConvert.SerializeObject(jsonObj));
+            var obj = JObject.Parse(result);
+            if (obj["code"].ToInt32() == 0)
+            {
+                return obj["data"].ToString();
+            }
+            return "";
+#else
             using (QuickJSRuntime runtime = new QuickJSRuntime())
             using (QuickJSContext context = runtime.CreateContext())
             {
                 var did = "10000000000000000000000000001501";
                 var time = Core.Helper.Utils.GetTimestamp();
-                //取加密的js
-                html = Regex.Match(html, @"(vdwdae325w_64we[\s\S]*function ub98484234[\s\S]*?)function").Groups[1].Value;
-                html = Regex.Replace(html, @"eval.*?;}", "strc;}");
+
                 context.Eval(html, "", JSEvalFlags.Global);
                 //调用ub98484234函数，返回格式化后的js
                 var jsCode = context.Eval("ub98484234()", "", JSEvalFlags.Global).ToString();
@@ -176,7 +195,7 @@ namespace AllLive.Core
                 var args = context.Eval($"sign('{rid}','{did}','{time}')", "", JSEvalFlags.Global).ToString();
                 return args;
             }
-
+#endif
         }
 
         public async Task<LiveSearchResult> Search(string keyword, int page = 1)
@@ -190,7 +209,7 @@ namespace AllLive.Core
             var obj = JObject.Parse(result);
 
             foreach (var item in obj["data"]["relateShow"])
-            { 
+            {
                 searchResult.Rooms.Add(new LiveRoomItem()
                 {
                     Cover = item["roomSrc"].ToString(),
@@ -220,7 +239,7 @@ namespace AllLive.Core
                 qualities.Add(new LivePlayQuality()
                 {
                     Quality = item["name"].ToString(),
-                    Data =new KeyValuePair<int,List<string>>(item["rate"].ToInt32(), cdns),
+                    Data = new KeyValuePair<int, List<string>>(item["rate"].ToInt32(), cdns),
                 });
             }
             return qualities;
@@ -233,7 +252,7 @@ namespace AllLive.Core
             foreach (var item in data.Value)
             {
                 var url = await GetUrl(roomDetail.RoomID, args, data.Key, item);
-                if (url.Length!=0)
+                if (url.Length != 0)
                 {
                     urls.Add(url);
                 }
@@ -241,21 +260,21 @@ namespace AllLive.Core
             return urls;
         }
 
-        private async Task<string> GetUrl(string rid,string args,int rate,string cdn="")
+        private async Task<string> GetUrl(string rid, string args, int rate, string cdn = "")
         {
             try
             {
                 args += $"&cdn={cdn}&rate={rate}";
                 var result = await HttpUtil.PostString($"https://www.douyu.com/lapi/live/getH5Play/{rid}", args);
                 var obj = JObject.Parse(result);
-                return obj["data"]["rtmp_url"].ToString() +"/"+ System.Net.WebUtility.HtmlDecode(obj["data"]["rtmp_live"].ToString());
+                return obj["data"]["rtmp_url"].ToString() + "/" + System.Net.WebUtility.HtmlDecode(obj["data"]["rtmp_live"].ToString());
             }
             catch (Exception)
             {
 
                 return "";
             }
-           
+
         }
 
         private int ParseHotNum(string hn)
@@ -273,9 +292,9 @@ namespace AllLive.Core
             {
                 return -999;
             }
-            
+
         }
     }
-   
+
 
 }

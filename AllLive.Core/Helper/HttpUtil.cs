@@ -63,5 +63,22 @@ namespace AllLive.Core.Helper
                 return await result.Content.ReadAsStringAsync();
             }
         }
+        public static async Task<string> PostJsonString(string url, string data, IDictionary<string, string> headers = null)
+        {
+            using (HttpClient httpClient = new HttpClient())
+            {
+                if (headers != null)
+                {
+                    foreach (var item in headers)
+                    {
+                        httpClient.DefaultRequestHeaders.Add(item.Key, item.Value);
+                    }
+                }
+                StringContent content = new StringContent(data, Encoding.UTF8, "application/json");
+                var result = await httpClient.PostAsync(url, content);
+                result.EnsureSuccessStatusCode();
+                return await result.Content.ReadAsStringAsync();
+            }
+        }
     }
 }

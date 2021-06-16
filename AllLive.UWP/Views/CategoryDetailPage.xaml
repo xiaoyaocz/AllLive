@@ -26,7 +26,7 @@
             <Button x:Name="btnBack" Click="btnBack_Click" Background="Transparent" Height="48" Width="48">
                 <SymbolIcon Symbol="Back"></SymbolIcon>
             </Button>
-            <TextBlock x:Name="txtTitle" Margin="8 0" Grid.Column="1" VerticalAlignment="Center" FontSize="16"></TextBlock>
+            <TextBlock x:Name="txtTitle" Margin="8 0" Grid.Column="1" VerticalAlignment="Center" ></TextBlock>
         </Grid>
         <Grid Grid.Row="1">
             <Grid>
