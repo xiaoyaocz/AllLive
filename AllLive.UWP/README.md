@@ -1,17 +1,20 @@
 # AllLive.UWP
 
 
-UWP不支持QuickJS,打包Release时需要修改AllLive.Core项目的csproj文件:
+UWP不支持QuickJS,生成Release时需要修改AllLive.Core项目的csproj文件:
+
+1、引用修改
 
 ```
 <PackageReference Include="QuickJS.NET" Version="0.0.3" />
-```
-
-至
-
-```
+<!-- 修改为以下内容，或去除QuickJS.NET引用 -->
 <PackageReference Include="QuickJS.NET" Version="0.0.3" PrivateAssets="all" />
 ```
 
-修改AllLive.Core属性
-添加Release条件编译符号：WINDOWS_UWP
+2、添加条件编译符号：WINDOWS_UWP
+
+```
+<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+   <DefineConstants>TRACE;WINDOWS_UWP</DefineConstants>
+</PropertyGroup>
+```
