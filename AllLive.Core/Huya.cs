@@ -122,19 +122,25 @@ namespace AllLive.Core
             Dictionary<string, string> headers = new Dictionary<string, string>();
             headers.Add("user-agent", "Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1 Edg/91.0.4472.69");
             var result = await HttpUtil.GetString($"https://m.huya.com/{roomId}", headers);
+            var jsonStr = Regex.Match(result, @"window\.HNF_GLOBAL_INIT.=.\{(.*?)\}.</script>", RegexOptions.Singleline).Groups[1].Value;
+            var jsonObj = JObject.Parse($"{{{jsonStr}}}");
             return new LiveRoomDetail()
             {
-                Cover = result.MatchText(@"picURL.=.'(.*?)'", ""),
-                Online = result.MatchText(@"totalCount:.'(\d+)'").ToInt32(),
-                RoomID = result.MatchText(@"<h2 class=""roomid"">.*?(\d+)</h2>"),
-                Title = result.MatchText(@"liveRoomName.=.'(.*?)'", ""),
-                UserName = result.MatchText(@"ANTHOR_NICK.=.'(.*?)'", ""),
-                UserAvatar = result.MatchTextSingleline(@"<span class=""pic-clip"">.*?<img src=""(.*?)"".*?</span>").Trim(' '),
-                Introduction = "",
-                Notice = result.MatchTextSingleline(@"<div class=""notice_content"">(.*?)</div>", "").Trim(' '),
-                Status = result.MatchText(@"ISLIVE.=.(\w+);", "true").ToBool(),
-                Data = Encoding.UTF8.GetString(Convert.FromBase64String(result.MatchText(@"liveLineUrl.=.""(.*?)"";"))),
-                DanmakuData = new HuyaDanmakuArgs(long.Parse(result.MatchText(@"ayyuid:.'(\d+)',")),result.MatchText(@"TOPSID.=.'(\d+)';").ToInt64(), result.MatchText(@"SUBSID.=.'(\d+)';").ToInt64()),
+                Cover = jsonObj["roomInfo"]["tLiveInfo"]["sScreenshot"].ToString(),
+                Online = jsonObj["roomInfo"]["tLiveInfo"]["lTotalCount"].ToInt32(),
+                RoomID = jsonObj["roomInfo"]["tLiveInfo"]["lProfileRoom"].ToString(),
+                Title = jsonObj["roomInfo"]["tLiveInfo"]["sRoomName"].ToString(),
+                UserName = jsonObj["roomInfo"]["tLiveInfo"]["sNick"].ToString(),
+                UserAvatar = jsonObj["roomInfo"]["tLiveInfo"]["sAvatar180"].ToString(),
+                Introduction = jsonObj["roomInfo"]["tLiveInfo"]["sIntroduction"].ToString(),
+                Notice = jsonObj["welcomeText"].ToString(),
+                Status = jsonObj["roomInfo"]["eLiveStatus"].ToInt32() == 2,
+                Data = "https:" + Encoding.UTF8.GetString(Convert.FromBase64String(jsonObj["roomProfile"]["liveLineUrl"].ToString())),
+                DanmakuData = new HuyaDanmakuArgs(
+                    jsonObj["roomInfo"]["tLiveInfo"]["lYyid"].ToInt64(),
+                    result.MatchText(@"lChannelId"":([0-9]+)").ToInt64(),
+                    result.MatchText(@"lSubChannelId"":([0-9]+)").ToInt64()
+                ),
                 Url = "https://www.huya.com/" + roomId
             };
         }
@@ -167,7 +173,7 @@ namespace AllLive.Core
             searchResult.HasMore = obj["response"]["3"]["numFound"].ToInt32() > (page * 20);
             return searchResult;
         }
-        public async Task<List<LivePlayQuality>> GetPlayQuality(LiveRoomDetail roomDetail)
+        public Task<List<LivePlayQuality>> GetPlayQuality(LiveRoomDetail roomDetail)
         {
             List<LivePlayQuality> qualities = new List<LivePlayQuality>();
             var url = roomDetail.Data.ToString();
@@ -184,7 +190,7 @@ namespace AllLive.Core
                 Quality = "原画",
                 Data = lines.Select(x =>
                 {
-                    x = x.Replace("hls.huya.com", "flv.huya.com").Replace("_2000", "").Replace("ratio=2000&", "").Replace(".m3u8",".flv");
+                    x = x.Replace("hls.huya.com", "flv.huya.com").Replace("_2000", "").Replace("ratio=2000&", "").Replace(".m3u8", ".flv");
                     return x;
                 }).ToList()
             });
@@ -211,11 +217,12 @@ namespace AllLive.Core
                 Quality = "高清HLS",
                 Data = lines
             });
-            return qualities;
+
+            return Task.FromResult(qualities);
         }
-        public async Task<List<string>> GetPlayUrls(LiveRoomDetail roomDetail, LivePlayQuality qn)
+        public Task<List<string>> GetPlayUrls(LiveRoomDetail roomDetail, LivePlayQuality qn)
         {
-            return qn.Data as List<string>;
+            return Task.FromResult(qn.Data as List<string>);
         }
 
 
