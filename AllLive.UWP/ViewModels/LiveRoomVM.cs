@@ -171,7 +171,11 @@ namespace AllLive.UWP.ViewModels
                 Online = result.Online;
                 Title = result.Title;
                 Name = result.UserName;
-                Photo = result.UserAvatar;
+               
+                if(!string.IsNullOrEmpty(result.UserAvatar))
+                {
+                    Photo = result.UserAvatar;
+                }
                 Living = result.Status;
 
                 //检查收藏情况
