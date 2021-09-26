@@ -42,7 +42,6 @@ UWP客户端，简单看直播。
 
 ![UWP1](https://raw.githubusercontent.com/xiaoyaocz/AllLive/master/Screenshots/UWP1.png)
 
-![UWP1](https://raw.githubusercontent.com/xiaoyaocz/AllLive/master/Screenshots/UWP2.png)
 
 ## AllLive.DanmakuHelper
 

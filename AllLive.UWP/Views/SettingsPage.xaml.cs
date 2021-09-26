@@ -32,6 +32,7 @@ namespace AllLive.UWP.Views
             settingVM = new SettingVM();
             this.InitializeComponent();
             LoadUI();
+           
         }
         private void LoadUI()
         {

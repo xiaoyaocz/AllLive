@@ -5,8 +5,7 @@
     xmlns:local="using:AllLive.UWP.Views"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:models="using:AllLive.UWP.Models" xmlns:controls="using:AllLive.UWP.Controls" xmlns:Windows10version1809="http://schemas.microsoft.com/winfx/2006/xaml/presentation?IsApiContractPresent(Windows.Foundation.UniversalApiContract, 7)"
-    mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    mc:Ignorable="d">
 
     <Grid>
         <controls:MyAdaptiveGridView ItemsSource="{x:Bind Path=favoriteVM.Items}"
@@ -15,17 +14,23 @@
                                      SelectionMode="None"
                                      IsItemClickEnabled="True"
                                      ItemClick="ls_ItemClick"
+                                     Margin="8"
+                                     StretchContentForSingleRow="False"
                                      DesiredWidth="400" >
             <controls:MyAdaptiveGridView.ItemContainerStyle>
-                <Style TargetType="GridViewItem">
-                    <Setter Property="Margin" Value="8 4"></Setter>
-                    <Setter Property="Padding" Value="8"></Setter>
+                <Style TargetType="GridViewItem" BasedOn="{StaticResource GridViewItemCornerRadiusStyle}">
+                    <Setter Property="Margin" Value="4"></Setter>
+                    <Setter Property="Padding" Value="8 4"></Setter>
+                    <Setter Property="BorderThickness" Value="1"></Setter>
+                    <Setter Property="BorderBrush" Value="{ThemeResource CardStrokeColorDefaultBrush}"></Setter>
+                    <Setter Property="Background" Value="{ThemeResource ButtonBackground}"></Setter>
                     <Setter Property="HorizontalContentAlignment" Value="Stretch"></Setter>
+                   
                 </Style>
             </controls:MyAdaptiveGridView.ItemContainerStyle>
             <controls:MyAdaptiveGridView.ItemTemplate>
                 <DataTemplate x:DataType="models:FavoriteItem">
-                    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+                    <Grid >
                         <Grid.ContextFlyout>
                             <MenuFlyout>
                                 <MenuFlyoutItem Click="MenuFlyoutItem_Click" Icon="Delete" Text="移除"></MenuFlyoutItem>
@@ -35,7 +40,7 @@
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
-                        <PersonPicture Width="56" ProfilePicture="{x:Bind Path=Photo}" Height="48" Background="Blue"></PersonPicture>
+                        <PersonPicture Width="56" BorderThickness="0" ProfilePicture="{x:Bind Path=Photo}" Height="48" Background="Blue"></PersonPicture>
                         <StackPanel Grid.Column="1" Margin="8 0 0 0" VerticalAlignment="Center">
                             <TextBlock Text="{x:Bind Path=UserName}"></TextBlock>
                             <TextBlock Text="{x:Bind Path=SiteName}" Margin="0 4 0 0" FontSize="12" Foreground="Gray"></TextBlock>
@@ -45,10 +50,10 @@
             </controls:MyAdaptiveGridView.ItemTemplate>
         </controls:MyAdaptiveGridView>
         <TextBlock Visibility="{x:Bind Path=favoriteVM.IsEmpty,Mode=OneWay}" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="Gray">这里还什么都没有~</TextBlock>
-        <Button Command="{x:Bind Path=favoriteVM.RefreshCommand}" Windows10version1809:CornerRadius="24" Visibility="{x:Bind Path=favoriteVM.Loading,Mode=OneWay,Converter={StaticResource displayConvert}}" Padding="0" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="12" BorderThickness="0" Background="Transparent">
-            <Border Width="48" Height="48" CornerRadius="24" Background="#33000000">
-                <SymbolIcon Symbol="Refresh" Foreground="White"></SymbolIcon>
-            </Border>
+        <Button Width="48" Height="48" Command="{x:Bind Path=favoriteVM.RefreshCommand}" Windows10version1809:CornerRadius="24" Visibility="{x:Bind Path=favoriteVM.Loading,Mode=OneWay,Converter={StaticResource displayConvert}}" Padding="0" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="12" >
+
+            <FontIcon FontFamily="{StaticResource SegoeFluent}" Glyph="&#xE72C;" />
+
         </Button>
     </Grid>
 </Page>

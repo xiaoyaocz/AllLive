@@ -116,10 +116,19 @@ namespace AllLive.UWP
                 // 确保当前窗口处于活动状态
                 Window.Current.Activate();
             }
-         
-            SetTitleBar();
-        }
 
+            ExtendTitleBar();
+        }
+        private void ExtendTitleBar()
+        {
+            CoreApplication.GetCurrentView().TitleBar.ExtendViewIntoTitleBar = true;
+            ApplicationViewTitleBar titleBar = ApplicationView.GetForCurrentView().TitleBar;
+            titleBar.BackgroundColor= Colors.Transparent;
+            titleBar.ButtonBackgroundColor = Colors.Transparent;
+            titleBar.ButtonInactiveBackgroundColor = Colors.Transparent;
+            //titleBar.ButtonForegroundColor = Colors.Transparent;
+          
+        }
         private void RootFrame_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
 
@@ -150,8 +159,8 @@ namespace AllLive.UWP
             {
                 var color = TitltBarButtonColor(uISettings);
                 titleBar.ButtonForegroundColor = color.Item1;
-                titleBar.ButtonBackgroundColor = color.Item2;
-                titleBar.BackgroundColor = color.Item2;
+                titleBar.ButtonBackgroundColor = Colors.Transparent;
+                titleBar.BackgroundColor = Colors.Transparent;
             });
         }
 

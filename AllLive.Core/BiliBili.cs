@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AllLive.Core.Danmaku;
 using AllLive.Core.Helper;
 using Newtonsoft.Json.Linq;
+using System.Text.RegularExpressions;
 
 namespace AllLive.Core
 {
@@ -121,7 +122,7 @@ namespace AllLive.Core
                     Cover = "https:"+item["cover"].ToString() + "@300w.jpg",
                     Online = item["online"].ToInt32(),
                     RoomID = item["roomid"].ToString(),
-                    Title = item["title"].ToString(),
+                    Title = Regex.Replace( item["title"].ToString(),@"<em.*?/em>",""),
                     UserName = item["uname"].ToString(),
                 });
             }

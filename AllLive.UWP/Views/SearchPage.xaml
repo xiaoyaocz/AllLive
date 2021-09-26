@@ -49,14 +49,18 @@
                             StretchContentForSingleRow="False"
                             ItemsSource="{x:Bind Path=Items,Mode=OneWay}"
                             ItemHeight="196" DesiredWidth="260" 
-                            Padding="4"
+                            Padding="8 4"
                             LoadMoreCommand="{x:Bind Path=LoadMoreCommand,Mode=OneWay}"
                             CanLoadMore="{x:Bind Path=CanLoadMore,Mode=OneWay}"
                             ItemTemplate="{StaticResource RoomItemTemplate}"
                             SelectionMode="None" IsItemClickEnabled="True">
                             <controls:MyAdaptiveGridView.ItemContainerStyle>
-                                <Style TargetType="GridViewItem">
-                                    <Setter Property="Margin" Value="8"></Setter>
+                                <Style TargetType="GridViewItem" BasedOn="{StaticResource GridViewItemCornerRadiusStyle}">
+                                    <Setter Property="Margin" Value="4"></Setter>
+                                    <Setter Property="BorderThickness" Value="1"></Setter>
+                                    <Setter Property="BorderBrush" Value="{ThemeResource CardStrokeColorDefaultBrush}"></Setter>
+                                    <Setter Property="Background" Value="{ThemeResource ButtonBackground}"></Setter>
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch"></Setter>
                                 </Style>
                             </controls:MyAdaptiveGridView.ItemContainerStyle>
 

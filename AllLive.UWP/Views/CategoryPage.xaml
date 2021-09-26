@@ -7,11 +7,10 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
     xmlns:viewmodels="using:AllLive.UWP.ViewModels" 
     xmlns:models="using:AllLive.Core.Models" 
-    xmlns:Windows10version1809="http://schemas.microsoft.com/winfx/2006/xaml/presentation?IsApiContractPresent(Windows.Foundation.UniversalApiContract, 7)"
-    mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    xmlns:winui="using:Microsoft.UI.Xaml.Controls"
+    mc:Ignorable="d">
     <Page.Resources>
-        <SolidColorBrush x:Key="PivotHeaderBackground" Color="{ThemeResource TopPaneBackground}"></SolidColorBrush>
+       
         <SolidColorBrush x:Key="SystemControlHighlightAltAccentBrush" Color="White"></SolidColorBrush>
     </Page.Resources>
     <Grid>
@@ -34,9 +33,20 @@
                     <Grid>
                         <SemanticZoom >
                             <SemanticZoom.ZoomedInView>
-                                <GridView ItemClick="GridView_ItemClick" ItemsSource="{x:Bind Path=CollectionView.View,Mode=OneWay}" Padding="12 0" IsItemClickEnabled="True" SelectionMode="None" >
+                                <GridView ItemClick="GridView_ItemClick" BorderThickness="0" ItemsSource="{x:Bind Path=CollectionView.View,Mode=OneWay}" Padding="8 0" IsItemClickEnabled="True" SelectionMode="None" >
                                     <GridView.GroupStyle>
                                         <GroupStyle >
+                                            <GroupStyle.HeaderContainerStyle>
+                                                <Style TargetType="GridViewHeaderItem">
+                                                    <Setter Property="Template" >
+                                                        <Setter.Value>
+                                                            <ControlTemplate TargetType="ContentControl">
+                                                                <ContentPresenter Content="{Binding}" Padding="8 0" VerticalAlignment="Center"/>
+                                                            </ControlTemplate>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </Style>
+                                            </GroupStyle.HeaderContainerStyle>
                                             <GroupStyle.HeaderTemplate>
                                                 <DataTemplate x:DataType="models:LiveCategory">
                                                     <TextBlock  Text="{x:Bind Name}" FontSize="20" FontWeight="Bold" Foreground="{ThemeResource ApplicationForegroundThemeBrush}" />
@@ -45,9 +55,14 @@
                                         </GroupStyle>
                                     </GridView.GroupStyle>
                                     <GridView.ItemContainerStyle>
-                                        <Style TargetType="GridViewItem">
+                                        <Style TargetType="GridViewItem" BasedOn="{StaticResource GridViewItemCornerRadiusStyle}">
                                             <Setter Property="Width" Value="100"></Setter>
                                             <Setter Property="Padding" Value="4"></Setter>
+                                            <Setter Property="Margin" Value="4"></Setter>
+                                            <Setter Property="BorderThickness" Value="1"></Setter>
+                                            <Setter Property="BorderBrush" Value="{ThemeResource CardStrokeColorDefaultBrush}"></Setter>
+                                            <Setter Property="Background" Value="{ThemeResource ButtonBackground}"></Setter>
+                                            <Setter Property="HorizontalContentAlignment" Value="Stretch"></Setter>
                                         </Style>
                                     </GridView.ItemContainerStyle>
                                     <GridView.ItemTemplate>
@@ -75,10 +90,8 @@
                         </SemanticZoom>
                         
                         <ProgressRing IsActive="True" Visibility="{x:Bind Path=Loading,Mode=OneWay}"  VerticalAlignment="Center" HorizontalAlignment="Center"></ProgressRing>
-                        <Button Command="{x:Bind Path=RefreshCommand}" Windows10version1809:CornerRadius="24" Visibility="{x:Bind Path=Loading,Mode=OneWay,Converter={StaticResource displayConvert}}" Padding="0" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="12" BorderThickness="0" Background="Transparent">
-                            <Border Width="48" Height="48" CornerRadius="24" Background="#33000000">
-                                <SymbolIcon Symbol="Refresh" Foreground="White"></SymbolIcon>
-                            </Border>
+                        <Button Command="{x:Bind Path=RefreshCommand}" Width="48" Height="48" CornerRadius="24" Visibility="{x:Bind Path=Loading,Mode=OneWay,Converter={StaticResource displayConvert}}" Padding="0" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="12" >
+                            <FontIcon FontFamily="{StaticResource SegoeFluent}" Glyph="&#xE72C;" />
                         </Button>
                     </Grid>
                 </DataTemplate>

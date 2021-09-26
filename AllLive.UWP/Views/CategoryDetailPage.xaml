@@ -10,7 +10,6 @@
     xmlns:controls="using:AllLive.UWP.Controls" 
     xmlns:models="using:AllLive.Core.Models" 
     xmlns:toolkit="using:Microsoft.Toolkit.Uwp.UI.Controls" 
-    xmlns:Windows10version1809="http://schemas.microsoft.com/winfx/2006/xaml/presentation?IsApiContractPresent(Windows.Foundation.UniversalApiContract, 7)"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid>
@@ -36,15 +35,19 @@
                             StretchContentForSingleRow="False"
                             ItemsSource="{x:Bind Path=categoryDetailVM.Items,Mode=OneWay}"
                             ItemHeight="196" DesiredWidth="260" 
-                            Padding="4"
+                            Padding="8 4"
                             LoadMoreCommand="{x:Bind Path=categoryDetailVM.LoadMoreCommand,Mode=OneWay}"
                             CanLoadMore="{x:Bind Path=categoryDetailVM.CanLoadMore,Mode=OneWay}"
                             LoadMoreBottomOffset="0"
                             ItemTemplate="{StaticResource RoomItemTemplate}"
                             SelectionMode="None" IsItemClickEnabled="True">
-                    <controls:MyAdaptiveGridView.ItemContainerStyle>
-                        <Style TargetType="GridViewItem">
-                            <Setter Property="Margin" Value="8"></Setter>
+                    <controls:MyAdaptiveGridView.ItemContainerStyle >
+                        <Style TargetType="GridViewItem" BasedOn="{StaticResource GridViewItemCornerRadiusStyle}">
+                            <Setter Property="Margin" Value="4"></Setter>
+                            <Setter Property="BorderThickness" Value="1"></Setter>
+                            <Setter Property="BorderBrush" Value="{ThemeResource CardStrokeColorDefaultBrush}"></Setter>
+                            <Setter Property="Background" Value="{ThemeResource ButtonBackground}"></Setter>
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch"></Setter>
                         </Style>
                     </controls:MyAdaptiveGridView.ItemContainerStyle>
                     <controls:MyAdaptiveGridView.Footer>
@@ -57,10 +60,11 @@
                     </controls:MyAdaptiveGridView.Footer>
                 </controls:MyAdaptiveGridView>
 
-                <Button Command="{x:Bind Path=categoryDetailVM.RefreshCommand}" Windows10version1809:CornerRadius="24" Visibility="{x:Bind Path=categoryDetailVM.Loading,Mode=OneWay,Converter={StaticResource displayConvert}}" Padding="0" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="12" BorderThickness="0" Background="Transparent">
-                    <Border Width="48" Height="48" CornerRadius="24" Background="#33000000">
-                        <SymbolIcon Symbol="Refresh" Foreground="White"></SymbolIcon>
-                    </Border>
+                <Button Command="{x:Bind Path=categoryDetailVM.RefreshCommand}" Height="48" Width="48" CornerRadius="24" Visibility="{x:Bind Path=categoryDetailVM.Loading,Mode=OneWay,Converter={StaticResource displayConvert}}" Padding="0" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="12" RenderTransformOrigin="0.5,0.5" >
+                  
+
+                    <FontIcon FontFamily="{StaticResource SegoeFluent}" Glyph="&#xE72C;" />
+
                 </Button>
                 <TextBlock Visibility="{x:Bind Path=categoryDetailVM.IsEmpty,Mode=OneWay}" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="Gray">什么都没有~</TextBlock>
             </Grid>

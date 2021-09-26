@@ -20,6 +20,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using AllLive.Core.Models;
+using Windows.ApplicationModel.Core;
 
 // https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x804 上介绍了“空白页”项模板
 
@@ -35,6 +36,9 @@ namespace AllLive.UWP
         {
             this.NavigationCacheMode = NavigationCacheMode.Enabled;
             this.InitializeComponent();
+            var coreTitleBar = CoreApplication.GetCurrentView().TitleBar;
+            Window.Current.SetTitleBar(TitleBar);
+         
         }
         protected async override void OnNavigatedTo(NavigationEventArgs e)
         {

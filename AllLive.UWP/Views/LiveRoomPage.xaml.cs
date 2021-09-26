@@ -56,6 +56,8 @@ namespace AllLive.UWP.Views
         public LiveRoomPage()
         {
             this.InitializeComponent();
+            var coreTitleBar = CoreApplication.GetCurrentView().TitleBar;
+            Window.Current.SetTitleBar(TitleBar);
             settingVM = new SettingVM();
             liveRoomVM = new LiveRoomVM(settingVM);
             liveRoomVM.Dispatcher = this.Dispatcher;

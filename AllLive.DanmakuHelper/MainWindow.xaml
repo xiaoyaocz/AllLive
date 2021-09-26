@@ -1,0 +1,43 @@
+﻿<Window x:Class="AllLive.DanmakuHelper.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:AllLive.DanmakuHelper"
+        mc:Ignorable="d"
+        xmlns:hc="https://handyorg.github.io/handycontrol"
+        Title="弹幕助手" Height="450" Width="400">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid Margin="12 12 12 0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBox hc:InfoElement.Placeholder="请输入直播间链接" Style="{StaticResource TextBoxExtend}"  VerticalContentAlignment="Center" Height="32" ></TextBox>
+            <Button Grid.Column="1" Width="64" Margin="4 0 0 0">连接</Button>
+        </Grid>
+        <StackPanel Grid.Row="1" Margin="12 12 12 0">
+            <CheckBox Margin="0 4" HorizontalAlignment="Left">显示头像</CheckBox>
+         
+            <TextBlock Margin="0 4">显示样式</TextBlock>
+            <ComboBox Margin="0 0 0 4"></ComboBox>
+           
+            <TextBlock Margin="0 4">屏蔽关键词</TextBlock>
+            <Grid >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBox hc:InfoElement.Placeholder="请输入关键词" Style="{StaticResource TextBoxExtend}"  VerticalContentAlignment="Center" Height="32" ></TextBox>
+                <Button Grid.Column="1" Width="64" Margin="4 0 0 0">添加</Button>
+            </Grid>
+          
+        </StackPanel>
+        <ListBox  Grid.Row="2" Margin="12 4 12 12"></ListBox>
+    </Grid>
+</Window>

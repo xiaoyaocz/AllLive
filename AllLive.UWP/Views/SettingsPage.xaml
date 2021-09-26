@@ -6,13 +6,13 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    >
 
     <Grid>
         <ScrollViewer>
             <StackPanel Margin="12">
                 <TextBlock FontSize="20" FontWeight="Bold">常规</TextBlock>
-                <TextBlock Margin="0 12 0 0">显示模式</TextBlock>
+                <TextBlock Margin="0 12 0 8">显示模式</TextBlock>
                 <ComboBox x:Name="cbTheme"  MinWidth="200" >
                     <ComboBox.Items>
                         <ComboBoxItem>跟随系统</ComboBoxItem>
