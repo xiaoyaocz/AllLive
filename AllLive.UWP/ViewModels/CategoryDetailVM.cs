@@ -18,14 +18,26 @@ namespace AllLive.UWP.ViewModels
 
         public ObservableCollection<AllLive.Core.Models.LiveRoomItem> Items { get; set; }
 
-        ILiveSite _site;
-        LiveSubCategory _category;
+        
+        private ILiveSite _site;
+        public ILiveSite Site
+        {
+            get { return _site; }
+            set { _site = value; }
+        }
+        private LiveSubCategory _category;
+        public LiveSubCategory Category
+        {
+            get { return _category; }
+            set { _category = value; }
+        }
+
         public async void LoadData(ILiveSite site, LiveSubCategory category)
         {
             try
             {
-                _site = site;
-                _category = category;
+                Site = site;
+                Category = category;
                 Loading = true;
                 CanLoadMore = false;
                 IsEmpty = false;

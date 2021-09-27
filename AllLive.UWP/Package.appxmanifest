@@ -8,15 +8,15 @@
   IgnorableNamespaces="uap mp uap3">
 
   <Identity
-    Name="77ab9a3d-b108-46e5-8d54-6392bbeee5c5"
-    Publisher="CN=xiaoyaocz"
-    Version="1.0.4.0" />
+    Name="5421.24244EC421563"
+    Publisher="CN=43A199A3-3813-4434-830F-536BE5EFB42E"
+    Version="1.1.2.0" />
 
-  <mp:PhoneIdentity PhoneProductId="77ab9a3d-b108-46e5-8d54-6392bbeee5c5" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
+  <mp:PhoneIdentity PhoneProductId="5a2a1e25-4e5f-476a-bfc0-57537bded590" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
-    <DisplayName>AllLive.UWP</DisplayName>
-    <PublisherDisplayName>xiaoyaocz</PublisherDisplayName>
+    <DisplayName>聚合直播</DisplayName>
+    <PublisherDisplayName>逍遥橙子</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
 

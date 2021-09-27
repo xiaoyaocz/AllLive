@@ -5,28 +5,26 @@
     xmlns:local="using:AllLive.UWP.Views"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:viewmodels="using:AllLive.UWP.ViewModels" xmlns:controls="using:AllLive.UWP.Controls"
-    mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    mc:Ignorable="d">
     <Page.Resources>
-        <SolidColorBrush x:Key="PivotHeaderBackground" Color="{ThemeResource TopPaneBackground}"></SolidColorBrush>
-        <SolidColorBrush x:Key="SystemControlHighlightAltAccentBrush" Color="White"></SolidColorBrush>
+        <SolidColorBrush x:Key="PivotHeaderBackground" Color="Transparent"></SolidColorBrush>
     </Page.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <Grid Background="{ThemeResource TopPaneBackground}">
+        <Grid BorderThickness="0 0 0 1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="0"/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
             <Button x:Name="btnBack" Click="btnBack_Click" Background="Transparent" Height="48" Width="56">
                 <SymbolIcon Symbol="Back"></SymbolIcon>
             </Button>
-            <AutoSuggestBox x:Name="searchBox" QuerySubmitted="searchBox_QuerySubmitted" Grid.Column="1" VerticalAlignment="Center" Margin="0 0 12 0" QueryIcon="Find" PlaceholderText="输入关键字搜索直播间"></AutoSuggestBox>
+            <AutoSuggestBox x:Name="searchBox" QuerySubmitted="searchBox_QuerySubmitted" Grid.Column="1" VerticalAlignment="Center" Margin="12 0" QueryIcon="Find" PlaceholderText="输入关键字搜索直播间"></AutoSuggestBox>
         </Grid>
-        <Pivot x:Name="pivot" Grid.Row="1" SelectionChanged="pivot_SelectionChanged" ItemsSource="{x:Bind Path=searchVM.Items}" >
+        <Pivot x:Name="pivot" Background="{ThemeResource LayerFillColorDefaultBrush}" Grid.Row="1" SelectionChanged="pivot_SelectionChanged" ItemsSource="{x:Bind Path=searchVM.Items}" >
             <Pivot.ItemContainerStyle>
                 <Style TargetType="PivotItem">
                     <Setter Property="Margin" Value="0"></Setter>

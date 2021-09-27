@@ -82,7 +82,7 @@ namespace AllLive.UWP
             //初始化数据库
             await DatabaseHelper.InitializeDatabase();
 
-            Windows.UI.Core.SystemNavigationManager.GetForCurrentView().BackRequested += App_BackRequested;
+            
             Frame rootFrame = Window.Current.Content as Frame;
 
             // 不要在窗口已包含内容时重复应用程序初始化，
@@ -94,7 +94,7 @@ namespace AllLive.UWP
 
                 rootFrame.NavigationFailed += OnNavigationFailed;
                 rootFrame.Navigated += RootFrame_Navigated;
-                rootFrame.PointerPressed += RootFrame_PointerPressed;
+             
                 if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
                 {
                     //TODO: 从之前挂起的应用程序加载状态
@@ -111,80 +111,50 @@ namespace AllLive.UWP
                     // 当导航堆栈尚未还原时，导航到第一页，
                     // 并通过将所需信息作为导航参数传入来配置
                     // 参数
-                    rootFrame.Navigate(typeof(MainPage), e.Arguments);
+                    rootFrame.Navigate(typeof(BaseFramePage), e.Arguments);
                 }
                 // 确保当前窗口处于活动状态
                 Window.Current.Activate();
             }
 
-            ExtendTitleBar();
-        }
-        private void ExtendTitleBar()
-        {
-            CoreApplication.GetCurrentView().TitleBar.ExtendViewIntoTitleBar = true;
-            ApplicationViewTitleBar titleBar = ApplicationView.GetForCurrentView().TitleBar;
-            titleBar.BackgroundColor= Colors.Transparent;
-            titleBar.ButtonBackgroundColor = Colors.Transparent;
-            titleBar.ButtonInactiveBackgroundColor = Colors.Transparent;
-            //titleBar.ButtonForegroundColor = Colors.Transparent;
-          
-        }
-        private void RootFrame_PointerPressed(object sender, PointerRoutedEventArgs e)
-        {
-
-            var par = e.GetCurrentPoint(sender as Frame).Properties.PointerUpdateKind;
-            if (SettingHelper.GetValue<bool>(SettingHelper.MOUSE_BACK, true) && par == Windows.UI.Input.PointerUpdateKind.XButton1Pressed || par == Windows.UI.Input.PointerUpdateKind.MiddleButtonPressed)
-            {
-                if ((sender as Frame).CanGoBack)
-                {
-                    (sender as Frame).GoBack();
-                    e.Handled = true;
-                }
-
-            }
-
+            SetTitleBar();
         }
 
+
+      
         public static void SetTitleBar()
         {
             UISettings uISettings = new UISettings();
-            var colors = TitltBarButtonColor(uISettings);
+            var color = TitltBarButtonColor(uISettings);
             ApplicationViewTitleBar titleBar = ApplicationView.GetForCurrentView().TitleBar;
+            
             titleBar.ButtonBackgroundColor = Colors.Transparent;
             titleBar.ButtonInactiveBackgroundColor = Colors.Transparent;
-            titleBar.ButtonForegroundColor = colors.Item1;
-            titleBar.ButtonBackgroundColor = colors.Item2;
-            titleBar.BackgroundColor = colors.Item2;
+            titleBar.ButtonForegroundColor = color;
+            titleBar.ButtonBackgroundColor = Colors.Transparent;
+            titleBar.BackgroundColor = Colors.Transparent;
             uISettings.ColorValuesChanged += new TypedEventHandler<UISettings, object>((setting, args) =>
             {
-                var color = TitltBarButtonColor(uISettings);
-                titleBar.ButtonForegroundColor = color.Item1;
+              
+                titleBar.ButtonForegroundColor = TitltBarButtonColor(uISettings);
                 titleBar.ButtonBackgroundColor = Colors.Transparent;
                 titleBar.BackgroundColor = Colors.Transparent;
             });
         }
 
-        private static (Color, Color) TitltBarButtonColor(UISettings uISettings)
+        private static Color TitltBarButtonColor(UISettings uISettings)
         {
             var settingTheme = SettingHelper.GetValue<int>(SettingHelper.THEME, 0);
             var uiSettings = new Windows.UI.ViewManagement.UISettings();
             var color = uiSettings.GetColorValue(UIColorType.Foreground);
-            var bgColor = (color == Colors.White) ? Color.FromArgb(255, 23, 23, 23) : Color.FromArgb(255, 246, 246, 246);
             if (settingTheme != 0)
             {
                 color = settingTheme == 1 ? Colors.Black : Colors.White;
-                bgColor = settingTheme == 2 ? Color.FromArgb(255, 23, 23, 23) : Color.FromArgb(255, 246, 246, 246);
+              
             }
-            return (color, bgColor);
+            return color;
         }
-        private void App_BackRequested(object sender, BackRequestedEventArgs e)
-        {
-            Frame rootFrame = Window.Current.Content as Frame;
-            if (rootFrame.CanGoBack)
-            {
-                rootFrame.GoBack();
-            }
-        }
+      
 
         private void RootFrame_Navigated(object sender, NavigationEventArgs e)
         {

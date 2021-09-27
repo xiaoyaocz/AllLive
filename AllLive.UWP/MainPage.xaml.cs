@@ -36,8 +36,6 @@ namespace AllLive.UWP
         {
             this.NavigationCacheMode = NavigationCacheMode.Enabled;
             this.InitializeComponent();
-            var coreTitleBar = CoreApplication.GetCurrentView().TitleBar;
-            Window.Current.SetTitleBar(TitleBar);
          
         }
         protected async override void OnNavigatedTo(NavigationEventArgs e)

@@ -171,8 +171,8 @@ namespace AllLive.UWP.ViewModels
                 Online = result.Online;
                 Title = result.Title;
                 Name = result.UserName;
-               
-                if(!string.IsNullOrEmpty(result.UserAvatar))
+                MessageCenter.ChangeTitle(Title + " - "+ Name, Site);
+                if (!string.IsNullOrEmpty(result.UserAvatar))
                 {
                     Photo = result.UserAvatar;
                 }

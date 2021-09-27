@@ -9,6 +9,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.System;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -105,11 +106,11 @@ namespace AllLive.UWP.Views
                 });
             });
             //弹幕开关
-            var state = SettingHelper.GetValue<Visibility>(SettingHelper.LiveDanmaku.SHOW, Visibility.Visible) == Visibility.Visible;
+            var state = SettingHelper.GetValue<bool>(SettingHelper.LiveDanmaku.SHOW, true) ;
             DanmuSettingState.IsOn = state;
             DanmuSettingState.Toggled += new RoutedEventHandler((e, args) =>
             {
-                SettingHelper.SetValue(SettingHelper.LiveDanmaku.SHOW, DanmuSettingState.IsOn ? Visibility.Visible : Visibility.Collapsed);
+                SettingHelper.SetValue(SettingHelper.LiveDanmaku.SHOW, DanmuSettingState.IsOn);
             });
             //弹幕清理
             numCleanCount.Value = SettingHelper.GetValue<int>(SettingHelper.LiveDanmaku.DANMU_CLEAN_COUNT, 200);
@@ -126,7 +127,7 @@ namespace AllLive.UWP.Views
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
-            version.Text = $"{SystemInformation.ApplicationVersion.Major}.{SystemInformation.ApplicationVersion.Minor}.{SystemInformation.ApplicationVersion.Build}";
+            version.Text = $"{SystemInformation.Instance.ApplicationVersion.Major}.{SystemInformation.Instance.ApplicationVersion.Minor}.{SystemInformation.Instance.ApplicationVersion.Build}";
         }
         private void RemoveLiveDanmuWord_Click(object sender, RoutedEventArgs e)
         {
@@ -152,5 +153,9 @@ namespace AllLive.UWP.Views
             SettingHelper.SetValue(SettingHelper.LiveDanmaku.SHIELD_WORD, settingVM.ShieldWords);
         }
 
+        private async void BtnGithub_Click(object sender, RoutedEventArgs e)
+        {
+           await Launcher.LaunchUriAsync(new Uri("https://github.com/xiaoyaocz/AllLive"));
+        }
     }
 }

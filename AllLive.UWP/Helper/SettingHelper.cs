@@ -9,7 +9,7 @@ namespace AllLive.UWP.Helper
 {
     public class SettingHelper
     {
-        public static LocalObjectStorageHelper storageHelper = new LocalObjectStorageHelper();
+        public static ApplicationDataStorageHelper storageHelper = ApplicationDataStorageHelper.GetCurrent(new Microsoft.Toolkit.Helpers.SystemSerializer());
         public static T GetValue<T>(string key, T _default)
         {
             if (storageHelper.KeyExists(key))
@@ -66,9 +66,9 @@ namespace AllLive.UWP.Helper
         {
             public const string TOP_MARGIN = "LiveTopMargin";
             /// <summary>
-            /// 显示弹幕 Visibility
+            /// 显示弹幕 
             /// </summary>
-            public const string SHOW = "LiveDanmuShow";
+            public const string SHOW = "LiveDanmuShowBool";
             /// <summary>
             /// 弹幕显示区域
             /// </summary>

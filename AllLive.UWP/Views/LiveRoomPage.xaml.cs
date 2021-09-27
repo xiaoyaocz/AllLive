@@ -56,8 +56,7 @@ namespace AllLive.UWP.Views
         public LiveRoomPage()
         {
             this.InitializeComponent();
-            var coreTitleBar = CoreApplication.GetCurrentView().TitleBar;
-            Window.Current.SetTitleBar(TitleBar);
+         
             settingVM = new SettingVM();
             liveRoomVM = new LiveRoomVM(settingVM);
             liveRoomVM.Dispatcher = this.Dispatcher;
@@ -142,7 +141,6 @@ namespace AllLive.UWP.Views
                         break;
                     case VLCState.Ended:
                         {
-                            dispRequest.RequestRelease();
                             liveRoomVM.Living = false;
                         }
                         break;
@@ -436,14 +434,22 @@ namespace AllLive.UWP.Views
                 LibVLC = null;
             }
             liveRoomVM?.Stop();
+         
+            SetFullScreen(false);
+            MiniWidnows(false);
             //取消屏幕常亮
             if (dispRequest != null)
             {
+                try
+                {
+                    dispRequest.RequestRelease();
+                }
+                catch (Exception)
+                {
+                }
+                
                 dispRequest = null;
             }
-
-            SetFullScreen(false);
-            MiniWidnows(false);
         }
         private void ControlTimer_Tick(object sender, object e)
         {
@@ -474,13 +480,13 @@ namespace AllLive.UWP.Views
             }
 
         }
-        private void btnBack_Click(object sender, RoutedEventArgs e)
-        {
-            if (this.Frame.CanGoBack)
-            {
-                this.Frame.GoBack();
-            }
-        }
+        //private void btnBack_Click(object sender, RoutedEventArgs e)
+        //{
+        //    if (this.Frame.CanGoBack)
+        //    {
+        //        this.Frame.GoBack();
+        //    }
+        //}
         protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
         {
 
@@ -501,7 +507,9 @@ namespace AllLive.UWP.Views
 
                 liveRoomVM.SiteLogo = siteInfo.Logo;
                 liveRoomVM.SiteName = siteInfo.Name;
+              
                 var data = pageArgs.Data as LiveRoomItem;
+                MessageCenter.ChangeTitle("", pageArgs.Site);
                 liveRoomVM.LoadData(pageArgs.Site, data.RoomID);
 
             }
@@ -551,7 +559,7 @@ namespace AllLive.UWP.Views
                 {
                     return;
                 }
-                SettingHelper.SetValue<double>(SettingHelper.RIGHT_DETAIL_WIDTH, args.NewSize.Width);
+                SettingHelper.SetValue<double>(SettingHelper.RIGHT_DETAIL_WIDTH, args.NewSize.Width+16);
             });
             //软解视频
             //cbDecode.SelectedIndex= SettingHelper.GetValue<int>(SettingHelper.DECODE, 0);
@@ -603,14 +611,14 @@ namespace AllLive.UWP.Views
                 });
             });
             //弹幕开关
-            var state = SettingHelper.GetValue<Visibility>(SettingHelper.LiveDanmaku.SHOW, Visibility.Visible);
+            var state = SettingHelper.GetValue<bool>(SettingHelper.LiveDanmaku.SHOW,true)?Visibility.Visible:Visibility.Collapsed;
             DanmuControl.Visibility = state;
             PlaySWDanmu.IsOn = state == Visibility.Visible;
             PlaySWDanmu.Toggled += new RoutedEventHandler((e, args) =>
             {
                 var visibility = PlaySWDanmu.IsOn ? Visibility.Visible : Visibility.Collapsed;
                 DanmuControl.Visibility = visibility;
-                SettingHelper.SetValue(SettingHelper.LiveDanmaku.SHOW, visibility);
+                SettingHelper.SetValue(SettingHelper.LiveDanmaku.SHOW, PlaySWDanmu.IsOn);
             });
 
             //音量
@@ -686,7 +694,12 @@ namespace AllLive.UWP.Views
                 SettingHelper.SetValue<bool>(SettingHelper.LiveDanmaku.BOLD, DanmuSettingBold.IsOn);
             });
             //弹幕样式
-            DanmuControl.DanmakuStyle = (DanmakuBorderStyle)SettingHelper.GetValue<int>(SettingHelper.LiveDanmaku.BORDER_STYLE, 2);
+            var danmuStyle = SettingHelper.GetValue<int>(SettingHelper.LiveDanmaku.BORDER_STYLE, 2);
+            if (danmuStyle > 2)
+            {
+                danmuStyle = 2;
+            }
+            DanmuControl.DanmakuStyle = (DanmakuBorderStyle)danmuStyle;
             DanmuSettingStyle.SelectionChanged += new SelectionChangedEventHandler((e, args) =>
             {
                 if (DanmuSettingStyle.SelectedIndex != -1)
@@ -922,8 +935,10 @@ namespace AllLive.UWP.Views
         private void SetFullScreen(bool e)
         {
             ApplicationView view = ApplicationView.GetForCurrentView();
+            MessageCenter.HideTitlebar(e);
             if (e)
             {
+              
                 PlayBtnFullScreen.Visibility = Visibility.Collapsed;
                 PlayBtnExitFullScreen.Visibility = Visibility.Visible;
 
@@ -940,8 +955,9 @@ namespace AllLive.UWP.Views
             {
                 PlayBtnFullScreen.Visibility = Visibility.Visible;
                 PlayBtnExitFullScreen.Visibility = Visibility.Collapsed;
-
-                ColumnRight.Width = new GridLength(280, GridUnitType.Pixel);
+                var width = SettingHelper.GetValue<double>(SettingHelper.RIGHT_DETAIL_WIDTH, 280);
+                ColumnRight.Width = new GridLength(width, GridUnitType.Pixel);
+                //ColumnRight.Width = new GridLength(280, GridUnitType.Pixel);
                 ColumnRight.MinWidth = 100;
                 BottomInfo.Height = GridLength.Auto;
                 //退出全屏
@@ -953,6 +969,7 @@ namespace AllLive.UWP.Views
         }
         private async void MiniWidnows(bool mini)
         {
+            MessageCenter.HideTitlebar(mini);
             isMini = mini;
             ApplicationView view = ApplicationView.GetForCurrentView();
             if (mini)
@@ -978,7 +995,7 @@ namespace AllLive.UWP.Views
                 DanmuControl.DanmakuSizeZoom = SettingHelper.GetValue<double>(SettingHelper.LiveDanmaku.FONT_ZOOM, 1);
                 DanmuControl.DanmakuDuration = SettingHelper.GetValue<int>(SettingHelper.LiveDanmaku.SPEED, 10);
                 DanmuControl.ClearAll();
-                DanmuControl.Visibility = SettingHelper.GetValue<Visibility>(SettingHelper.LiveDanmaku.SHOW, Visibility.Visible);
+                DanmuControl.Visibility = SettingHelper.GetValue<bool>(SettingHelper.LiveDanmaku.SHOW, true)?Visibility.Visible:Visibility.Collapsed;
             }
 
         }

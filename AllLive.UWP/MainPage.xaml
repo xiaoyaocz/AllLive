@@ -6,34 +6,12 @@
     xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d"
-    muxc:BackdropMaterial.ApplyToRootOrPageBackground="True">
-    <Page.Resources>
-        <CornerRadius x:Key="NavigationViewContentGridCornerRadius">0</CornerRadius>
-    </Page.Resources>
+    mc:Ignorable="d">
+   
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="auto"/>
-            <RowDefinition/>
-        </Grid.RowDefinitions>
-        <Grid  Height="32" Background="Transparent">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
-            <Image x:Name="AppFontIcon"
-                   Margin="12 0 0 0"
-                    HorizontalAlignment="Left" 
-                    VerticalAlignment="Center"
-                    Source="Assets/Square44x44Logo.png" 
-                    Width="16" 
-                    Height="16"/>
-            <Grid Grid.Column="1" x:Name="TitleBar" Background="#00FFFFFF">
-                <TextBlock x:Name="Title" Text="聚合直播" FontSize="12" VerticalAlignment="Center"  Margin="12 0"></TextBlock>
-            </Grid>
-
-        </Grid>
-        <muxc:NavigationView x:Name="navigationView" Grid.Row="1" IsSettingsVisible="False" PaneTitle="聚合直播" PaneDisplayMode="Top" SelectionChanged="NavigationView_SelectionChanged" IsBackButtonVisible="Collapsed">
+       
+       
+        <muxc:NavigationView x:Name="navigationView"  IsSettingsVisible="False" PaneTitle="聚合直播" PaneDisplayMode="Top" SelectionChanged="NavigationView_SelectionChanged" IsBackButtonVisible="Collapsed">
             <muxc:NavigationView.AutoSuggestBox>
                 <AutoSuggestBox x:Name="searchBox" QuerySubmitted="searchBox_QuerySubmitted" QueryIcon="Find" PlaceholderText="输入链接或关键字" Width="180"  AutomationProperties.Name="Search"></AutoSuggestBox>
             </muxc:NavigationView.AutoSuggestBox>

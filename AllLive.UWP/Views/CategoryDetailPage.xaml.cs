@@ -25,7 +25,7 @@ namespace AllLive.UWP.Views
     /// 可用于自身或导航至 Frame 内部的空白页。
     /// </summary>
     public sealed partial class CategoryDetailPage : Page
-    { 
+    {
         readonly CategoryDetailVM categoryDetailVM;
         PageArgs pageArgs;
         public CategoryDetailPage()
@@ -41,25 +41,31 @@ namespace AllLive.UWP.Views
             {
                 this.Frame.GoBack();
             }
-           
+
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
-            if(e.NavigationMode== NavigationMode.New)
+            if (e.NavigationMode == NavigationMode.New)
             {
                 pageArgs = e.Parameter as PageArgs;
                 var category = pageArgs.Data as LiveSubCategory;
-                txtTitle.Text = pageArgs.Site.Name+" - " +category.Name;
+                MessageCenter.ChangeTitle(category.Name, pageArgs.Site);
+                //txtTitle.Text = pageArgs.Site.Name+" - " +category.Name;
                 categoryDetailVM.LoadData(pageArgs.Site, category);
+            }
+            else if (e.NavigationMode == NavigationMode.Back)
+            {
+                MessageCenter.ChangeTitle(categoryDetailVM.Category.Name, categoryDetailVM.Site);
+
             }
         }
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)
         {
             base.OnNavigatedFrom(e);
-            if(e.NavigationMode== NavigationMode.Back)
+            if (e.NavigationMode == NavigationMode.Back)
             {
                 NavigationCacheMode = NavigationCacheMode.Disabled;
             }
@@ -69,7 +75,7 @@ namespace AllLive.UWP.Views
         {
             var item = e.ClickedItem as AllLive.Core.Models.LiveRoomItem;
             MessageCenter.OpenLiveRoom(pageArgs.Site, item);
-           
+
         }
     }
 }

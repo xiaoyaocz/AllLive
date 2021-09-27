@@ -1,6 +1,7 @@
 ﻿using AllLive.Core.Interface;
 using AllLive.Core.Models;
 using AllLive.UWP.Models;
+using AllLive.UWP.ViewModels;
 using AllLive.UWP.Views;
 using System;
 using System.Collections.Generic;
@@ -17,6 +18,11 @@ namespace AllLive.UWP.Helper
 {
     public static class MessageCenter
     {
+        public delegate void NavigatePageHandler(Type page,object data);
+        public static event NavigatePageHandler NavigatePageEvent;
+        public delegate void ChangeTitleHandler(string title, string logo);
+        public static event ChangeTitleHandler ChangeTitleEvent;
+        public static event EventHandler<bool> HideTitlebarEvent;
         public async static void OpenLiveRoom(ILiveSite liveSite,LiveRoomItem item)
         {
             var arg = new PageArgs()
@@ -45,10 +51,36 @@ namespace AllLive.UWP.Helper
             }
             else
             {
-                (Window.Current.Content as Frame).Navigate(typeof(LiveRoomPage), arg);
+                NavigatePage(typeof(LiveRoomPage), arg);
+                //(Window.Current.Content as Frame).Navigate(typeof(LiveRoomPage), arg);
             }
            
         }
+
+        public static void NavigatePage(Type page, object data)
+        {
+            NavigatePageEvent?.Invoke(page, data);
+        }
+
+        public static void ChangeTitle(string title, ILiveSite site=null)
+        {
+            var logo = "ms-appx:///Assets/Square44x44Logo.png";
+            if (site != null)
+            {
+                var siteInfo = MainVM.Sites.FirstOrDefault(x => x.LiveSite.Equals(site));
+                if (siteInfo != null)
+                {
+                    logo = siteInfo.Logo;
+                }
+            }
+           
+            ChangeTitleEvent?.Invoke(title, logo);
+        }
+        public static void HideTitlebar(bool show)
+        {
+            HideTitlebarEvent?.Invoke(null, show);
+        }
     }
     class BlankPage : Page { }
+    
 }

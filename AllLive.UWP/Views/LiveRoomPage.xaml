@@ -4,30 +4,25 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:AllLive.UWP.Views"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls" xmlns:models="using:AllLive.Core.Models" xmlns:my="using:Microsoft.UI.Xaml.Controls" xmlns:controls1="using:NSDanmaku.Controls" xmlns:convert="using:AllLive.UWP.Converters" xmlns:vlc="using:LibVLCSharp.Platforms.UWP"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls" 
+    xmlns:models="using:AllLive.Core.Models" 
+    xmlns:my="using:Microsoft.UI.Xaml.Controls" 
+    xmlns:controls1="using:NSDanmaku.Controls" 
+    xmlns:convert="using:AllLive.UWP.Converters" 
+    xmlns:vlc="using:LibVLCSharp.Platforms.UWP"
     mc:Ignorable="d"
-    xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
-    muxc:BackdropMaterial.ApplyToRootOrPageBackground="True">
+    xmlns:ui="using:Microsoft.Toolkit.Uwp.UI"
+    xmlns:winui="using:Microsoft.UI.Xaml.Controls"
+    winui:BackdropMaterial.ApplyToRootOrPageBackground="True"
+    >
     <Page.Resources>
         <convert:DanmakuStyleConvert x:Key="styleConvert"></convert:DanmakuStyleConvert>
     </Page.Resources>
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition/>
-        </Grid.RowDefinitions>
-        <Grid  Height="32" >
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="48"/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
-            
-            <Grid Grid.Column="1" x:Name="TitleBar" Background="#00FFFFFF">
-                <TextBlock x:Name="Title" Text="{x:Bind Path=liveRoomVM.Title,Mode=OneWay}" FontSize="12" VerticalAlignment="Center"  Margin="12 0"></TextBlock>
-            </Grid>
-
-        </Grid>
-        <Grid Grid.Row="1">
+       
+       
+        <Grid >
             <Grid.RowDefinitions>
                 <RowDefinition/>
                 <RowDefinition Height="Auto" x:Name="BottomInfo"/>
@@ -38,6 +33,7 @@
             </Grid.ColumnDefinitions>
             <Button x:Name="BtnFoucs" Width="0" Height="0" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="-8 -8 0 0" Background="Transparent" BorderThickness="0"></Button>
             <Grid Background="Black" RequestedTheme="Dark"
+              ui:UIElementExtensions.ClipToBounds="True"
               PointerMoved="Grid_PointerMoved"   
               PointerEntered="Grid_PointerEntered" 
               PointerExited="Grid_PointerExited"
@@ -56,7 +52,7 @@
                 </vlc:VideoView>
                 <!--弹幕-->
                 <Grid Tapped="Grid_Tapped">
-                    <controls1:Danmaku x:Name="DanmuControl" />
+                    <controls1:Danmaku x:Name="DanmuControl"/>
                 </Grid>
                 <!--亮度-->
                 <Grid x:Name="BrightnessShield" Tapped="Grid_Tapped" Background="#99000000" Opacity="0"></Grid>
@@ -69,31 +65,9 @@
                     <TextBlock x:Name="TxtToolTip" Foreground="Black" FontSize="20" Text=""></TextBlock>
                 </Border>
                 <Grid x:Name="control">
+                   
                     <Grid x:Name="StandardControl">
-                        <Grid  VerticalAlignment="Top">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-                            <Grid.Background>
-                                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                                    <GradientStop Color="#00000000" Offset="1"/>
-                                    <GradientStop Color="#C8000000" Offset="0"/>
-                                </LinearGradientBrush>
-                            </Grid.Background>
-                            <Button x:Name="btnBack" Click="btnBack_Click" Width="48" ToolTipService.ToolTip="返回" Background="Transparent" Height="48">
-                                <FontIcon FontSize="16" FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE112;" />
-                            </Button>
-                            <TextBlock Grid.Column="1" FontSize="16"  VerticalAlignment="Center" Text="{x:Bind Path=liveRoomVM.Title,Mode=OneWay}"></TextBlock>
-                            <StackPanel Grid.Column="2" Orientation="Horizontal">
-
-                                <Button x:Name="PlayTopBtnScreenshot" Click="PlayTopBtnScreenshot_Click" ToolTipService.ToolTip="截图" Width="48" Background="Transparent" Height="48">
-                                    <PathIcon Data="F1 M 20 7.421875 C 20 6.386719 19.160156 5.546875 18.125 5.546875 L 14.6875 5.546875 L 14.20311 4.261703 C 13.929672 3.531265 13.230476 3.046875 12.449226 3.046875 L 7.546883 3.046875 C 6.765633 3.046875 6.066399 3.531265 5.792961 4.261703 L 5.3125 5.546875 L 1.875 5.546875 C 0.839844 5.546875 0 6.386719 0 7.421875 L 0 18.671875 C 0 19.707031 0.839844 20.546875 1.875 20.546875 L 18.125 20.546875 C 19.160156 20.546875 20 19.707031 20 18.671875 Z M 14.6875 13.046875 C 14.6875 15.63282 12.585945 17.734375 10 17.734375 C 7.414055 17.734375 5.3125 15.63282 5.3125 13.046875 C 5.3125 10.46093 7.414055 8.359375 10 8.359375 C 12.585945 8.359375 14.6875 10.46093 14.6875 13.046875 Z M 13.4375 13.046875 C 13.4375 11.152344 11.894531 9.609375 10 9.609375 C 8.105469 9.609375 6.5625 11.152344 6.5625 13.046875 C 6.5625 14.941406 8.105469 16.484375 10 16.484375 C 11.894531 16.484375 13.4375 14.941406 13.4375 13.046875 Z " VerticalAlignment="Center" HorizontalAlignment="Center" />
-                                </Button>
-
-                            </StackPanel>
-                        </Grid>
+                        
                         <Grid Height="48" VerticalAlignment="Bottom">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
@@ -107,14 +81,15 @@
                                 </LinearGradientBrush>
                             </Grid.Background>
                             <StackPanel Orientation="Horizontal">
-                                <Button x:Name="PlayBtnPlay" Click="PlayBtnPlay_Click" Width="48" ToolTipService.ToolTip="播放" Background="Transparent" Height="48">
-                                    <PathIcon Data="{StaticResource ResourceKey=IconPlay}" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                              
+                                <Button x:Name="PlayBtnPlay" BorderThickness="0" Click="PlayBtnPlay_Click" Width="48" ToolTipService.ToolTip="播放" Background="Transparent" Height="48">
+                                    <FontIcon FontFamily="{StaticResource SegoeFluent}" Glyph="&#xE102;" />
                                 </Button>
-                                <Button x:Name="PlayBtnPause" Click="PlayBtnPause_Click" Visibility="Collapsed" Width="48" ToolTipService.ToolTip="暂停" Background="Transparent" Height="48">
-                                    <PathIcon Data="{StaticResource ResourceKey=IconPause}" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                <Button x:Name="PlayBtnPause" BorderThickness="0" Click="PlayBtnPause_Click" Visibility="Collapsed" Width="48" ToolTipService.ToolTip="暂停" Background="Transparent" Height="48">
+                                    <FontIcon FontFamily="{StaticResource SegoeFluent}" Glyph="&#xE103;" />
                                 </Button>
-                                <Button x:Name="PlayBtnSettingsDanmaku"  Width="48" ToolTipService.ToolTip="弹幕设置" Background="Transparent" Height="48">
-                                    <PathIcon Data="{StaticResource ResourceKey=IconSetting}" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                <Button x:Name="PlayBtnSettingsDanmaku" BorderThickness="0" Width="48" ToolTipService.ToolTip="弹幕设置" Background="Transparent" Height="48">
+                                    <FontIcon FontFamily="{StaticResource SegoeFluent}" Glyph="&#xE713;" />
                                     <Button.Flyout>
                                         <Flyout>
                                             <StackPanel Width="240">
@@ -133,7 +108,6 @@
                                                     <ComboBox.Items>
                                                         <ComboBoxItem>重叠</ComboBoxItem>
                                                         <ComboBoxItem>无边</ComboBoxItem>
-                                                        <ComboBoxItem>阴影</ComboBoxItem>
                                                         <ComboBoxItem>描边</ComboBoxItem>
                                                     </ComboBox.Items>
                                                 </ComboBox>
@@ -155,8 +129,8 @@
 
 
                             <StackPanel Grid.Column="2" Orientation="Horizontal">
-                                <Button x:Name="PlayBtnVolume"  Width="48" ToolTipService.ToolTip="音量" Background="Transparent" Height="48">
-                                    <PathIcon Data="{StaticResource ResourceKey=IconVolume}" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                <Button x:Name="PlayBtnVolume" BorderThickness="0" Width="48" ToolTipService.ToolTip="音量" Background="Transparent" Height="48">
+                                    <FontIcon FontFamily="{StaticResource SegoeFluent}" Glyph="&#xE15D;" />
                                     <Button.Flyout>
                                         <Flyout>
                                             <StackPanel>
@@ -183,20 +157,20 @@
                                       HorizontalContentAlignment="Center"  Foreground="White" BorderThickness="0"  VerticalAlignment="Center" Background="Transparent">
 
                                 </ComboBox>
-                                <Button x:Name="PlayBtnMinWindow" Click="PlayBtnMinWindow_Click" ToolTipService.ToolTip="小窗" Width="48" Background="Transparent" Height="48">
-                                    <PathIcon Data="{StaticResource ResourceKey=IconMiniWindow}" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                <Button x:Name="PlayBtnMinWindow" Click="PlayBtnMinWindow_Click" BorderThickness="0" ToolTipService.ToolTip="小窗" Width="48" Background="Transparent" Height="48">
+                                    <FontIcon FontFamily="{StaticResource SegoeFluent}" Glyph="&#xE17C;" />
                                 </Button>
-                                <Button x:Name="PlayBtnFullWindow" Click="PlayBtnFullWindow_Click" ToolTipService.ToolTip="铺满窗口" Width="48" Background="Transparent" Height="48">
-                                    <PathIcon Data="{StaticResource ResourceKey=IconFullWindow}" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                <Button x:Name="PlayBtnFullWindow" Click="PlayBtnFullWindow_Click" BorderThickness="0" ToolTipService.ToolTip="铺满窗口" Width="48" Background="Transparent" Height="48">
+                                    <FontIcon FontFamily="{StaticResource SegoeFluent}" Glyph="&#xE9A6;" />
                                 </Button>
-                                <Button x:Name="PlayBtnExitFullWindow" Click="PlayBtnExitFullWindow_Click" Visibility="Collapsed" ToolTipService.ToolTip="取消铺满窗口" Width="48" Background="Transparent" Height="48">
-                                    <PathIcon Data="{StaticResource ResourceKey=IconExitFullWindow}" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                <Button x:Name="PlayBtnExitFullWindow" Click="PlayBtnExitFullWindow_Click" BorderThickness="0" Visibility="Collapsed" ToolTipService.ToolTip="取消铺满窗口" Width="48" Background="Transparent" Height="48">
+                                    <FontIcon FontFamily="{StaticResource SegoeFluent}" Glyph="&#xE146;" />
                                 </Button>
-                                <Button x:Name="PlayBtnFullScreen" Click="PlayBtnFullScreen_Click" ToolTipService.ToolTip="全屏" Width="48" Background="Transparent" Height="48">
-                                    <PathIcon Data="{StaticResource ResourceKey=IconFullScreen}" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                <Button x:Name="PlayBtnFullScreen" Click="PlayBtnFullScreen_Click" BorderThickness="0" ToolTipService.ToolTip="全屏" Width="48" Background="Transparent" Height="48">
+                                    <FontIcon FontFamily="{StaticResource SegoeFluent}" Glyph="&#xE1D9;" />
                                 </Button>
-                                <Button x:Name="PlayBtnExitFullScreen" Click="PlayBtnExitFullScreen_Click" Visibility="Collapsed" ToolTipService.ToolTip="退出全屏" Width="48" Background="Transparent" Height="48">
-                                    <PathIcon Data="{StaticResource ResourceKey=IconExitFullScreen}" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                <Button x:Name="PlayBtnExitFullScreen" Click="PlayBtnExitFullScreen_Click" BorderThickness="0" Visibility="Collapsed" ToolTipService.ToolTip="退出全屏" Width="48" Background="Transparent" Height="48">
+                                    <FontIcon FontFamily="{StaticResource SegoeFluent}" Glyph="&#xE1D8;" />
                                 </Button>
                             </StackPanel>
                         </Grid>
@@ -228,6 +202,11 @@
             </Grid>
             <Grid Grid.Row="1" Background="{ThemeResource NavigationViewTopPaneBackground}">
                 <CommandBar DefaultLabelPosition="Right" HorizontalAlignment="Left">
+                    <AppBarButton Label="截图" x:Name="PlayTopBtnScreenshot" BorderThickness="0" Click="PlayTopBtnScreenshot_Click" >
+                        <AppBarButton.Icon>
+                            <FontIcon FontFamily="{StaticResource SegoeFluent}" Glyph="&#xE722;" />
+                        </AppBarButton.Icon>
+                    </AppBarButton>
                     <AppBarButton Label="收藏" 
                               x:Name="BottomBtnAddFavorite" 
                               Command="{x:Bind Path=liveRoomVM.AddFavoriteCommand}"
@@ -272,12 +251,13 @@
                     </AppBarButton>
                 </CommandBar>
             </Grid>
-            <Grid x:Name="GridRight" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Grid.Column="1" Grid.RowSpan="2">
+            
+            <Grid x:Name="GridRight" Margin="8 0" Grid.Column="1" Grid.RowSpan="2">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
-                <Grid Padding="8" BorderThickness="0 0 0 1" BorderBrush="#33808080">
+                <Grid Padding="8" CornerRadius="8" BorderThickness="1"  BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" Background="{ThemeResource LayerFillColorDefaultBrush}" >
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition/>
@@ -285,7 +265,7 @@
                     </Grid.ColumnDefinitions>
                     <PersonPicture Width="48" ProfilePicture="{x:Bind Path=liveRoomVM.Photo,Mode=OneWay}" Height="48" Background="Blue"></PersonPicture>
                     <StackPanel Grid.Column="1" VerticalAlignment="Center" Orientation="Vertical" Margin="8 0 0 0">
-                        <TextBlock Text="{x:Bind Path=liveRoomVM.Name,Mode=OneWay}"></TextBlock>
+                        <TextBlock Text="{x:Bind Path=liveRoomVM.Name,Mode=OneWay}" ToolTipService.ToolTip="{x:Bind Path=liveRoomVM.Name,Mode=OneWay}" TextTrimming="CharacterEllipsis" ></TextBlock>
                         <StackPanel Orientation="Horizontal" Margin="0 4 0 0">
                             <Image Width="18" Height="18" Margin="0 0 4 0" Source="{x:Bind Path=liveRoomVM.SiteLogo,Mode=OneWay}"></Image>
                             <TextBlock  VerticalAlignment="Center" Opacity=".6" FontSize="12" Text="{x:Bind Path=liveRoomVM.SiteName,Mode=OneWay}"></TextBlock>
@@ -303,7 +283,10 @@
                                Opacity=".6"></TextBlock>
                     </StackPanel>
                 </Grid>
-                <Pivot Grid.Row="1">
+                <Grid Grid.Row="1" CornerRadius="8 8 0 0" Margin="0 4 0 0" BorderThickness="1"  BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" Background="{ThemeResource LayerFillColorDefaultBrush}">
+                    
+               
+                <Pivot >
                     <PivotItem Margin="0">
                         <PivotItem.Header>
                             <TextBlock FontSize="15">互动</TextBlock>
@@ -374,7 +357,8 @@
                             </StackPanel>
                         </ScrollViewer>
                     </PivotItem>
-                </Pivot>
+                    </Pivot>
+                </Grid>
             </Grid>
 
             <controls:GridSplitter

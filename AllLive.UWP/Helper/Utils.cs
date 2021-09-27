@@ -101,7 +101,7 @@ namespace AllLive.UWP.Helper
                 var url = $"https://cdn.jsdelivr.net/gh/xiaoyaocz/AllLive@master/AllLive.UWP/version.json?ts{new Random().Next(0,99999) }";
                 var result = await HttpUtil.GetString(url);
                 var ver = JsonConvert.DeserializeObject<NewVersion>(result);
-                var num = $"{ SystemInformation.ApplicationVersion.Major }{ SystemInformation.ApplicationVersion.Minor.ToString("00")}{ SystemInformation.ApplicationVersion.Build.ToString("00")}";
+                var num = $"{ SystemInformation.Instance.ApplicationVersion.Major }{ SystemInformation.Instance.ApplicationVersion.Minor.ToString("00")}{ SystemInformation.Instance.ApplicationVersion.Build.ToString("00")}";
                 var v = int.Parse(num);
                 if (ver.versionCode > v)
                 {

@@ -86,6 +86,7 @@ watch_time DATETIME);
             {
                 favoriteItems.Add(new FavoriteItem()
                 {
+                    ID= reader.GetInt32(0),
                     RoomID = reader.GetString(4),
                     Photo = reader.GetString(3),
                     SiteName = reader.GetString(2),
@@ -161,6 +162,7 @@ watch_time DATETIME);
             {
                 favoriteItems.Add(new HistoryItem()
                 {
+                    ID= reader.GetInt32(0),
                     RoomID = reader.GetString(4),
                     Photo = reader.GetString(3),
                     SiteName = reader.GetString(2),

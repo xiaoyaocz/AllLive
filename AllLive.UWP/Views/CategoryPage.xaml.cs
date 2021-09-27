@@ -1,4 +1,5 @@
 ﻿using AllLive.Core.Models;
+using AllLive.UWP.Helper;
 using AllLive.UWP.Models;
 using AllLive.UWP.ViewModels;
 using System;
@@ -45,11 +46,16 @@ namespace AllLive.UWP.Views
         private void GridView_ItemClick(object sender, ItemClickEventArgs e)
         {
             var item = e.ClickedItem as LiveSubCategory;
-            (Window.Current.Content as Frame).Navigate(typeof(CategoryDetailPage), new PageArgs()
+            MessageCenter.NavigatePage(typeof(CategoryDetailPage), new PageArgs()
             {
                 Site = (pivot.SelectedItem as CategoryItemVM).site.LiveSite,
                 Data = item
             });
+            //(Window.Current.Content as Frame).Navigate(typeof(CategoryDetailPage), new PageArgs()
+            //{
+            //    Site = (pivot.SelectedItem as CategoryItemVM).site.LiveSite,
+            //    Data = item
+            //});
         }
     }
 }

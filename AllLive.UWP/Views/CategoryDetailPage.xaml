@@ -9,27 +9,22 @@
     xmlns:viewmodels="using:AllLive.UWP.ViewModels" 
     xmlns:controls="using:AllLive.UWP.Controls" 
     xmlns:models="using:AllLive.Core.Models" 
-    xmlns:toolkit="using:Microsoft.Toolkit.Uwp.UI.Controls" 
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    xmlns:toolkit="using:Microsoft.Toolkit.Uwp.UI.Controls" >
 
-    <Grid>
+    <Grid >
         <Grid.RowDefinitions>
-            <RowDefinition Height="48"/>
+            <RowDefinition Height="0"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <Grid Background="{ThemeResource TopPaneBackground}">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
-            <Button x:Name="btnBack" Click="btnBack_Click" Background="Transparent" Height="48" Width="48">
-                <SymbolIcon Symbol="Back"></SymbolIcon>
-            </Button>
-            <TextBlock x:Name="txtTitle" Margin="8 0" Grid.Column="1" VerticalAlignment="Center" ></TextBlock>
-        </Grid>
-        <Grid Grid.Row="1">
-            <Grid>
-                <controls:MyAdaptiveGridView
+        
+        <Grid Background="{ThemeResource LayerFillColorDefaultBrush}" 
+              BorderThickness="1" 
+              Grid.Row="1"
+              BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+              CornerRadius="8 8 0 0"
+              Padding="0 4"
+              >
+            <controls:MyAdaptiveGridView
                             OneRowModeEnabled="False"
                             ItemClick="MyAdaptiveGridView_ItemClick"
                             StretchContentForSingleRow="False"
@@ -41,33 +36,33 @@
                             LoadMoreBottomOffset="0"
                             ItemTemplate="{StaticResource RoomItemTemplate}"
                             SelectionMode="None" IsItemClickEnabled="True">
-                    <controls:MyAdaptiveGridView.ItemContainerStyle >
-                        <Style TargetType="GridViewItem" BasedOn="{StaticResource GridViewItemCornerRadiusStyle}">
-                            <Setter Property="Margin" Value="4"></Setter>
-                            <Setter Property="BorderThickness" Value="1"></Setter>
-                            <Setter Property="BorderBrush" Value="{ThemeResource CardStrokeColorDefaultBrush}"></Setter>
-                            <Setter Property="Background" Value="{ThemeResource ButtonBackground}"></Setter>
-                            <Setter Property="HorizontalContentAlignment" Value="Stretch"></Setter>
-                        </Style>
-                    </controls:MyAdaptiveGridView.ItemContainerStyle>
-                    <controls:MyAdaptiveGridView.Footer>
-                        <Grid>
-                            <HyperlinkButton Command="{x:Bind Path=categoryDetailVM.LoadMoreCommand}" HorizontalAlignment="Center" Visibility="{x:Bind Path=categoryDetailVM.CanLoadMore,Mode=OneWay}">
-                                <TextBlock>加载更多</TextBlock>
-                            </HyperlinkButton>
-                            <ProgressRing  IsActive="True" Visibility="{x:Bind Path=categoryDetailVM.Loading,Mode=OneWay}"  VerticalAlignment="Center" Width="24"></ProgressRing>
-                        </Grid>
-                    </controls:MyAdaptiveGridView.Footer>
-                </controls:MyAdaptiveGridView>
+                <controls:MyAdaptiveGridView.ItemContainerStyle >
+                    <Style TargetType="GridViewItem" BasedOn="{StaticResource GridViewItemCornerRadiusStyle}">
+                        <Setter Property="Margin" Value="4"></Setter>
+                        <Setter Property="BorderThickness" Value="1"></Setter>
+                        <Setter Property="BorderBrush" Value="{ThemeResource CardStrokeColorDefaultBrush}"></Setter>
+                        <Setter Property="Background" Value="{ThemeResource ButtonBackground}"></Setter>
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch"></Setter>
+                    </Style>
+                </controls:MyAdaptiveGridView.ItemContainerStyle>
+                <controls:MyAdaptiveGridView.Footer>
+                    <Grid>
+                        <HyperlinkButton Command="{x:Bind Path=categoryDetailVM.LoadMoreCommand}" HorizontalAlignment="Center" Visibility="{x:Bind Path=categoryDetailVM.CanLoadMore,Mode=OneWay}">
+                            <TextBlock>加载更多</TextBlock>
+                        </HyperlinkButton>
+                        <ProgressRing  IsActive="True" Visibility="{x:Bind Path=categoryDetailVM.Loading,Mode=OneWay}"  VerticalAlignment="Center" Width="24"></ProgressRing>
+                    </Grid>
+                </controls:MyAdaptiveGridView.Footer>
+            </controls:MyAdaptiveGridView>
 
-                <Button Command="{x:Bind Path=categoryDetailVM.RefreshCommand}" Height="48" Width="48" CornerRadius="24" Visibility="{x:Bind Path=categoryDetailVM.Loading,Mode=OneWay,Converter={StaticResource displayConvert}}" Padding="0" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="12" RenderTransformOrigin="0.5,0.5" >
-                  
+            <Button Command="{x:Bind Path=categoryDetailVM.RefreshCommand}" Height="48" Width="48" CornerRadius="24" Visibility="{x:Bind Path=categoryDetailVM.Loading,Mode=OneWay,Converter={StaticResource displayConvert}}" Padding="0" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="12" RenderTransformOrigin="0.5,0.5" >
 
-                    <FontIcon FontFamily="{StaticResource SegoeFluent}" Glyph="&#xE72C;" />
 
-                </Button>
-                <TextBlock Visibility="{x:Bind Path=categoryDetailVM.IsEmpty,Mode=OneWay}" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="Gray">什么都没有~</TextBlock>
-            </Grid>
+                <FontIcon FontFamily="{StaticResource SegoeFluent}" Glyph="&#xE72C;" />
+
+            </Button>
+            <TextBlock Visibility="{x:Bind Path=categoryDetailVM.IsEmpty,Mode=OneWay}" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="Gray">什么都没有~</TextBlock>
         </Grid>
     </Grid>
+
 </Page>

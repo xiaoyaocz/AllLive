@@ -36,6 +36,7 @@ namespace AllLive.UWP.Views
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
+            MessageCenter.ChangeTitle("直播间搜索");
             if (e.NavigationMode == NavigationMode.New)
             {
                 if (e.Parameter != null)
