@@ -40,6 +40,8 @@ AllLive.ConsoleApp -d [URL]
 
 UWP客户端，简单看直播。
 
+[微软商店下载](https://www.microsoft.com/store/apps/9N1TWG2G84VD)
+
 ![UWP1](https://raw.githubusercontent.com/xiaoyaocz/AllLive/master/Screenshots/UWP1.png)
 
 
