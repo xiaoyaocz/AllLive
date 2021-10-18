@@ -2,6 +2,7 @@
 using AllLive.UWP.ViewModels;
 using Microsoft.Toolkit.Uwp.Helpers;
 using Microsoft.UI.Xaml.Controls;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -146,11 +147,11 @@ namespace AllLive.UWP.Views
             if (!settingVM.ShieldWords.Contains(LiveDanmuSettingTxtWord.Text))
             {
                 settingVM.ShieldWords.Add(LiveDanmuSettingTxtWord.Text);
-                SettingHelper.SetValue(SettingHelper.LiveDanmaku.SHIELD_WORD, settingVM.ShieldWords);
+                SettingHelper.SetValue(SettingHelper.LiveDanmaku.SHIELD_WORD,JsonConvert.SerializeObject( settingVM.ShieldWords));
             }
 
             LiveDanmuSettingTxtWord.Text = "";
-            SettingHelper.SetValue(SettingHelper.LiveDanmaku.SHIELD_WORD, settingVM.ShieldWords);
+            SettingHelper.SetValue(SettingHelper.LiveDanmaku.SHIELD_WORD, JsonConvert.SerializeObject(settingVM.ShieldWords));
         }
 
         private async void BtnGithub_Click(object sender, RoutedEventArgs e)

@@ -1,4 +1,5 @@
 ﻿using AllLive.UWP.Helper;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -17,10 +18,7 @@ namespace AllLive.UWP.ViewModels
         public ObservableCollection<string> ShieldWords { get; set; }
         public void LoadShieldSetting()
         {
-    
-            ShieldWords = SettingHelper.GetValue<ObservableCollection<string>>(SettingHelper.LiveDanmaku.SHIELD_WORD, new ObservableCollection<string>() { });
-
-          
+            ShieldWords =JsonConvert.DeserializeObject<ObservableCollection<string>>( SettingHelper.GetValue<string>(SettingHelper.LiveDanmaku.SHIELD_WORD,"[]"));
         }
     }
 }
