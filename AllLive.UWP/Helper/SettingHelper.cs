@@ -97,7 +97,7 @@ namespace AllLive.UWP.Helper
             /// <summary>
             /// 关键词屏蔽 ObservableCollection<string>
             /// </summary>
-            public const string SHIELD_WORD = "LiveDanmuShieldWordString";
+            public const string SHIELD_WORD = "LiveDanmuShieldWordString1";
 
             /// <summary>
             /// 直播弹幕清理

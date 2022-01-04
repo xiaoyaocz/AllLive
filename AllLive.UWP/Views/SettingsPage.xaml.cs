@@ -134,7 +134,7 @@ namespace AllLive.UWP.Views
         {
             var word = (sender as AppBarButton).DataContext as string;
             settingVM.ShieldWords.Remove(word);
-            SettingHelper.SetValue(SettingHelper.LiveDanmaku.SHIELD_WORD, settingVM.ShieldWords);
+            SettingHelper.SetValue(SettingHelper.LiveDanmaku.SHIELD_WORD, JsonConvert.SerializeObject(settingVM.ShieldWords));
         }
 
         private void LiveDanmuSettingTxtWord_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)

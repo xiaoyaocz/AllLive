@@ -30,6 +30,7 @@ using Windows.UI;
 using Windows.ApplicationModel.Core;
 using LibVLCSharp.Shared;
 using System.Diagnostics;
+using Newtonsoft.Json;
 
 // https://go.microsoft.com/fwlink/?LinkId=234238 上介绍了“空白页”项模板
 
@@ -721,7 +722,7 @@ namespace AllLive.UWP.Views
         {
             var word = (sender as AppBarButton).DataContext as string;
             settingVM.ShieldWords.Remove(word);
-            SettingHelper.SetValue(SettingHelper.LiveDanmaku.SHIELD_WORD, settingVM.ShieldWords);
+            SettingHelper.SetValue(SettingHelper.LiveDanmaku.SHIELD_WORD, JsonConvert.SerializeObject( settingVM.ShieldWords));
         }
 
         private void LiveDanmuSettingTxtWord_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
@@ -734,11 +735,11 @@ namespace AllLive.UWP.Views
             if (!settingVM.ShieldWords.Contains(LiveDanmuSettingTxtWord.Text))
             {
                 settingVM.ShieldWords.Add(LiveDanmuSettingTxtWord.Text);
-                SettingHelper.SetValue(SettingHelper.LiveDanmaku.SHIELD_WORD, settingVM.ShieldWords);
+                SettingHelper.SetValue(SettingHelper.LiveDanmaku.SHIELD_WORD, JsonConvert.SerializeObject(settingVM.ShieldWords));
             }
 
             LiveDanmuSettingTxtWord.Text = "";
-            SettingHelper.SetValue(SettingHelper.LiveDanmaku.SHIELD_WORD, settingVM.ShieldWords);
+            SettingHelper.SetValue(SettingHelper.LiveDanmaku.SHIELD_WORD, JsonConvert.SerializeObject(settingVM.ShieldWords));
         }
 
 
