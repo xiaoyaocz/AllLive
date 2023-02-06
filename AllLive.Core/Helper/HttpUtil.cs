@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using System.Net.Http;
+using System.Net;
 
 namespace AllLive.Core.Helper
 {
@@ -10,7 +11,11 @@ namespace AllLive.Core.Helper
     {
         public static async Task<string> GetString(string url,IDictionary<string,string> headers=null)
         {
-            using (HttpClient httpClient=new HttpClient())
+            HttpClientHandler httpClientHandler = new HttpClientHandler
+            {
+                AutomaticDecompression = DecompressionMethods.GZip| DecompressionMethods.Deflate
+            };
+            using (HttpClient httpClient=new HttpClient(httpClientHandler))
             {
                 if (headers != null)
                 {

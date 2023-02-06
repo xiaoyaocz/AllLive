@@ -52,7 +52,7 @@ namespace AllLive.Core
             {
                 subs.Add(new LiveSubCategory()
                 {
-                    Pic = $"https://huyaimg.msstatic.com/cdnimage/game/{ item["gid"].ToString()}-MS.jpg",
+                    Pic = $"https://huyaimg.msstatic.com/cdnimage/game/{item["gid"].ToString()}-MS.jpg",
                     ID = item["gid"].ToString(),
                     ParentID = id,
                     Name = item["gameFullName"].ToString(),
@@ -76,12 +76,17 @@ namespace AllLive.Core
                 {
                     cover += "?x-oss-process=style/w338_h190&";
                 }
+                var title = item["roomName"]?.ToString();
+                if (string.IsNullOrEmpty(title))
+                {
+                    title = item["introduction"]?.ToString() ?? "";
+                }
                 categoryResult.Rooms.Add(new LiveRoomItem()
                 {
                     Cover = cover,
                     Online = item["totalCount"].ToInt32(),
                     RoomID = item["profileRoom"].ToString(),
-                    Title = item["roomName"].ToString(),
+                    Title = title,
                     UserName = item["nick"].ToString(),
                 });
             }
@@ -105,12 +110,17 @@ namespace AllLive.Core
                 {
                     cover += "?x-oss-process=style/w338_h190&";
                 }
+                var title = item["roomName"]?.ToString();
+                if (string.IsNullOrEmpty(title))
+                {
+                    title = item["introduction"]?.ToString()??"";
+                }
                 categoryResult.Rooms.Add(new LiveRoomItem()
                 {
                     Cover = cover,
                     Online = item["totalCount"].ToInt32(),
                     RoomID = item["profileRoom"].ToString(),
-                    Title = item["roomName"].ToString(),
+                    Title = title,
                     UserName = item["nick"].ToString(),
                 });
             }
@@ -124,12 +134,18 @@ namespace AllLive.Core
             var result = await HttpUtil.GetString($"https://m.huya.com/{roomId}", headers);
             var jsonStr = Regex.Match(result, @"window\.HNF_GLOBAL_INIT.=.\{(.*?)\}.</script>", RegexOptions.Singleline).Groups[1].Value;
             var jsonObj = JObject.Parse($"{{{jsonStr}}}");
+          
+            var title = jsonObj["roomInfo"]["tLiveInfo"]["sRoomName"].ToString();
+            if (string.IsNullOrEmpty(title))
+            {
+                title = jsonObj["roomInfo"]["tLiveInfo"]["sIntroduction"].ToString();
+            }
             return new LiveRoomDetail()
             {
                 Cover = jsonObj["roomInfo"]["tLiveInfo"]["sScreenshot"].ToString(),
                 Online = jsonObj["roomInfo"]["tLiveInfo"]["lTotalCount"].ToInt32(),
                 RoomID = jsonObj["roomInfo"]["tLiveInfo"]["lProfileRoom"].ToString(),
-                Title = jsonObj["roomInfo"]["tLiveInfo"]["sRoomName"].ToString(),
+                Title = title,
                 UserName = jsonObj["roomInfo"]["tProfileInfo"]["sNick"].ToString(),
                 UserAvatar = jsonObj["roomInfo"]["tProfileInfo"]["sAvatar180"].ToString(),
                 Introduction = jsonObj["roomInfo"]["tLiveInfo"]["sIntroduction"].ToString(),
@@ -151,7 +167,7 @@ namespace AllLive.Core
                 Rooms = new List<LiveRoomItem>(),
 
             };
-            var result = await HttpUtil.GetUtf8String($"https://search.cdn.huya.com/?m=Search&do=getSearchContent&q={ Uri.EscapeDataString(keyword)}&uid=0&v=4&typ=-5&livestate=0&rows=20&start={(page - 1) * 20}");
+            var result = await HttpUtil.GetUtf8String($"https://search.cdn.huya.com/?m=Search&do=getSearchContent&q={Uri.EscapeDataString(keyword)}&uid=0&v=4&typ=-5&livestate=0&rows=20&start={(page - 1) * 20}");
             var obj = JObject.Parse(result);
 
             foreach (var item in obj["response"]["3"]["docs"])
@@ -176,9 +192,10 @@ namespace AllLive.Core
         public Task<List<LivePlayQuality>> GetPlayQuality(LiveRoomDetail roomDetail)
         {
             List<LivePlayQuality> qualities = new List<LivePlayQuality>();
-            var url = roomDetail.Data.ToString();
-            //四条线路
+            var url = GetRealUrl(roomDetail.Data.ToString());
+            //五条线路
             var lines = new List<string>() {
+                Regex.Replace(url, @".*?\.hls\.huya\.com", "https://hw.hls.huya.com"),
                 Regex.Replace(url, @".*?\.hls\.huya\.com", "https://tx.hls.huya.com"),
                 Regex.Replace(url, @".*?\.hls\.huya\.com", "https://bd.hls.huya.com"),
                 Regex.Replace(url, @".*?\.hls\.huya\.com", "https://al.hls.huya.com"),
@@ -224,8 +241,49 @@ namespace AllLive.Core
         {
             return Task.FromResult(qn.Data as List<string>);
         }
+        // https://github.com/wbt5/real-url/blob/master/huya.py
+        private string GetRealUrl(string e)
+        {
+
+            var i = e.Split('?')[0];
+            var b = e.Split('?')[1];
+
+            var r = i.Split('/');
+            var s = Regex.Replace(r.Last(), @".(flv|m3u8)", "");
+       
+            var _c = b.Split("&".ToCharArray(), count:4);
+            var c =new List<string>();
+            foreach (var item in _c)
+            {
+                if (!string.IsNullOrEmpty(item))
+                {
+                    c.Add(item);
+                }
+            }
+
+            Dictionary<string, string> n = new Dictionary<string, string>();
+            foreach (var item in c)
+            {
+                var split= item.Split('=');
+                n.Add(split[0], split[1].Split('&')[0]);
+            }
+           
+            var fm = Uri.UnescapeDataString(n["fm"]);
+           
+            var u = Encoding.UTF8.GetString(Convert.FromBase64String(fm));
+            var p = u.Split('_')[0];
+           
+            var f = (Utils.GetTimestamp() * 1e7).ToString();
+            var l = n["wsTime"];
+            var t = "0";
+            var h =string.Join("_",new string[] { p, t, s, f, l }) ;
+            var m =Utils.ToMD5(h);
+            var y = c.Last();
+            var url = $"{i}?wsSecret={m}&wsTime={l}&u={t}&seqid={f}&{y}";
+            //    return url;
+            return url.Replace("&ctype=tars_mobile","");
+        }
 
 
-
-    }
+}
 }
