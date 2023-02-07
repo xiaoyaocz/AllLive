@@ -34,7 +34,7 @@ namespace AllLive.UWP.Views
             settingVM = new SettingVM();
             this.InitializeComponent();
             LoadUI();
-           
+
         }
         private void LoadUI()
         {
@@ -107,7 +107,7 @@ namespace AllLive.UWP.Views
                 });
             });
             //弹幕开关
-            var state = SettingHelper.GetValue<bool>(SettingHelper.LiveDanmaku.SHOW, true) ;
+            var state = SettingHelper.GetValue<bool>(SettingHelper.LiveDanmaku.SHOW, true);
             DanmuSettingState.IsOn = state;
             DanmuSettingState.Toggled += new RoutedEventHandler((e, args) =>
             {
@@ -147,7 +147,7 @@ namespace AllLive.UWP.Views
             if (!settingVM.ShieldWords.Contains(LiveDanmuSettingTxtWord.Text))
             {
                 settingVM.ShieldWords.Add(LiveDanmuSettingTxtWord.Text);
-                SettingHelper.SetValue(SettingHelper.LiveDanmaku.SHIELD_WORD,JsonConvert.SerializeObject( settingVM.ShieldWords));
+                SettingHelper.SetValue(SettingHelper.LiveDanmaku.SHIELD_WORD, JsonConvert.SerializeObject(settingVM.ShieldWords));
             }
 
             LiveDanmuSettingTxtWord.Text = "";
@@ -156,7 +156,14 @@ namespace AllLive.UWP.Views
 
         private async void BtnGithub_Click(object sender, RoutedEventArgs e)
         {
-           await Launcher.LaunchUriAsync(new Uri("https://github.com/xiaoyaocz/AllLive"));
+            await Launcher.LaunchUriAsync(new Uri("https://github.com/xiaoyaocz/AllLive"));
+        }
+
+        private async void BtnLog_Click(object sender, RoutedEventArgs e)
+        {
+            Windows.Storage.StorageFolder storageFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
+            var logFolder = await storageFolder.CreateFolderAsync("log", Windows.Storage.CreationCollisionOption.OpenIfExists);
+            await Launcher.LaunchFolderAsync(logFolder);
         }
     }
 }

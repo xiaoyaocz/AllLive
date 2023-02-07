@@ -116,7 +116,11 @@
                                                         <TextBlock >字体加粗</TextBlock>
                                                     </ToggleSwitch.Header>
                                                 </ToggleSwitch>
-
+                                                <ToggleSwitch x:Name="DanmuSettingColourful" Margin="0 8 0 0" >
+                                                    <ToggleSwitch.Header>
+                                                        <TextBlock >彩色弹幕</TextBlock>
+                                                    </ToggleSwitch.Header>
+                                                </ToggleSwitch>
 
 
                                             </StackPanel>

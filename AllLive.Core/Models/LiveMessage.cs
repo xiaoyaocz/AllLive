@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Text;
 
 namespace AllLive.Core.Models
@@ -38,5 +39,9 @@ namespace AllLive.Core.Models
         /// 单Type=Online时，Data为人气值(long)
         /// </summary>
         public object Data { get; set; }
+        /// <summary>
+        /// 弹幕颜色
+        /// </summary>
+        public Color Color { get; set; }= Color.White;
     }
 }

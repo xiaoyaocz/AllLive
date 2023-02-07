@@ -86,6 +86,10 @@ namespace AllLive.UWP.Helper
             /// </summary>
             public const string BOLD = "LiveDanmuBold";
             /// <summary>
+            /// 彩色弹幕 bool
+            /// </summary>
+            public const string COLOURFUL = "LiveDanmuColourful";
+            /// <summary>
             /// 弹幕边框样式 int
             /// </summary>
             public const string BORDER_STYLE = "LiveDanmuStyle";

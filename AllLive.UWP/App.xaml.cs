@@ -35,7 +35,7 @@ namespace AllLive.UWP
         {
 
             this.InitializeComponent();
-           
+
             App.Current.UnhandledException += App_UnhandledException;
             this.Suspending += OnSuspending;
         }
@@ -81,8 +81,9 @@ namespace AllLive.UWP
         {
             //初始化数据库
             await DatabaseHelper.InitializeDatabase();
+            //初始化弹幕DPI
+            NSDanmaku.Controls.Danmaku.InitDanmakuDpi();
 
-            
             Frame rootFrame = Window.Current.Content as Frame;
 
             // 不要在窗口已包含内容时重复应用程序初始化，
@@ -94,7 +95,7 @@ namespace AllLive.UWP
 
                 rootFrame.NavigationFailed += OnNavigationFailed;
                 rootFrame.Navigated += RootFrame_Navigated;
-             
+
                 if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
                 {
                     //TODO: 从之前挂起的应用程序加载状态
@@ -121,13 +122,13 @@ namespace AllLive.UWP
         }
 
 
-      
+
         public static void SetTitleBar()
         {
             UISettings uISettings = new UISettings();
             var color = TitltBarButtonColor(uISettings);
             ApplicationViewTitleBar titleBar = ApplicationView.GetForCurrentView().TitleBar;
-            
+
             titleBar.ButtonBackgroundColor = Colors.Transparent;
             titleBar.ButtonInactiveBackgroundColor = Colors.Transparent;
             titleBar.ButtonForegroundColor = color;
@@ -135,7 +136,7 @@ namespace AllLive.UWP
             titleBar.BackgroundColor = Colors.Transparent;
             uISettings.ColorValuesChanged += new TypedEventHandler<UISettings, object>((setting, args) =>
             {
-              
+
                 titleBar.ButtonForegroundColor = TitltBarButtonColor(uISettings);
                 titleBar.ButtonBackgroundColor = Colors.Transparent;
                 titleBar.BackgroundColor = Colors.Transparent;
@@ -150,11 +151,11 @@ namespace AllLive.UWP
             if (settingTheme != 0)
             {
                 color = settingTheme == 1 ? Colors.Black : Colors.White;
-              
+
             }
             return color;
         }
-      
+
 
         private void RootFrame_Navigated(object sender, NavigationEventArgs e)
         {

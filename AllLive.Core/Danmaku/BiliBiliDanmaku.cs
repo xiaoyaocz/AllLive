@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -150,6 +151,7 @@ namespace AllLive.Core.Danmaku
                     if (obj["info"] != null && obj["info"].ToArray().Length != 0)
                     {
                         var message = obj["info"][1].ToString();
+                        var color = obj["info"][0][3].ToInt32();
                         if (obj["info"][2] != null && obj["info"][2].ToArray().Length != 0)
                         {
                             var username = obj["info"][2][1].ToString();
@@ -157,7 +159,8 @@ namespace AllLive.Core.Danmaku
                             {
                                 Type = LiveMessageType.Chat,
                                 Message = message,
-                                UserName = username
+                                UserName = username,
+                                Color = color==0?Color.White: Utils.NumberToColor(color),
                             });
                         }
                     }

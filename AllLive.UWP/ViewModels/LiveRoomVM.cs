@@ -19,7 +19,7 @@ namespace AllLive.UWP.ViewModels
     {
         SettingVM settingVM;
         public event EventHandler<string> ChangedPlayUrl;
-        public event EventHandler<string> AddDanmaku;
+        public event EventHandler<LiveMessage> AddDanmaku;
         public LiveRoomVM(SettingVM settingVM)
         {
             this.settingVM = settingVM;
@@ -195,7 +195,13 @@ namespace AllLive.UWP.ViewModels
                 await LiveDanmaku.Start(result.DanmakuData);
                 if (detail.Status)
                 {
-                    Qualities = await Site.GetPlayQuality(result);
+                    var qualities = await Site.GetPlayQuality(result);
+                    if (Site.Name == "虎牙直播")
+                    {
+                        //HDR无法播放
+                        qualities = qualities.Where(x => !x.Quality.Contains("HDR")).ToList();
+                    }
+                    Qualities=qualities;
                     if (Qualities != null && Qualities.Count > 0)
                     {
                         CurrentQuality = Qualities[0];
@@ -302,7 +308,8 @@ namespace AllLive.UWP.ViewModels
                 {
                     if (Messages.Count >= MessageCleanCount)
                     {
-                        Messages.Clear();
+                        Messages.RemoveAt(0);
+                        //Messages.Clear();
                     }
                     if (settingVM.ShieldWords != null && settingVM.ShieldWords.Count > 0)
                     {
@@ -310,7 +317,7 @@ namespace AllLive.UWP.ViewModels
                     }
 
                     Messages.Add(e);
-                    AddDanmaku?.Invoke(this, e.Message);
+                    AddDanmaku?.Invoke(this, e);
                     return;
                 }
             });

@@ -53,11 +53,12 @@
                       BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" 
                       CornerRadius="4">
                     <StackPanel VerticalAlignment="Center">
-                        <TextBlock>新窗口播放</TextBlock>
+                        <TextBlock>新窗口播放(暂不可用)</TextBlock>
                         <TextBlock FontSize="12" Foreground="Gray">使用新窗口打开直播间</TextBlock>
                     </StackPanel>
                     <ToggleSwitch x:Name="swNewWindow"
                                   MinWidth="72"
+                                  IsEnabled="False"
                                   VerticalAlignment="Center" 
                                   HorizontalAlignment="Right"></ToggleSwitch>
                 </Grid>
@@ -166,6 +167,7 @@
                         <TextBlock FontSize="12" Foreground="Gray">版本: <Run x:Name="version"/></TextBlock>
                     </StackPanel>
                     <StackPanel HorizontalAlignment="Right" VerticalAlignment="Center" Orientation="Horizontal">
+                        <Button x:Name="BtnLog" Margin="8 0" Click="BtnLog_Click">运行日志</Button>
                         <Button x:Name="BtnGithub" Click="BtnGithub_Click">项目主页</Button>
                     </StackPanel>
                 </Grid>

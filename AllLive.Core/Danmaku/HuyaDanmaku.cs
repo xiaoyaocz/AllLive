@@ -1,9 +1,11 @@
-﻿using AllLive.Core.Interface;
+﻿using AllLive.Core.Helper;
+using AllLive.Core.Interface;
 using AllLive.Core.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -84,11 +86,13 @@ namespace AllLive.Core.Danmaku
                         messageNotice.ReadFrom(new TarsInputStream(wSPushMessage.Msg));
                         var uname = messageNotice.UserInfo.NickName;
                         var content = messageNotice.Content;
+                        var color = messageNotice.BulletFormat.FontColor;
                         NewMessage?.Invoke(this, new LiveMessage()
                         {
                             Type = LiveMessageType.Chat,
                             Message = content,
                             UserName = uname,
+                            Color= color <= 0 ? Color.White : Utils.NumberToColor(color),
                         });
 
                     }
@@ -225,16 +229,39 @@ namespace AllLive.Core.Danmaku
     {
         public HYSender UserInfo = new HYSender();
         public string Content = "";
+        public HYBulletFormat BulletFormat = new HYBulletFormat();
         public override void ReadFrom(TarsInputStream _is)
         {
             UserInfo = (HYSender)_is.Read(UserInfo, 0, false);
             Content = _is.Read(Content, 3, false);
+            BulletFormat = (HYBulletFormat)_is.Read(BulletFormat, 6, false);
         }
         public override void WriteTo(TarsOutputStream _os)
         {
             _os.Write(UserInfo, 0);
             _os.Write(Content, 3);
-
+            _os.Write(BulletFormat, 6);
+        }
+    }
+    public class HYBulletFormat : TarsStruct
+    {
+        public int FontColor =0;
+        public int FontSize = 4;
+        public int TextSpeed = 0;
+        public int TransitionType = 1;
+        public override void ReadFrom(TarsInputStream _is)
+        {
+            FontColor = _is.Read(FontColor, 0, false);
+            FontSize = _is.Read(FontSize, 1, false);
+            TextSpeed = _is.Read(TextSpeed, 2, false);
+            TransitionType = _is.Read(TransitionType, 3, false);
+        }
+        public override void WriteTo(TarsOutputStream _os)
+        {
+            _os.Write(FontColor, 0);
+            _os.Write(FontSize, 1);
+            _os.Write(FontSize, 2);
+            _os.Write(FontSize, 3);
         }
     }
 }

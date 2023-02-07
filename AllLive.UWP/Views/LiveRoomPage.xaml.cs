@@ -31,6 +31,7 @@ using Windows.ApplicationModel.Core;
 using LibVLCSharp.Shared;
 using System.Diagnostics;
 using Newtonsoft.Json;
+using Windows.UI.Core;
 
 // https://go.microsoft.com/fwlink/?LinkId=234238 上介绍了“空白页”项模板
 
@@ -57,7 +58,7 @@ namespace AllLive.UWP.Views
         public LiveRoomPage()
         {
             this.InitializeComponent();
-         
+
             settingVM = new SettingVM();
             liveRoomVM = new LiveRoomVM(settingVM);
             liveRoomVM.Dispatcher = this.Dispatcher;
@@ -122,7 +123,7 @@ namespace AllLive.UWP.Views
                             PlayBtnPlay.Visibility = Visibility.Collapsed;
                             PlayBtnPause.Visibility = Visibility.Visible;
                             dispRequest.RequestActive();
-
+                            liveRoomVM.Living = true;
                             SetMediaInfo();
                         }
                         break;
@@ -142,16 +143,33 @@ namespace AllLive.UWP.Views
                         break;
                     case VLCState.Ended:
                         {
-                            liveRoomVM.Living = false;
+                            var index = liveRoomVM.Lines.IndexOf(liveRoomVM.CurrentLine);
+                            //尝试切换
+                            if (index == liveRoomVM.Lines.Count - 1)
+                            {
+                                liveRoomVM.Living = false;
+                            }
+                            else
+                            {
+                                liveRoomVM.CurrentLine = liveRoomVM.Lines[index + 1];
+                            }
                         }
                         break;
                     case VLCState.Error:
                         {
-                            await this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
+                            var index = liveRoomVM.Lines.IndexOf(liveRoomVM.CurrentLine);
+                            //尝试切换
+                            if (index == liveRoomVM.Lines.Count - 1)
                             {
+                                PlayerLoading.Visibility = Visibility.Collapsed;
                                 LogHelper.Log("直播加载失败", LogType.ERROR, new Exception("vlc直播加载失败"));
-                                await new MessageDialog($"啊，直播加载失败了\r\n请尝试在直播设置中打开/关闭硬解试试", "播放失败").ShowAsync();
-                            });
+                                await new MessageDialog($"啊，直播播放失败了，请尝试以下操作\r\n1、更换清晰度或线路\r\n2、请尝试在直播设置中打开/关闭硬解试试", "播放失败").ShowAsync();
+                            }
+                            else
+                            {
+                                liveRoomVM.CurrentLine = liveRoomVM.Lines[index + 1];
+                            }
+
                         }
                         break;
                     default:
@@ -277,13 +295,17 @@ namespace AllLive.UWP.Views
 
 
 
-        private void LiveRoomVM_AddDanmaku(object sender, string e)
+        private void LiveRoomVM_AddDanmaku(object sender, LiveMessage e)
         {
+
             if (DanmuControl.Visibility == Visibility.Visible)
             {
-
-                DanmuControl.AddLiveDanmu(e, false, Colors.White);
+                var color = DanmuSettingColourful.IsOn ?
+                    Color.FromArgb(e.Color.A, e.Color.R, e.Color.G, e.Color.B) :
+                    Colors.White;
+                DanmuControl.AddLiveDanmu(e.Message, false, color);
             }
+
         }
 
         private async void CoreWindow_KeyDown(Windows.UI.Core.CoreWindow sender, Windows.UI.Core.KeyEventArgs args)
@@ -435,7 +457,7 @@ namespace AllLive.UWP.Views
                 LibVLC = null;
             }
             liveRoomVM?.Stop();
-         
+
             SetFullScreen(false);
             MiniWidnows(false);
             //取消屏幕常亮
@@ -448,7 +470,7 @@ namespace AllLive.UWP.Views
                 catch (Exception)
                 {
                 }
-                
+
                 dispRequest = null;
             }
         }
@@ -508,7 +530,7 @@ namespace AllLive.UWP.Views
 
                 liveRoomVM.SiteLogo = siteInfo.Logo;
                 liveRoomVM.SiteName = siteInfo.Name;
-              
+
                 var data = pageArgs.Data as LiveRoomItem;
                 MessageCenter.ChangeTitle("", pageArgs.Site);
                 liveRoomVM.LoadData(pageArgs.Site, data.RoomID);
@@ -560,7 +582,7 @@ namespace AllLive.UWP.Views
                 {
                     return;
                 }
-                SettingHelper.SetValue<double>(SettingHelper.RIGHT_DETAIL_WIDTH, args.NewSize.Width+16);
+                SettingHelper.SetValue<double>(SettingHelper.RIGHT_DETAIL_WIDTH, args.NewSize.Width + 16);
             });
             //软解视频
             //cbDecode.SelectedIndex= SettingHelper.GetValue<int>(SettingHelper.DECODE, 0);
@@ -612,7 +634,7 @@ namespace AllLive.UWP.Views
                 });
             });
             //弹幕开关
-            var state = SettingHelper.GetValue<bool>(SettingHelper.LiveDanmaku.SHOW,true)?Visibility.Visible:Visibility.Collapsed;
+            var state = SettingHelper.GetValue<bool>(SettingHelper.LiveDanmaku.SHOW, true) ? Visibility.Visible : Visibility.Collapsed;
             DanmuControl.Visibility = state;
             PlaySWDanmu.IsOn = state == Visibility.Visible;
             PlaySWDanmu.Toggled += new RoutedEventHandler((e, args) =>
@@ -624,7 +646,7 @@ namespace AllLive.UWP.Views
 
             //音量
             var volume = SettingHelper.GetValue<double>(SettingHelper.PLAYER_VOLUME, 1.0);
-            mediaPlayer.Volume = Convert.ToInt32(volume*100);
+            mediaPlayer.Volume = Convert.ToInt32(volume * 100);
             SliderVolume.Value = volume;
             SliderVolume.ValueChanged += new RangeBaseValueChangedEventHandler((e, args) =>
             {
@@ -716,13 +738,20 @@ namespace AllLive.UWP.Views
             {
                 SettingHelper.SetValue<double>(SettingHelper.LiveDanmaku.AREA, DanmuSettingArea.Value);
             });
+
+            //彩色弹幕
+            DanmuSettingColourful.IsOn = SettingHelper.GetValue<bool>(SettingHelper.LiveDanmaku.COLOURFUL, true);
+            DanmuSettingColourful.Toggled += new RoutedEventHandler((e, args) =>
+            {
+                SettingHelper.SetValue<bool>(SettingHelper.LiveDanmaku.COLOURFUL, DanmuSettingColourful.IsOn);
+            });
         }
 
         private void RemoveLiveDanmuWord_Click(object sender, RoutedEventArgs e)
         {
             var word = (sender as AppBarButton).DataContext as string;
             settingVM.ShieldWords.Remove(word);
-            SettingHelper.SetValue(SettingHelper.LiveDanmaku.SHIELD_WORD, JsonConvert.SerializeObject( settingVM.ShieldWords));
+            SettingHelper.SetValue(SettingHelper.LiveDanmaku.SHIELD_WORD, JsonConvert.SerializeObject(settingVM.ShieldWords));
         }
 
         private void LiveDanmuSettingTxtWord_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
@@ -939,7 +968,7 @@ namespace AllLive.UWP.Views
             MessageCenter.HideTitlebar(e);
             if (e)
             {
-              
+
                 PlayBtnFullScreen.Visibility = Visibility.Collapsed;
                 PlayBtnExitFullScreen.Visibility = Visibility.Visible;
 
@@ -996,7 +1025,7 @@ namespace AllLive.UWP.Views
                 DanmuControl.DanmakuSizeZoom = SettingHelper.GetValue<double>(SettingHelper.LiveDanmaku.FONT_ZOOM, 1);
                 DanmuControl.DanmakuDuration = SettingHelper.GetValue<int>(SettingHelper.LiveDanmaku.SPEED, 10);
                 DanmuControl.ClearAll();
-                DanmuControl.Visibility = SettingHelper.GetValue<bool>(SettingHelper.LiveDanmaku.SHOW, true)?Visibility.Visible:Visibility.Collapsed;
+                DanmuControl.Visibility = SettingHelper.GetValue<bool>(SettingHelper.LiveDanmaku.SHOW, true) ? Visibility.Visible : Visibility.Collapsed;
             }
 
         }

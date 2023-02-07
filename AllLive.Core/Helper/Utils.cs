@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -31,8 +32,8 @@ namespace AllLive.Core.Helper
         public static string ToMD5(string data)
         {
             MD5 md5 = MD5.Create();
-            
-            var hash=md5.ComputeHash(Encoding.UTF8.GetBytes(data));
+
+            var hash = md5.ComputeHash(Encoding.UTF8.GetBytes(data));
             StringBuilder stringBuilder = new StringBuilder();
             foreach (var item in hash)
             {
@@ -57,7 +58,7 @@ namespace AllLive.Core.Helper
         {
             try
             {
-                return Regex.Match(input, pattern,RegexOptions.Singleline).Groups[1].Value;
+                return Regex.Match(input, pattern, RegexOptions.Singleline).Groups[1].Value;
             }
             catch (Exception)
             {
@@ -67,8 +68,8 @@ namespace AllLive.Core.Helper
         }
         public static int ToInt32(this object input)
         {
-        
-            if(int.TryParse(input?.ToString()??"0", out var result))
+
+            if (int.TryParse(input?.ToString() ?? "0", out var result))
             {
                 return result;
             }
@@ -102,5 +103,34 @@ namespace AllLive.Core.Helper
             }
         }
 
+        public static Color NumberToColor(this int intColor)
+        {
+
+            var obj = intColor.ToString("X2");
+
+            Color color = Color.White;
+            if (obj.Length == 4)
+            {
+                obj = "00" + obj;
+            }
+            if (obj.Length == 6)
+            {
+                var R = byte.Parse(obj.Substring(0, 2), System.Globalization.NumberStyles.HexNumber);
+                var G = byte.Parse(obj.Substring(2, 2), System.Globalization.NumberStyles.HexNumber);
+                var B = byte.Parse(obj.Substring(4, 2), System.Globalization.NumberStyles.HexNumber);
+                var A = 255;
+                color = Color.FromArgb(A, R, G, B);
+            }
+            if (obj.Length == 8)
+            {
+                var R = byte.Parse(obj.Substring(2, 2), System.Globalization.NumberStyles.HexNumber);
+                var G = byte.Parse(obj.Substring(4, 2), System.Globalization.NumberStyles.HexNumber);
+                var B = byte.Parse(obj.Substring(6, 2), System.Globalization.NumberStyles.HexNumber);
+                var A = byte.Parse(obj.Substring(0, 2), System.Globalization.NumberStyles.HexNumber);
+                color = Color.FromArgb(A, R, G, B);
+            }
+
+            return color;
+        }
     }
 }

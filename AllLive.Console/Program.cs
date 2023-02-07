@@ -127,12 +127,34 @@ namespace AllLive.ConsoleApp
         {
             if (e.Type == Core.Models.LiveMessageType.Chat)
             {
-                Console.WriteLine($"[{e.UserName}]：{e.Message}");
+                Console.ForegroundColor = ClosestConsoleColor(e.Color.R,e.Color.G,e.Color.B);
+                Console.WriteLine($"[{e.Color.R.ToString("X2")}{e.Color.G.ToString("X2")}{e.Color.B.ToString("X2")}][{e.UserName}]：{e.Message}");
+                Console.ResetColor();
             }
             if (e.Type == Core.Models.LiveMessageType.Online)
             {
                 Console.WriteLine($"------人气值：{e.Data}-----");
             }
+        }
+        static ConsoleColor ClosestConsoleColor(byte r, byte g, byte b)
+        {
+            ConsoleColor ret = 0;
+            double rr = r, gg = g, bb = b, delta = double.MaxValue;
+
+            foreach (ConsoleColor cc in Enum.GetValues(typeof(ConsoleColor)))
+            {
+                var n = Enum.GetName(typeof(ConsoleColor), cc);
+                var c = System.Drawing.Color.FromName(n == "DarkYellow" ? "Orange" : n); // bug fix
+                var t = Math.Pow(c.R - rr, 2.0) + Math.Pow(c.G - gg, 2.0) + Math.Pow(c.B - bb, 2.0);
+                if (t == 0.0)
+                    return cc;
+                if (t < delta)
+                {
+                    delta = t;
+                    ret = cc;
+                }
+            }
+            return ret;
         }
     }
 }

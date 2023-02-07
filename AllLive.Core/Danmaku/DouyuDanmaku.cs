@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -71,7 +72,8 @@ namespace AllLive.Core.Danmaku
                         NewMessage?.Invoke(this, new LiveMessage()
                         {
                             UserName = json["nn"].ToString(),
-                            Message = json["txt"].ToString()
+                            Message = json["txt"].ToString(),
+                            Color= GetColor(json["col"].ToInt32())
                         });
                     }
 
@@ -80,6 +82,27 @@ namespace AllLive.Core.Danmaku
             }
             catch (Exception)
             {
+            }
+        }
+
+        private Color GetColor(int type)
+        {
+            switch (type)
+            {
+                case 1:
+                    return Color.Red;
+                case 2:
+                    return Color.FromArgb(30, 135, 240);
+                case 3:
+                    return Color.FromArgb(122, 200, 75);
+                case 4:
+                    return Color.FromArgb(255, 127, 0);
+                case 5:
+                    return Color.FromArgb(155, 57, 244);
+                case 6:
+                    return Color.FromArgb(255, 105, 180);
+                default:
+                    return Color.White;
             }
         }
 
@@ -110,7 +133,7 @@ namespace AllLive.Core.Danmaku
 
         public async Task Start(object args)
         {
-            this.roomId =  args.ToString();
+            this.roomId = args.ToString();
             await Task.Run(() =>
             {
                 ws.Connect();
