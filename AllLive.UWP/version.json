@@ -1,6 +1,6 @@
 {
-	"version":"1.1.2",
-	"versionCode":10102,
-	"message":"适配Win11新风格",
-	"url":"https://www.microsoft.com/store/apps/9N1TWG2G84VD"
+	"version": "1.2.0",
+	"versionCode": 10200,
+	"message": "1.修复虎牙直播问题\r\n2.支持彩色弹幕\r\n3.修复其他一些问题",
+	"url": "https://www.microsoft.com/store/apps/9N1TWG2G84VD"
 }
