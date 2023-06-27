@@ -73,7 +73,7 @@ namespace AllLive.Core
             foreach (var item in obj["data"]["datas"])
             {
                 var cover = item["screenshot"].ToString();
-                if (!cover.Contains("?x-oss-process"))
+                if (!cover.Contains("?"))
                 {
                     cover += "?x-oss-process=style/w338_h190&";
                 }
@@ -107,7 +107,7 @@ namespace AllLive.Core
             foreach (var item in obj["data"]["datas"])
             {
                 var cover = item["screenshot"].ToString();
-                if (!cover.Contains("?x-oss-process"))
+                if (!cover.Contains("?"))
                 {
                     cover += "?x-oss-process=style/w338_h190&";
                 }
@@ -217,7 +217,7 @@ namespace AllLive.Core
             foreach (var item in obj["response"]["3"]["docs"])
             {
                 var cover = item["game_screenshot"].ToString();
-                if (!cover.Contains("?x-oss-process"))
+                if (!cover.Contains("?"))
                 {
                     cover += "?x-oss-process=style/w338_h190&";
                 }

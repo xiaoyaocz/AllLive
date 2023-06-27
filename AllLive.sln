@@ -12,6 +12,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1433AD20-68B7-4EA2-838F-EDA9B5BE3EC6}"
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
+		AllLive.UWP\version.json = AllLive.UWP\version.json
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AllLive.Avalonia", "AllLive.Avalonia\AllLive.Avalonia.csproj", "{EC14E456-F593-494F-B52C-6E1D532305B7}"

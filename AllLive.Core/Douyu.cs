@@ -127,25 +127,33 @@ namespace AllLive.Core
         }
         public async Task<LiveRoomDetail> GetRoomDetail(object roomId)
         {
-            var result = await HttpUtil.GetString($"https://www.douyu.com/{roomId}");
+            var result = await HttpUtil.GetString($"https://m.douyu.com/{roomId}/index.pageContext.json",new Dictionary<string, string>()
+            {
+                { "referer", $"https://m.douyu.com/{roomId}"},
+                { "user-agent","Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1 Edg/114.0.0.0" },
+            });
+            var jsEncResult = await HttpUtil.GetString($"https://www.douyu.com/swf_api/homeH5Enc?rids={roomId}", new Dictionary<string, string>()
+            {
+                { "referer", $"https://m.douyu.com/{roomId}"},
+                { "user-agent","Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1 Edg/114.0.0.0" },
+            });
+            var crptext = JObject.Parse(jsEncResult)["data"][$"room{roomId}"].ToString();
+            var obj = JObject.Parse(result);
+            var roomInfo =obj["pageContext"]["pageProps"]["room"]["roomInfo"]["roomInfo"];
 
-            Dictionary<string, string> headers = new Dictionary<string, string>();
-            headers.Add("user-agent", "Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1 Edg/91.0.4472.69");
-            var result_json = await HttpUtil.GetString($"https://m.douyu.com/{roomId}", headers);
-            var obj = JObject.Parse($"{{{result_json.MatchText(@"\$ROOM.=.{(.*?)}")}}}");
             return new LiveRoomDetail()
             {
-                Cover = obj["roomSrc"].ToString(),
-                Online = ParseHotNum(obj["hn"].ToString()),
-                RoomID = obj["rid"].ToString(),
-                Title = obj["roomName"].ToString(),
-                UserName = obj["nickname"].ToString(),
-                UserAvatar = obj["avatar"].ToString(),
+                Cover = roomInfo["roomSrc"].ToString(),
+                Online = ParseHotNum(roomInfo["hn"].ToString()),
+                RoomID = roomInfo["rid"].ToString(),
+                Title = roomInfo["roomName"].ToString(),
+                UserName = roomInfo["nickname"].ToString(),
+                UserAvatar = roomInfo["avatar"].ToString(),
                 Introduction = "",
-                Notice = obj["notice"].ToString(),
-                Status = obj["isLive"].ToInt32() == 1,
-                DanmakuData = obj["rid"].ToString(),
-                Data = await GetPlayArgs(result, obj["rid"].ToString()),
+                Notice = roomInfo["notice"].ToString(),
+                Status = roomInfo["isLive"].ToInt32() == 1,
+                DanmakuData = roomInfo["rid"].ToString(),
+                Data = await GetPlayArgs(crptext, roomInfo["rid"].ToString()),
                 Url = "https://www.douyu.com/" + roomId
             };
         }

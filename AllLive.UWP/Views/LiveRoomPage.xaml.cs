@@ -86,7 +86,7 @@ namespace AllLive.UWP.Views
 
 
         }
-        private void player_Initialized(object sender, LibVLCSharp.Platforms.UWP.InitializedEventArgs e)
+        private void player_Initialized(object sender, LibVLCSharp.Platforms.Windows.InitializedEventArgs e)
         {
             LibVLC = new LibVLC(enableDebugLogs: true, e.SwapChainOptions);
             mediaPlayer = new MediaPlayer(LibVLC);

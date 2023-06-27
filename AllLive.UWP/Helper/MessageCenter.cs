@@ -23,7 +23,7 @@ namespace AllLive.UWP.Helper
         public delegate void ChangeTitleHandler(string title, string logo);
         public static event ChangeTitleHandler ChangeTitleEvent;
         public static event EventHandler<bool> HideTitlebarEvent;
-        public async static void OpenLiveRoom(ILiveSite liveSite,LiveRoomItem item)
+        public static void OpenLiveRoom(ILiveSite liveSite,LiveRoomItem item)
         {
             var arg = new PageArgs()
             {
