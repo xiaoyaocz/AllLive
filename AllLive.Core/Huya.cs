@@ -10,6 +10,8 @@ using System.Text.RegularExpressions;
 using System.Text;
 using System.Linq;
 using System.Net.WebSockets;
+using System.Web;
+using WebSocketSharp;
 
 namespace AllLive.Core
 {
@@ -141,6 +143,9 @@ namespace AllLive.Core
             {
                 title = jsonObj["roomInfo"]["tLiveInfo"]["sIntroduction"].ToString();
             }
+
+            var uid =await GetUid();
+            var uuid = GetUuid();
             var huyaLines = new List<HuyaLineModel>();
             var huyaBiterates = new List<HuyaBitRateModel>();
             //读取可用线路
@@ -154,6 +159,9 @@ namespace AllLive.Core
                     {
                         Line = item["sFlvUrl"].ToString().Replace("http://","").Replace("https://",""),
                         LineType = HuyaLineType.FLV,
+                        FlvAntiCode = item["sFlvAntiCode"].ToString(),
+                        HlsAntiCode = item["sHlsAntiCode"].ToString(),
+                        StreamName =  item["sStreamName"].ToString(),
                     });
                 }
                 //HLS效果不好，暂不使用
@@ -195,6 +203,8 @@ namespace AllLive.Core
                     Url = "https:" + Encoding.UTF8.GetString(Convert.FromBase64String(jsonObj["roomProfile"]["liveLineUrl"].ToString())),
                     Lines = huyaLines,
                     BitRates = huyaBiterates,
+                    Uid=uid,
+                    UUid=uuid,
                 },
                 DanmakuData = new HuyaDanmakuArgs(
                     jsonObj["roomInfo"]["tLiveInfo"]["lYyid"].ToInt64(),
@@ -204,6 +214,19 @@ namespace AllLive.Core
                 Url = "https://www.huya.com/" + roomId
             };
         }
+        private long GetUuid()
+        {
+            return (long)((DateTimeOffset.Now.ToUnixTimeMilliseconds() % 10000000000 * 1000 + (1000 * new Random().Next(0, int.MaxValue))) % uint.MaxValue);
+        }
+        private async Task<string> GetUid()
+        {
+            var data = "{\"appId\":5002,\"byPass\":3,\"context\":\"\",\"version\":\"2.4\",\"data\":{}}";
+            var result = await HttpUtil.PostJsonString($"https://udblgn.huya.com/web/anonymousLogin",data);
+            var obj = JObject.Parse(result);
+
+            return obj["data"]["uid"].ToString();
+        }
+
         public async Task<LiveSearchResult> Search(string keyword, int page = 1)
         {
             LiveSearchResult searchResult = new LiveSearchResult()
@@ -243,7 +266,7 @@ namespace AllLive.Core
                     new HuyaBitRateModel()
                     {
                         Name="原画",
-                        BitRate=0
+                        BitRate=0,
                     },
                     new HuyaBitRateModel()
                     {
@@ -277,23 +300,29 @@ namespace AllLive.Core
                     },
                 };
             }
-            var url = GetRealUrl(urlData.Url);
+            //var url = GetRealUrl(urlData.Url);
 
             foreach (var item in urlData.BitRates)
             {
                 var urls = new List<string>();
                 foreach (var line in urlData.Lines)
                 {
-                    var src = Regex.Replace(url, @".*?\..*\.huya\.com/src", $"https://{line.Line}");
+                    var src = Regex.Replace(line.Line, @".*?\..*\.huya\.com/src", $"https://{line.Line}");
                    
+                    src += $"/{line.StreamName}";
                     if (line.LineType== HuyaLineType.FLV)
                     {
-                        src = src.Replace(".m3u8", ".flv");
+                        src += ".flv";
                     }
                     if (line.LineType == HuyaLineType.HLS)
                     {
-                        src = src.Replace(".flv", ".m3u8");
+                        src += ".m3u8";
                     }
+                    
+                    var param = ProcessAnticode(line.LineType == HuyaLineType.FLV?line.FlvAntiCode: line.HlsAntiCode, urlData.Uid, line.StreamName);
+
+                    src += $"?{param}";
+
                     if (item.BitRate > 0)
                     {
                         src = $"{src}&ratio={item.BitRate}";
@@ -311,60 +340,43 @@ namespace AllLive.Core
 
             return Task.FromResult(qualities);
         }
+        public string ProcessAnticode(string anticode, string uid, string streamname)
+        {
+            // https://github.com/iceking2nd/real-url/blob/master/huya.py
+            var query = HttpUtility.ParseQueryString(anticode);
+            query["ver"] = "1";
+            query["sv"] = "2110211124";
+            query["seqid"] = (long.Parse(uid) +Utils.GetTimestampMs()).ToString();
+            query["uid"] = uid;
+            query["uuid"] = GetUuid().ToString();
+
+            var ss = Utils.ToMD5($"{query["seqid"]}|{query["ctype"]}|{query["t"]}");
+
+            query["fm"] = Encoding.UTF8.GetString( Convert.FromBase64String(query["fm"]));
+            query["fm"] = query["fm"].Replace("$0", query["uid"]).Replace("$1", streamname).Replace("$2", ss).Replace("$3", query["wsTime"]);
+            query["wsSecret"] = Utils.ToMD5(query["fm"]);
+
+            query.Remove("fm");
+            if (query.AllKeys.Contains("txyp"))
+            {
+                query.Remove("txyp");
+            }
+
+           
+            return query.ToString();
+        }
+       
         public Task<List<string>> GetPlayUrls(LiveRoomDetail roomDetail, LivePlayQuality qn)
         {
             return Task.FromResult(qn.Data as List<string>);
         }
         
-        private string GetRealUrl(string e)
-        {
-            // https://github.com/wbt5/real-url/blob/master/huya.py
-            var i = e.Split('?')[0];
-            var b = e.Split('?')[1];
-
-            var r = i.Split('/');
-            var s = Regex.Replace(r.Last(), @".(flv|m3u8)", "");
-
-            var _c = b.Split("&".ToCharArray(), count: 4);
-            var c = new List<string>();
-            foreach (var item in _c)
-            {
-                if (!string.IsNullOrEmpty(item))
-                {
-                    c.Add(item);
-                }
-            }
-
-            Dictionary<string, string> n = new Dictionary<string, string>();
-            foreach (var item in c)
-            {
-                var split = item.Split('=');
-                n.Add(split[0], split[1].Split('&')[0]);
-            }
-
-            var fm = Uri.UnescapeDataString(n["fm"]);
-
-            var u = Encoding.UTF8.GetString(Convert.FromBase64String(fm));
-            var p = u.Split('_')[0];
-
-            var f = (Utils.GetTimestampMs() * 10000).ToString();
-            var l = n["wsTime"];
-            var t = "0";
-            var h = string.Join("_", new string[] { p, t, s, f, l });
-            var m = Utils.ToMD5(h);
-            var y = c.Last();
-            var url = $"{i}?wsSecret={m}&wsTime={l}&u={t}&seqid={f}&{y}";
-            url = url.Replace("&ctype=tars_mobile", "");
-            url = Regex.Replace(url, @"ratio=\d+&", "");
-            url = Regex.Replace(url, @"imgplus_\d+", "imgplus");
-            return url;
-        }
-
-
     }
     public class HuyaUrlDataModel
     {
         public string Url { get; set; }
+        public string Uid { get; set; }
+        public long UUid { get; set; }
         public List<HuyaLineModel> Lines { get; set; }
         public List<HuyaBitRateModel> BitRates { get; set; }
     }
@@ -376,6 +388,9 @@ namespace AllLive.Core
     public class HuyaLineModel
     {
         public string Line { get; set; }
+        public string FlvAntiCode { get; set; }
+        public string StreamName { get; set; }
+        public string HlsAntiCode { get; set; }
         public HuyaLineType LineType { get; set; }
     }
     public class HuyaBitRateModel
