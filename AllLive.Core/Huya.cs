@@ -157,7 +157,7 @@ namespace AllLive.Core
                 {
                     huyaLines.Add(new HuyaLineModel()
                     {
-                        Line = item["sFlvUrl"].ToString().Replace("http://","").Replace("https://",""),
+                        Line = item["sFlvUrl"].ToString(),
                         LineType = HuyaLineType.FLV,
                         FlvAntiCode = item["sFlvAntiCode"].ToString(),
                         HlsAntiCode = item["sHlsAntiCode"].ToString(),
@@ -275,31 +275,31 @@ namespace AllLive.Core
                     },
                 };
             }
-            if (urlData.Lines.Count == 0)
-            {
-                urlData.Lines = new List<HuyaLineModel>() {
-                    new HuyaLineModel()
-                    {
-                        Line="tx.flv.huya.com",
-                        LineType= HuyaLineType.FLV
-                    },
-                    new HuyaLineModel()
-                    {
-                        Line="bd.flv.huya.com",
-                        LineType= HuyaLineType.FLV
-                    },
-                    new HuyaLineModel()
-                    {
-                        Line="al.flv.huya.com",
-                        LineType= HuyaLineType.FLV
-                    },
-                    new HuyaLineModel()
-                    {
-                        Line="hw.flv.huya.com",
-                        LineType= HuyaLineType.FLV
-                    },
-                };
-            }
+            //if (urlData.Lines.Count == 0)
+            //{
+            //    urlData.Lines = new List<HuyaLineModel>() {
+            //        new HuyaLineModel()
+            //        {
+            //            Line="tx.flv.huya.com",
+            //            LineType= HuyaLineType.FLV
+            //        },
+            //        new HuyaLineModel()
+            //        {
+            //            Line="bd.flv.huya.com",
+            //            LineType= HuyaLineType.FLV
+            //        },
+            //        new HuyaLineModel()
+            //        {
+            //            Line="al.flv.huya.com",
+            //            LineType= HuyaLineType.FLV
+            //        },
+            //        new HuyaLineModel()
+            //        {
+            //            Line="hw.flv.huya.com",
+            //            LineType= HuyaLineType.FLV
+            //        },
+            //    };
+            //}
             //var url = GetRealUrl(urlData.Url);
 
             foreach (var item in urlData.BitRates)
@@ -307,7 +307,7 @@ namespace AllLive.Core
                 var urls = new List<string>();
                 foreach (var line in urlData.Lines)
                 {
-                    var src = Regex.Replace(line.Line, @".*?\..*\.huya\.com/src", $"https://{line.Line}");
+                    var src = line.Line;
                    
                     src += $"/{line.StreamName}";
                     if (line.LineType== HuyaLineType.FLV)
