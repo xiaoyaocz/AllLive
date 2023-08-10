@@ -139,7 +139,7 @@ namespace AllLive.Core
             });
             var crptext = JObject.Parse(jsEncResult)["data"][$"room{roomId}"].ToString();
             var obj = JObject.Parse(result);
-            var roomInfo =obj["pageContext"]["pageProps"]["room"]["roomInfo"]["roomInfo"];
+            var roomInfo =obj["pageProps"]["room"]["roomInfo"]["roomInfo"];
 
             return new LiveRoomDetail()
             {
