@@ -12,6 +12,7 @@ using System.Linq;
 using System.Net.WebSockets;
 using System.Web;
 using WebSocketSharp;
+using System.Collections.Specialized;
 
 namespace AllLive.Core
 {
@@ -344,26 +345,35 @@ namespace AllLive.Core
         {
             // https://github.com/iceking2nd/real-url/blob/master/huya.py
             var query = HttpUtility.ParseQueryString(anticode);
-            query["ver"] = "1";
-            query["sv"] = "2110211124";
-            query["seqid"] = (long.Parse(uid) +Utils.GetTimestampMs()).ToString();
-            query["uid"] = uid;
-            query["uuid"] = GetUuid().ToString();
+            query["t"] = "100";
+            query["ctype"] = "huya_live";
+            var wsTime = (Utils.GetTimestamp() + 21600).ToString("x");
+            var seqId =(Utils.GetTimestampMs() + long.Parse(uid)).ToString();
+            var fm = Encoding.UTF8.GetString(Convert.FromBase64String(Uri.UnescapeDataString(query["fm"])));
+            var wsSecretPrefix = fm.Split('_').First();
+            var wsSecretHash = Utils.ToMD5($"{seqId}|{query["ctype"]}|{query["t"]}");
+            var wsSecret = Utils.ToMD5($"{wsSecretPrefix}_{uid}_{streamname}_{wsSecretHash}_{wsTime}");
 
-            var ss = Utils.ToMD5($"{query["seqid"]}|{query["ctype"]}|{query["t"]}");
 
-            query["fm"] = Encoding.UTF8.GetString( Convert.FromBase64String(query["fm"]));
-            query["fm"] = query["fm"].Replace("$0", query["uid"]).Replace("$1", streamname).Replace("$2", ss).Replace("$3", query["wsTime"]);
-            query["wsSecret"] = Utils.ToMD5(query["fm"]);
-
-            query.Remove("fm");
-            if (query.AllKeys.Contains("txyp"))
-            {
-                query.Remove("txyp");
-            }
-
-           
-            return query.ToString();
+            var map = new NameValueCollection();
+            map.Add("wsSecret", wsSecret);
+            map.Add("wsTime", wsTime);
+            map.Add("seqid", seqId);
+            map.Add("ctype", query["ctype"]);
+            map.Add("ver", "1");
+            map.Add("fs", query["fs"]);
+            map.Add("sphdcdn", query["sphdcdn"] ?? "");
+            map.Add("sphdDC", query["sphdDC"] ?? "");
+            map.Add("sphd", query["sphd"] ?? "");
+            map.Add("exsphd", query["exsphd"] ?? "");
+            map.Add("uid", uid);
+            map.Add("uuid", GetUuid().ToString());
+            map.Add("t", query["t"]);
+            map.Add("sv", "2110211124");
+          
+            //将map转为字符串
+            var param = string.Join("&", map.AllKeys.Select(x => $"{x}={map[x]}"));
+            return param;
         }
        
         public Task<List<string>> GetPlayUrls(LiveRoomDetail roomDetail, LivePlayQuality qn)
