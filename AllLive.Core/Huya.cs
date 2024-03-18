@@ -345,8 +345,8 @@ namespace AllLive.Core
         {
             // https://github.com/iceking2nd/real-url/blob/master/huya.py
             var query = HttpUtility.ParseQueryString(anticode);
-            query["t"] = "100";
-            query["ctype"] = "huya_live";
+            query["t"] = "102";
+            query["ctype"] = "tars_mp";
             var wsTime = (Utils.GetTimestamp() + 21600).ToString("x");
             var seqId =(Utils.GetTimestampMs() + long.Parse(uid)).ToString();
             var fm = Encoding.UTF8.GetString(Convert.FromBase64String(Uri.UnescapeDataString(query["fm"])));
@@ -369,7 +369,7 @@ namespace AllLive.Core
             map.Add("uid", uid);
             map.Add("uuid", GetUuid().ToString());
             map.Add("t", query["t"]);
-            map.Add("sv", "2110211124");
+            map.Add("sv", "2401310322");
           
             //将map转为字符串
             var param = string.Join("&", map.AllKeys.Select(x => $"{x}={map[x]}"));

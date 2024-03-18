@@ -420,6 +420,10 @@ namespace AllLive.UWP.Views
                     {
                         media.AddOption("http-referrer=https://live.bilibili.com");
                         media.AddOption("http-user-agent=Mozilla/5.0 BiliDroid/1.12.0 (bbcallen@gmail.com)");
+                    }else if (liveRoomVM.SiteName == "虎牙直播")
+                    {
+                        media.AddOption("http-referrer=https://www.huya.com");
+                        media.AddOption("http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36 Edg/121.0.0.0");
                     }
                     media.StateChanged += Media_StateChanged;
                     mediaPlayer.Play(media);
