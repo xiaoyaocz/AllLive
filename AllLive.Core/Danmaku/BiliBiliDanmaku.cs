@@ -1,12 +1,15 @@
 ﻿using AllLive.Core.Helper;
 using AllLive.Core.Interface;
 using AllLive.Core.Models;
+using BrotliSharpLib;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -29,15 +32,11 @@ namespace AllLive.Core.Danmaku
         private readonly string ServerUrl = "wss://broadcastlv.chat.bilibili.com/sub";
         Timer timer;
         WebSocket ws;
+        private DanmuInfo danmuInfo;
+        private string buvid;
         public BiliBiliDanmaku()
         {
-            ws = new WebSocket(ServerUrl);
-            ws.OnOpen += Ws_OnOpen;
-            ws.OnError += Ws_OnError;
-            ws.OnMessage += Ws_OnMessage;
-            ws.OnClose += Ws_OnClose;
-            timer = new Timer(HeartbeatTime);
-            timer.Elapsed += Timer_Elapsed;
+          
         }
         private async void Ws_OnOpen(object sender, EventArgs e)
         {
@@ -47,7 +46,10 @@ namespace AllLive.Core.Danmaku
                 ws.Send(EncodeData(JsonConvert.SerializeObject(new
                 {
                     roomid = roomId,
-                    uid = 0
+                    uid = 0,
+                    protover = 3,
+                    key = danmuInfo.token,
+                    buvid,
                 }), 7));
 
             });
@@ -78,6 +80,23 @@ namespace AllLive.Core.Danmaku
         public async Task Start(object args)
         {
             roomId = args.ToInt32();
+            var _buvid = await GetBuvid();
+            buvid = _buvid;
+            var info = await GetDanmuInfo(roomId);
+            if (info == null)
+            {
+                SendSystemMessage("获取弹幕信息失败");
+                return;
+            }
+            danmuInfo = info;
+            var host=info.host_list.First();
+            ws = new WebSocket($"wss://{host.host}/sub");
+            ws.OnOpen += Ws_OnOpen;
+            ws.OnError += Ws_OnError;
+            ws.OnMessage += Ws_OnMessage;
+            ws.OnClose += Ws_OnClose;
+            timer = new Timer(HeartbeatTime);
+            timer.Elapsed += Timer_Elapsed;
             await Task.Run(() =>
             {
                 ws.Connect();
@@ -107,10 +126,18 @@ namespace AllLive.Core.Danmaku
 
         private void ParseData(byte[] data)
         {
-            //协议版本。0为JSON，可以直接解析；1为房间人气值,Body为4位Int32；2为压缩过Buffer，需要解压再处理
+            //协议版本。
+            //0为JSON，可以直接解析；
+            //1为房间人气值,Body为Int32；
+            //2为zlib压缩过Buffer，需要解压再处理
+            //3为brotli压缩过Buffer，需要解压再处理
             int protocolVersion = BitConverter.ToInt32(new byte[4] { data[7], data[6], 0, 0 }, 0);
-            //操作类型。3=心跳回应，内容为房间人气值；5=通知，弹幕、广播等全部信息；8=进房回应，空
+            //操作类型。
+            //3=心跳回应，内容为房间人气值；
+            //5=通知，弹幕、广播等全部信息；
+            //8=进房回应，空
             int operation = BitConverter.ToInt32(data.Skip(8).Take(4).Reverse().ToArray(), 0);
+
             //内容
             var body = data.Skip(16).ToArray();
             if (operation == 3)
@@ -125,10 +152,9 @@ namespace AllLive.Core.Danmaku
             else if (operation == 5)
             {
 
-                if (protocolVersion == 2)
+                if (protocolVersion == 2 || protocolVersion == 3)
                 {
-                    body = DecompressData(body);
-
+                    body = DecompressData(body, protocolVersion);
                 }
                 var text = Encoding.UTF8.GetString(body);
                 //可能有多条数据，做个分割
@@ -218,8 +244,12 @@ namespace AllLive.Core.Danmaku
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        private byte[] DecompressData(byte[] data)
+        private byte[] DecompressData(byte[] data,int protocolVersion)
         {
+            if (protocolVersion == 3)
+            {
+                return DecompressDataWithBrotli(data);
+            }
             using (MemoryStream outBuffer = new MemoryStream())
             using (System.IO.Compression.DeflateStream compressedzipStream = new System.IO.Compression.DeflateStream(new MemoryStream(data, 2, data.Length - 2), System.IO.Compression.CompressionMode.Decompress))
             {
@@ -239,5 +269,91 @@ namespace AllLive.Core.Danmaku
 
 
         }
+        /// <summary>
+        /// 解压数据 (使用Brotli)
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        private byte[] DecompressDataWithBrotli(byte[] data)
+        {
+            using (var decompressedStream = new BrotliStream(new MemoryStream(data), CompressionMode.Decompress))
+            {
+                using (var outBuffer = new MemoryStream())
+                {
+                    var block = new byte[1024];
+                    while (true)
+                    {
+                        var bytesRead = decompressedStream.Read(block, 0, block.Length);
+                        if (bytesRead <= 0)
+                            break;
+                        outBuffer.Write(block, 0, bytesRead);
+                    }
+                    return outBuffer.ToArray();
+                }
+            }
+
+
+        }
+        private async Task<string> GetBuvid()
+        {
+            try
+            {
+                var result = await HttpUtil.GetString($"https://api.bilibili.com/x/frontend/finger/spi");
+                var obj = JObject.Parse(result);
+
+                return obj["data"]["b_3"].ToString();
+            }
+            catch (Exception)
+            {
+                return "";
+            }
+        }
+
+        private async Task<DanmuInfo> GetDanmuInfo(int roomId)
+        {
+            try
+            {
+                var result = await HttpUtil.GetString($"https://api.live.bilibili.com/xlive/web-room/v1/index/getDanmuInfo?id={roomId}");
+                var obj = JObject.Parse(result);
+                var info = obj["data"].ToObject<DanmuInfo>();
+                return info;
+            }
+            catch (Exception ex)
+            {
+                SendSystemMessage(ex.Message);
+            }
+            return null;
+        }
+    
+        private void SendSystemMessage(string msg)
+        {
+            NewMessage(this, new LiveMessage()
+            {
+                Type = LiveMessageType.Chat,
+                UserName = "系统",
+                Message = msg
+            });
+        }
+    }
+
+    
+
+    class DanmuInfo
+    {
+        public string group { get; set; }
+        public int business_id { get; set; }
+        public double refresh_row_factor { get; set; }
+        public int refresh_rate { get; set; }
+        public int max_delay { get; set; }
+        public string token { get; set; }
+        public List<DanmuInfoHostList> host_list { get; set; }
+    }
+
+    class DanmuInfoHostList
+    {
+        public string host { get; set; }
+        public int port { get; set; }
+        public int wss_port { get; set; }
+        public int ws_port { get; set; }
     }
 }

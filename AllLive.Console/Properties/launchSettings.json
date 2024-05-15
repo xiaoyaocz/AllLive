@@ -2,7 +2,7 @@
   "profiles": {
     "AllLive.ConsoleApp": {
       "commandName": "Project",
-      "commandLineArgs": "-i https://www.huya.com/660000"
+      "commandLineArgs": "-d https://www.bilibili.com/7734200"
     }
   }
 }
