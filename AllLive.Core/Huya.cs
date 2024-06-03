@@ -13,6 +13,8 @@ using System.Net.WebSockets;
 using System.Web;
 using WebSocketSharp;
 using System.Collections.Specialized;
+using static System.Net.Mime.MediaTypeNames;
+using System.IO;
 
 namespace AllLive.Core
 {
@@ -80,10 +82,10 @@ namespace AllLive.Core
                 {
                     cover += "?x-oss-process=style/w338_h190&";
                 }
-                var title = item["roomName"]?.ToString();
+                var title = item["introduction"]?.ToString();
                 if (string.IsNullOrEmpty(title))
                 {
-                    title = item["introduction"]?.ToString() ?? "";
+                    title = item["roomName"]?.ToString() ?? "";
                 }
                 categoryResult.Rooms.Add(new LiveRoomItem()
                 {
@@ -114,10 +116,10 @@ namespace AllLive.Core
                 {
                     cover += "?x-oss-process=style/w338_h190&";
                 }
-                var title = item["roomName"]?.ToString();
+                var title = item["introduction"]?.ToString();
                 if (string.IsNullOrEmpty(title))
                 {
-                    title = item["introduction"]?.ToString() ?? "";
+                    title = item["roomName"]?.ToString() ?? "";
                 }
                 categoryResult.Rooms.Add(new LiveRoomItem()
                 {
@@ -136,16 +138,20 @@ namespace AllLive.Core
             Dictionary<string, string> headers = new Dictionary<string, string>();
             headers.Add("user-agent", "Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1 Edg/91.0.4472.69");
             var result = await HttpUtil.GetString($"https://m.huya.com/{roomId}", headers);
-            var jsonStr = Regex.Match(result, @"window\.HNF_GLOBAL_INIT.=.\{(.*?)\}.</script>", RegexOptions.Singleline).Groups[1].Value;
-            var jsonObj = JObject.Parse($"{{{jsonStr}}}");
+            var jsonStr = Regex.Match(result, @"window\.HNF_GLOBAL_INIT.=.\{[\s\S]*?\}[\s\S]*?</script>", RegexOptions.Singleline).Groups[0].Value;
+            jsonStr=Regex.Replace(jsonStr, @"window\.HNF_GLOBAL_INIT.=.", "").Replace("</script>", "");
+            jsonStr=Regex.Replace(jsonStr, @"function.*?\(.*?\).\{[\s\S]*?\}", "\"\"");
 
-            var title = jsonObj["roomInfo"]["tLiveInfo"]["sRoomName"].ToString();
+
+             var jsonObj = JObject.Parse(jsonStr);
+
+            var title = jsonObj["roomInfo"]["tLiveInfo"]["sIntroduction"].ToString();
             if (string.IsNullOrEmpty(title))
             {
-                title = jsonObj["roomInfo"]["tLiveInfo"]["sIntroduction"].ToString();
+                title = jsonObj["roomInfo"]["tLiveInfo"]["sRoomName"].ToString();
             }
 
-            var uid =await GetUid();
+            var uid = await GetUid();
             var uuid = GetUuid();
             var huyaLines = new List<HuyaLineModel>();
             var huyaBiterates = new List<HuyaBitRateModel>();
@@ -153,8 +159,8 @@ namespace AllLive.Core
             var lines = jsonObj["roomInfo"]["tLiveInfo"]["tLiveStreamInfo"]["vStreamInfo"]["value"];
             foreach (var item in lines)
             {
-                
-                if ( !string.IsNullOrEmpty(item["sFlvUrl"]?.ToString()))
+
+                if (!string.IsNullOrEmpty(item["sFlvUrl"]?.ToString()))
                 {
                     huyaLines.Add(new HuyaLineModel()
                     {
@@ -162,7 +168,7 @@ namespace AllLive.Core
                         LineType = HuyaLineType.FLV,
                         FlvAntiCode = item["sFlvAntiCode"].ToString(),
                         HlsAntiCode = item["sHlsAntiCode"].ToString(),
-                        StreamName =  item["sStreamName"].ToString(),
+                        StreamName = item["sStreamName"].ToString(),
                     });
                 }
                 //HLS效果不好，暂不使用
@@ -204,8 +210,8 @@ namespace AllLive.Core
                     Url = "https:" + Encoding.UTF8.GetString(Convert.FromBase64String(jsonObj["roomProfile"]["liveLineUrl"].ToString())),
                     Lines = huyaLines,
                     BitRates = huyaBiterates,
-                    Uid=uid,
-                    UUid=uuid,
+                    Uid = uid,
+                    UUid = uuid,
                 },
                 DanmakuData = new HuyaDanmakuArgs(
                     jsonObj["roomInfo"]["tLiveInfo"]["lYyid"].ToInt64(),
@@ -222,7 +228,7 @@ namespace AllLive.Core
         private async Task<string> GetUid()
         {
             var data = "{\"appId\":5002,\"byPass\":3,\"context\":\"\",\"version\":\"2.4\",\"data\":{}}";
-            var result = await HttpUtil.PostJsonString($"https://udblgn.huya.com/web/anonymousLogin",data);
+            var result = await HttpUtil.PostJsonString($"https://udblgn.huya.com/web/anonymousLogin", data);
             var obj = JObject.Parse(result);
 
             return obj["data"]["uid"].ToString();
@@ -261,9 +267,9 @@ namespace AllLive.Core
         {
             List<LivePlayQuality> qualities = new List<LivePlayQuality>();
             var urlData = roomDetail.Data as HuyaUrlDataModel;
-            if (urlData.BitRates.Count ==0)
+            if (urlData.BitRates.Count == 0)
             {
-                urlData.BitRates = new List<HuyaBitRateModel>() { 
+                urlData.BitRates = new List<HuyaBitRateModel>() {
                     new HuyaBitRateModel()
                     {
                         Name="原画",
@@ -309,9 +315,9 @@ namespace AllLive.Core
                 foreach (var line in urlData.Lines)
                 {
                     var src = line.Line;
-                   
+
                     src += $"/{line.StreamName}";
-                    if (line.LineType== HuyaLineType.FLV)
+                    if (line.LineType == HuyaLineType.FLV)
                     {
                         src += ".flv";
                     }
@@ -319,8 +325,8 @@ namespace AllLive.Core
                     {
                         src += ".m3u8";
                     }
-                    
-                    var param = ProcessAnticode(line.LineType == HuyaLineType.FLV?line.FlvAntiCode: line.HlsAntiCode, urlData.Uid, line.StreamName);
+
+                    var param = ProcessAnticode(line.LineType == HuyaLineType.FLV ? line.FlvAntiCode : line.HlsAntiCode, urlData.Uid, line.StreamName);
 
                     src += $"?{param}";
 
@@ -330,13 +336,14 @@ namespace AllLive.Core
                     }
                     urls.Add(src);
                 }
-                qualities.Add(new LivePlayQuality() { 
+                qualities.Add(new LivePlayQuality()
+                {
                     Data = urls,
-                    Quality=item.Name,
+                    Quality = item.Name,
                 });
             }
 
-            
+
 
 
             return Task.FromResult(qualities);
@@ -348,7 +355,7 @@ namespace AllLive.Core
             query["t"] = "102";
             query["ctype"] = "tars_mp";
             var wsTime = (Utils.GetTimestamp() + 21600).ToString("x");
-            var seqId =(Utils.GetTimestampMs() + long.Parse(uid)).ToString();
+            var seqId = (Utils.GetTimestampMs() + long.Parse(uid)).ToString();
             var fm = Encoding.UTF8.GetString(Convert.FromBase64String(Uri.UnescapeDataString(query["fm"])));
             var wsSecretPrefix = fm.Split('_').First();
             var wsSecretHash = Utils.ToMD5($"{seqId}|{query["ctype"]}|{query["t"]}");
@@ -370,17 +377,17 @@ namespace AllLive.Core
             map.Add("uuid", GetUuid().ToString());
             map.Add("t", query["t"]);
             map.Add("sv", "2401310322");
-          
+
             //将map转为字符串
             var param = string.Join("&", map.AllKeys.Select(x => $"{x}={map[x]}"));
             return param;
         }
-       
+
         public Task<List<string>> GetPlayUrls(LiveRoomDetail roomDetail, LivePlayQuality qn)
         {
             return Task.FromResult(qn.Data as List<string>);
         }
-        
+
     }
     public class HuyaUrlDataModel
     {
@@ -392,8 +399,8 @@ namespace AllLive.Core
     }
     public enum HuyaLineType
     {
-        FLV=0,
-        HLS=1,
+        FLV = 0,
+        HLS = 1,
     }
     public class HuyaLineModel
     {
