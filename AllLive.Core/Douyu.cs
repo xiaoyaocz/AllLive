@@ -242,6 +242,18 @@ namespace AllLive.Core
             {
                 cdns.Add(item["cdn"].ToString());
             }
+            // 如果cdn以scdn开头，将其放到最后
+            for (int i = 0; i < cdns.Count; i++)
+            {
+                if (cdns[i].StartsWith("scdn"))
+                {
+                    cdns.Add(cdns[i]);
+                    cdns.RemoveAt(i);
+                    break;
+                }
+            }
+
+
             foreach (var item in obj["data"]["multirates"])
             {
                 qualities.Add(new LivePlayQuality()
