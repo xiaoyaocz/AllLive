@@ -1,36 +1,36 @@
 # AllLive
 
-»ñÈ¡¸÷¸öÍøÕ¾µÄÖ±²¥ĞÅÏ¢¼°µ¯Ä»¡£
+è·å–å„ä¸ªç½‘ç«™çš„ç›´æ’­ä¿¡æ¯åŠå¼¹å¹•ã€‚
 
-Ö§³ÖÒÔÏÂÍøÕ¾£º
+æ”¯æŒä»¥ä¸‹ç½‘ç«™ï¼š
 
-- »¢ÑÀÖ±²¥
+- è™ç‰™ç›´æ’­
 
-- ¶·ÓãÖ±²¥
+- æ–—é±¼ç›´æ’­
 
-- ßÙÁ¨ßÙÁ¨Ö±²¥
+- å“”å“©å“”å“©ç›´æ’­
 
 ## TODO:
 
-- Æó¶ìµç¾º [¡Á]
+- ä¼é¹…ç”µç« [Ã—]
 
-- DanmakuHelper [¡Á]
+- DanmakuHelper [Ã—]
 
 ## AllLive.Core
 
-ÏîÄ¿ºËĞÄ£¬.NET Standard 2.0Àà¿â¡£ÓÃÓÚ»ñÈ¡¸÷¸öÍøÕ¾µÄĞÅÏ¢¼°µ¯Ä»ÊµÏÖ¡£
+é¡¹ç›®æ ¸å¿ƒï¼Œ.NET Standard 2.0ç±»åº“ã€‚ç”¨äºè·å–å„ä¸ªç½‘ç«™çš„ä¿¡æ¯åŠå¼¹å¹•å®ç°ã€‚
 
 ## AllLive.ConsoleApp
 
-»ùÓÚAllLive.CoreµÄ¿ØÖÆÌ¨³ÌĞò¡£
+åŸºäºAllLive.Coreçš„æ§åˆ¶å°ç¨‹åºã€‚
 
-ÊäÈëÖ±²¥¼äÁ´½Ó»ñÈ¡ĞÅÏ¢¼°²¥·ÅµØÖ·£º
+è¾“å…¥ç›´æ’­é—´é“¾æ¥è·å–ä¿¡æ¯åŠæ’­æ”¾åœ°å€ï¼š
 
 ```
 AllLive.ConsoleApp -i [URL]
 ```
 
-ÊäÈëÖ±²¥¼äÁ´½Ó»ñÈ¡µ¯Ä»£º
+è¾“å…¥ç›´æ’­é—´é“¾æ¥è·å–å¼¹å¹•ï¼š
 
 ```
 AllLive.ConsoleApp -d [URL]
@@ -38,18 +38,18 @@ AllLive.ConsoleApp -d [URL]
 
 ## AllLive.UWP
 
-UWP¿Í»§¶Ë£¬¼òµ¥¿´Ö±²¥¡£
+UWPå®¢æˆ·ç«¯ï¼Œç®€å•çœ‹ç›´æ’­ã€‚
 
-[Î¢ÈíÉÌµêÏÂÔØ](https://www.microsoft.com/store/apps/9N1TWG2G84VD)
+[å¾®è½¯å•†åº—ä¸‹è½½](https://www.microsoft.com/store/apps/9N1TWG2G84VD)
 
 ![UWP1](https://raw.githubusercontent.com/xiaoyaocz/AllLive/master/Screenshots/UWP1.png)
 
 
 ## AllLive.DanmakuHelper
 
-µ¯Ä»ÖúÊÖ£¬ÊµÊ±ÏÔÊ¾µ¯Ä»¡£
+å¼¹å¹•åŠ©æ‰‹ï¼Œå®æ—¶æ˜¾ç¤ºå¼¹å¹•ã€‚
 
-## ²Î¿¼¼°ÒıÓÃ
+## å‚è€ƒåŠå¼•ç”¨
 [https://github.com/wbt5/real-url](https://github.com/wbt5/real-url)
 
 [https://github.com/lovelyyoshino/Bilibili-Live-API/blob/master/API.WebSocket.md](https://github.com/lovelyyoshino/Bilibili-Live-API/blob/master/API.WebSocket.md)

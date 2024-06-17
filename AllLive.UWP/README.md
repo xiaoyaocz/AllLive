@@ -1,17 +1,17 @@
 # AllLive.UWP
 
 
-UWP²»Ö§³ÖQuickJS,Éú³ÉReleaseÊ±ÐèÒªÐÞ¸ÄAllLive.CoreÏîÄ¿µÄcsprojÎÄ¼þ:
+UWPä¸æ”¯æŒQuickJS,ç”ŸæˆReleaseæ—¶éœ€è¦ä¿®æ”¹AllLive.Coreé¡¹ç›®çš„csprojæ–‡ä»¶:
 
-1¡¢ÒýÓÃÐÞ¸Ä
+1ã€å¼•ç”¨ä¿®æ”¹
 
 ```
 <PackageReference Include="QuickJS.NET" Version="0.0.3" />
-<!-- ÐÞ¸ÄÎªÒÔÏÂÄÚÈÝ£¬»òÈ¥³ýQuickJS.NETÒýÓÃ -->
+<!-- ä¿®æ”¹ä¸ºä»¥ä¸‹å†…å®¹ï¼Œæˆ–åŽ»é™¤QuickJS.NETå¼•ç”¨ -->
 <PackageReference Include="QuickJS.NET" Version="0.0.3" PrivateAssets="all" />
 ```
 
-2¡¢Ìí¼ÓÌõ¼þ±àÒë·ûºÅ£ºWINDOWS_UWP
+2ã€æ·»åŠ æ¡ä»¶ç¼–è¯‘ç¬¦å·ï¼šWINDOWS_UWP
 
 ```
 <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
