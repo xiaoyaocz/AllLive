@@ -229,7 +229,7 @@ namespace AllLive.UWP.ViewModels
 
         private void AddFavorite()
         {
-            if (Site == null || RoomID == null) return;
+            if (Site == null || RoomID == null|| RoomID=="0" || RoomID=="") return;
             DatabaseHelper.AddFavorite(new Models.FavoriteItem() { 
                 Photo= Photo,
                 RoomID=RoomID,
@@ -237,6 +237,7 @@ namespace AllLive.UWP.ViewModels
                 UserName= Name
             });
             IsFavorite = true;
+            MessageCenter.UpdateFavorite();
         }
         private void RemoveFavorite()
         {
@@ -246,6 +247,7 @@ namespace AllLive.UWP.ViewModels
             }
             DatabaseHelper.DeleteFavorite(FavoriteID.Value);
             IsFavorite = false;
+            MessageCenter.UpdateFavorite();
         }
 
         public async void LoadPlayUrl()

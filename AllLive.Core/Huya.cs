@@ -135,15 +135,9 @@ namespace AllLive.Core
         }
         public async Task<LiveRoomDetail> GetRoomDetail(object roomId)
         {
-            Dictionary<string, string> headers = new Dictionary<string, string>();
-            headers.Add("user-agent", "Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1 Edg/91.0.4472.69");
-            var result = await HttpUtil.GetString($"https://m.huya.com/{roomId}", headers);
-            var jsonStr = Regex.Match(result, @"window\.HNF_GLOBAL_INIT.=.\{[\s\S]*?\}[\s\S]*?</script>", RegexOptions.Singleline).Groups[0].Value;
-            jsonStr=Regex.Replace(jsonStr, @"window\.HNF_GLOBAL_INIT.=.", "").Replace("</script>", "");
-            jsonStr=Regex.Replace(jsonStr, @"function.*?\(.*?\).\{[\s\S]*?\}", "\"\"");
-
-
-             var jsonObj = JObject.Parse(jsonStr);
+            var jsonObj = await GetRoomInfo(roomId);
+            var topSid = jsonObj["topSid"].ToInt64();
+            var subSid = jsonObj["subSid"].ToInt64();
 
             var title = jsonObj["roomInfo"]["tLiveInfo"]["sIntroduction"].ToString();
             if (string.IsNullOrEmpty(title))
@@ -159,7 +153,6 @@ namespace AllLive.Core
             var lines = jsonObj["roomInfo"]["tLiveInfo"]["tLiveStreamInfo"]["vStreamInfo"]["value"];
             foreach (var item in lines)
             {
-
                 if (!string.IsNullOrEmpty(item["sFlvUrl"]?.ToString()))
                 {
                     huyaLines.Add(new HuyaLineModel()
@@ -181,6 +174,10 @@ namespace AllLive.Core
                 //    });
                 //}
             }
+
+            // 将AL的线路放到最后,AL的线路非常容易出现403
+            huyaLines = huyaLines.OrderBy(x => x.Line.Contains("al.flv.")).ToList();
+
             //优先FLV
             //huyaLines=huyaLines.Where(x=>!x.Line.Contains("-game")).OrderBy(x=>x.LineType).ToList();
 
@@ -194,11 +191,17 @@ namespace AllLive.Core
                     Name = item["sDisplayName"].ToString(),
                 });
             }
+            var realRoomId= jsonObj["roomInfo"]["tLiveInfo"]["lProfileRoom"].ToInt32();
+            if (realRoomId == 0)
+            {
+               realRoomId = jsonObj["roomInfo"]["tProfileInfo"]["lProfileRoom"].ToInt32();
+            }
+
             return new LiveRoomDetail()
             {
                 Cover = jsonObj["roomInfo"]["tLiveInfo"]["sScreenshot"].ToString(),
                 Online = jsonObj["roomInfo"]["tLiveInfo"]["lTotalCount"].ToInt32(),
-                RoomID = jsonObj["roomInfo"]["tLiveInfo"]["lProfileRoom"].ToString(),
+                RoomID = realRoomId.ToString(),
                 Title = title,
                 UserName = jsonObj["roomInfo"]["tProfileInfo"]["sNick"].ToString(),
                 UserAvatar = jsonObj["roomInfo"]["tProfileInfo"]["sAvatar180"].ToString(),
@@ -215,11 +218,32 @@ namespace AllLive.Core
                 },
                 DanmakuData = new HuyaDanmakuArgs(
                     jsonObj["roomInfo"]["tLiveInfo"]["lYyid"].ToInt64(),
-                    result.MatchText(@"lChannelId"":([0-9]+)").ToInt64(),
-                    result.MatchText(@"lSubChannelId"":([0-9]+)").ToInt64()
+                    topSid,
+                    subSid
                 ),
                 Url = "https://www.huya.com/" + roomId
             };
+        }
+
+        private async Task<JToken> GetRoomInfo(object roomId)
+        {
+            Dictionary<string, string> headers = new Dictionary<string, string>();
+            headers.Add("user-agent", "Mozilla/5.0 (Linux; Android 11; Pixel 5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.91 Mobile Safari/537.36 Edg/117.0.0.0");
+            var result = await HttpUtil.GetString($"https://m.huya.com/{roomId}", headers);
+            var jsonStr = Regex.Match(result, @"window\.HNF_GLOBAL_INIT.=.\{[\s\S]*?\}[\s\S]*?</script>", RegexOptions.Singleline).Groups[0].Value;
+            jsonStr = Regex.Replace(jsonStr, @"window\.HNF_GLOBAL_INIT.=.", "").Replace("</script>", "");
+            jsonStr = Regex.Replace(jsonStr, @"function.*?\(.*?\).\{[\s\S]*?\}", "\"\"");
+
+
+            var jsonObj = JObject.Parse(jsonStr);
+
+            var topSid = result.MatchText(@"lChannelId"":([0-9]+)").ToInt64();
+            var subSid = result.MatchText(@"lSubChannelId"":([0-9]+)").ToInt64();
+
+            jsonObj["topSid"]=topSid;
+            jsonObj["subSid"]=subSid;
+
+            return jsonObj;
         }
         private long GetUuid()
         {
@@ -379,7 +403,7 @@ namespace AllLive.Core
             map.Add("sv", "2401310322");
 
             //将map转为字符串
-            var param = string.Join("&", map.AllKeys.Select(x => $"{x}={map[x]}"));
+            var param = string.Join("&", map.AllKeys.Select(x => $"{x}={Uri.EscapeDataString(map[x])}"));
             return param;
         }
 
@@ -387,7 +411,11 @@ namespace AllLive.Core
         {
             return Task.FromResult(qn.Data as List<string>);
         }
-
+        public async Task<bool> GetLiveStatus(object roomId)
+        {
+            var roomInfo = await GetRoomInfo(roomId.ToString());
+            return roomInfo["roomInfo"]["eLiveStatus"].ToInt32() == 2;
+        }
     }
     public class HuyaUrlDataModel
     {

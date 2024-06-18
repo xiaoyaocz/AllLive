@@ -16,7 +16,23 @@ namespace AllLive.UWP.ViewModels
             Items = new ObservableCollection<FavoriteItem>();
         }
 
-        public ObservableCollection<FavoriteItem> Items { get; set; }
+        private ObservableCollection<FavoriteItem> _items;
+        public ObservableCollection<FavoriteItem> Items
+        {
+            get { return _items; }
+            set { _items = value; DoPropertyChanged("Items"); }
+        }
+
+
+        private bool _loadingLiveStatus;
+
+        public bool LoaddingLiveStatus
+        {
+            get { return _loadingLiveStatus; }
+            set { _loadingLiveStatus = value; DoPropertyChanged("LoaddingLiveStatus"); }
+        }
+
+
 
         public async void LoadData()
         {
@@ -28,6 +44,7 @@ namespace AllLive.UWP.ViewModels
                     Items.Add(item);
                 }
                 IsEmpty = Items.Count == 0;
+                LoadLiveStatus();
             }
             catch (Exception ex)
             {
@@ -39,6 +56,46 @@ namespace AllLive.UWP.ViewModels
             }
         }
 
+        public void LoadLiveStatus()
+        {
+            LoaddingLiveStatus = true;
+            loadedCount = 0;
+            foreach (var item in Items)
+            {
+                LoadLiveStatus(item);
+            }
+        }
+
+        int loadedCount = 0;
+        public async void LoadLiveStatus(FavoriteItem item)
+        {
+            try
+            {
+                var site = MainVM.Sites.FirstOrDefault(x => x.Name == item.SiteName);
+                if (site != null)
+                {
+                    var status = await site.LiveSite.GetLiveStatus(item.RoomID);
+                    item.LiveStatus = status;
+                }
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Log($"获取直播状态失败:{item.SiteName}-{item.RoomID}", LogType.ERROR, ex);
+            }
+            finally
+            {
+                loadedCount++;
+                if (loadedCount == Items.Count)
+                {
+                    LoaddingLiveStatus = false;
+                    loadedCount = 0;
+                    // 排序，直播的在前面
+                    Items = new ObservableCollection<FavoriteItem>(Items.OrderByDescending(x => x.LiveStatus));
+                }
+            }
+        } 
+
+
         public override void Refresh()
         {
             base.Refresh();
@@ -46,7 +103,7 @@ namespace AllLive.UWP.ViewModels
             LoadData();
         }
 
-        public  void RemoveItem(FavoriteItem item)
+        public void RemoveItem(FavoriteItem item)
         {
             try
             {
@@ -58,7 +115,7 @@ namespace AllLive.UWP.ViewModels
             {
                 HandleError(ex);
             }
-          
+
         }
 
 

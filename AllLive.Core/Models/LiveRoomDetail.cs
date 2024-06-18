@@ -54,5 +54,10 @@ namespace AllLive.Core.Models
         /// 链接
         /// </summary>
         public string Url { get; set; }
+
+        /// <summary>
+        /// 是否录播
+        /// </summary>
+        public bool IsRecord { get; set; } = false;
     }
 }

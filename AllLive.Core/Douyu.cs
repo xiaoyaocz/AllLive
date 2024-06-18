@@ -127,35 +127,43 @@ namespace AllLive.Core
         }
         public async Task<LiveRoomDetail> GetRoomDetail(object roomId)
         {
-            var result = await HttpUtil.GetString($"https://m.douyu.com/{roomId}/index.pageContext.json",new Dictionary<string, string>()
-            {
-                { "referer", $"https://m.douyu.com/{roomId}"},
-                { "user-agent","Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1 Edg/114.0.0.0" },
-            });
+            var roomInfo = await GetRoomInfo(roomId.ToString());
             var jsEncResult = await HttpUtil.GetString($"https://www.douyu.com/swf_api/homeH5Enc?rids={roomId}", new Dictionary<string, string>()
             {
                 { "referer", $"https://m.douyu.com/{roomId}"},
                 { "user-agent","Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1 Edg/114.0.0.0" },
             });
             var crptext = JObject.Parse(jsEncResult)["data"][$"room{roomId}"].ToString();
-            var obj = JObject.Parse(result);
-            var roomInfo =obj["pageProps"]["room"]["roomInfo"]["roomInfo"];
+           
 
             return new LiveRoomDetail()
             {
-                Cover = roomInfo["roomSrc"].ToString(),
-                Online = ParseHotNum(roomInfo["hn"].ToString()),
-                RoomID = roomInfo["rid"].ToString(),
-                Title = roomInfo["roomName"].ToString(),
-                UserName = roomInfo["nickname"].ToString(),
-                UserAvatar = roomInfo["avatar"].ToString(),
-                Introduction = "",
-                Notice = roomInfo["notice"].ToString(),
-                Status = roomInfo["isLive"].ToInt32() == 1,
-                DanmakuData = roomInfo["rid"].ToString(),
-                Data = await GetPlayArgs(crptext, roomInfo["rid"].ToString()),
-                Url = "https://www.douyu.com/" + roomId
+                Cover = roomInfo["room_pic"].ToString(),
+                Online = ParseHotNum(roomInfo["room_biz_all"]["hot"].ToString()),
+                RoomID = roomInfo["room_id"].ToString(),
+                Title = roomInfo["room_name"].ToString(),
+                UserName = roomInfo["owner_name"].ToString(),
+                UserAvatar = roomInfo["owner_avatar"].ToString(),
+                Introduction =roomInfo["show_details"].ToString(),
+                Notice = "",
+                Status = roomInfo["show_status"].ToInt32() == 1 && roomInfo["videoLoop"].ToInt32() != 1,
+                DanmakuData = roomInfo["room_id"].ToString(),
+                Data = await GetPlayArgs(crptext, roomInfo["room_id"].ToString()),
+                Url = "https://www.douyu.com/" + roomId,
+                IsRecord= roomInfo["videoLoop"].ToInt32() == 1,
             };
+        }
+
+
+        private async Task<JToken> GetRoomInfo(string roomId)
+        {
+            var result = await HttpUtil.GetString($"https://www.douyu.com/betard/{roomId}", new Dictionary<string, string>()
+            {
+                { "referer", $"https://www.douyu.com/{roomId}"},
+                { "user-agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36 Edg/114.0.1823.43" },
+            });
+            var obj = JObject.Parse(result);
+            return obj["room"];
         }
 
         private async Task<string> GetPlayArgs(string html, string rid)
@@ -296,7 +304,11 @@ namespace AllLive.Core
             }
 
         }
-
+        public async Task<bool> GetLiveStatus(object roomId)
+        {
+            var roomInfo = await GetRoomInfo(roomId.ToString());
+            return roomInfo["show_status"].ToInt32() == 1 && roomInfo["videoLoop"].ToInt32() != 1;
+        }
         private int ParseHotNum(string hn)
         {
             try

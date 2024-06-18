@@ -552,6 +552,12 @@ namespace AllLive.Core
         {
             throw new Exception("抖音直播不支持搜索");
         }
+        public async Task<bool> GetLiveStatus(object roomId)
+        {
+            var result = await GetRoomDetail(roomId: roomId);
+            return result.Status;
+
+        }
 
         private string GenerateRandomNumber(int length)
         {

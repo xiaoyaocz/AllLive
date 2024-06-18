@@ -23,6 +23,7 @@ namespace AllLive.UWP.Helper
         public delegate void ChangeTitleHandler(string title, string logo);
         public static event ChangeTitleHandler ChangeTitleEvent;
         public static event EventHandler<bool> HideTitlebarEvent;
+        public static event EventHandler UpdateFavoriteEvent;
         public static void OpenLiveRoom(ILiveSite liveSite,LiveRoomItem item)
         {
             var arg = new PageArgs()
@@ -79,6 +80,11 @@ namespace AllLive.UWP.Helper
         public static void HideTitlebar(bool show)
         {
             HideTitlebarEvent?.Invoke(null, show);
+        }
+
+        public static void UpdateFavorite()
+        {
+            UpdateFavoriteEvent?.Invoke(null, new EventArgs());
         }
     }
     class BlankPage : Page { }

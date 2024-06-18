@@ -29,12 +29,25 @@ namespace AllLive.UWP.Views
         public FavoritePage()
         {
             favoriteVM = new FavoriteVM();
+            this.NavigationCacheMode = NavigationCacheMode.Enabled;
+            MessageCenter.UpdateFavoriteEvent += MessageCenter_UpdateFavoriteEvent; ;
             this.InitializeComponent();
         }
+
+        private void MessageCenter_UpdateFavoriteEvent(object sender, EventArgs e)
+        {
+            favoriteVM.Refresh();
+        }
+
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
-            favoriteVM.LoadData();
+
+            if(favoriteVM.Items.Count==0)
+            {
+                favoriteVM.LoadData();
+            }
+
         }
 
         private void ls_ItemClick(object sender, ItemClickEventArgs e)

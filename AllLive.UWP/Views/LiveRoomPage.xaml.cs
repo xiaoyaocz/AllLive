@@ -139,22 +139,8 @@ namespace AllLive.UWP.Views
         {
             await this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
             {
-                if(liveRoomVM.CurrentLine==null)
-                {
-                    return;
-                }
-                var index = liveRoomVM.Lines.IndexOf(liveRoomVM.CurrentLine);
-                //尝试切换
-                if (index == liveRoomVM.Lines.Count - 1)
-                {
-                    PlayerLoading.Visibility = Visibility.Collapsed;
-                    LogHelper.Log("直播加载失败", LogType.ERROR, new Exception("vlc直播加载失败"));
-                    await new MessageDialog($"啊，直播播放失败了，请尝试以下操作\r\n1、更换清晰度或线路\r\n2、请尝试在直播设置中打开/关闭硬解试试", "播放失败").ShowAsync();
-                }
-                else
-                {
-                    liveRoomVM.CurrentLine = liveRoomVM.Lines[index + 1];
-                }
+               
+                PlayError();
             });
 
         }
@@ -209,7 +195,7 @@ namespace AllLive.UWP.Views
         {
             try
             {
-               
+
                 var str = $"Url: {liveRoomVM.CurrentLine?.Url ?? ""}\r\n";
                 str += $"Quality: {liveRoomVM.CurrentQuality?.Quality ?? ""}\r\n";
                 str += $"Video Codec: {interopMSS.CurrentVideoStream.CodecName}\r\nAudio Codec:{interopMSS.AudioStreams[0].CodecName}\r\n";
@@ -333,7 +319,7 @@ namespace AllLive.UWP.Views
 
         private void LiveRoomVM_ChangedPlayUrl(object sender, string e)
         {
-            _=SetPlayer(e);
+            _ = SetPlayer(e);
         }
         private async Task SetPlayer(string url)
         {
@@ -354,7 +340,7 @@ namespace AllLive.UWP.Views
 
                 var config = new MediaSourceConfig();
                 config.FFmpegOptions.Add("rtsp_transport", "tcp");
-                var decoder=SettingHelper.GetValue<int>(SettingHelper.VIDEO_DECODER, 0);
+                var decoder = SettingHelper.GetValue<int>(SettingHelper.VIDEO_DECODER, 0);
                 switch (decoder)
                 {
                     case 1:
@@ -376,9 +362,21 @@ namespace AllLive.UWP.Views
                 {
                     config.FFmpegOptions.Add("user_agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36 Edg/121.0.0.0");
                     config.FFmpegOptions.Add("referer", "https://www.huya.com");
+
                 }
-                interopMSS = await FFmpegMediaSource.CreateFromUriAsync(url, config);
+                try
+                {
+                    interopMSS = await FFmpegMediaSource.CreateFromUriAsync(url, config);
+                }
+                catch (Exception ex)
+                {
+                    LogHelper.Log("播放器初始化失败", LogType.ERROR, ex);
+                    PlayError();
+                    return;
+                }
+              
                 mediaPlayer.AutoPlay = true;
+                mediaPlayer.Volume = SliderVolume.Value;
                 mediaPlayer.Source = interopMSS.CreateMediaPlaybackItem();
                 player.SetMediaPlayer(mediaPlayer);
             }
@@ -389,6 +387,25 @@ namespace AllLive.UWP.Views
 
         }
 
+        private async void PlayError()
+        {
+            if (liveRoomVM.CurrentLine == null)
+            {
+                return;
+            }
+            // 当前线路播放失败，尝试下一个线路
+            var index = liveRoomVM.Lines.IndexOf(liveRoomVM.CurrentLine);
+            if (index == liveRoomVM.Lines.Count - 1)
+            {
+                PlayerLoading.Visibility = Visibility.Collapsed;
+                LogHelper.Log("直播加载失败", LogType.ERROR, new Exception("直播加载失败"));
+                await new MessageDialog($"啊，播放失败了，请尝试以下操作\r\n1、更换清晰度或线路\r\n2、请尝试在直播设置中打开/关闭硬解试试", "播放失败").ShowAsync();
+            }
+            else
+            {
+                liveRoomVM.CurrentLine = liveRoomVM.Lines[index + 1];
+            }
+        }
 
         private void StopPlay()
         {
@@ -406,7 +423,7 @@ namespace AllLive.UWP.Views
             timer_focus.Stop();
             controlTimer.Stop();
             Window.Current.CoreWindow.PointerCursor = new Windows.UI.Core.CoreCursor(Windows.UI.Core.CoreCursorType.Arrow, 0);
-           
+
             liveRoomVM?.Stop();
 
             SetFullScreen(false);
