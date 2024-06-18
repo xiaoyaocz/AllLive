@@ -29,12 +29,12 @@ namespace AllLive.UWP.ViewModels
                 Logo="ms-appx:///Assets/Logo/huya.png",
                 LiveSite=new AllLive.Core.Huya(),
             },
-            //new Site()
-            //{
-            //    Name="企鹅电竞",
-            //    Logo="ms-appx:///Assets/Logo/egame.png",
-            //    LiveSite=new AllLive.Core.Egame(),
-            //},
+            new Site()
+            {
+                Name="抖音直播",
+                Logo="ms-appx:///Assets/Logo/douyin.png",
+                LiveSite=new AllLive.Core.Douyin(),
+            },
         };
         
     }

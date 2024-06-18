@@ -5,7 +5,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -85,24 +84,24 @@ namespace AllLive.Core.Danmaku
             }
         }
 
-        private Color GetColor(int type)
+        private DanmakuColor GetColor(int type)
         {
             switch (type)
             {
                 case 1:
-                    return Color.Red;
+                    return DanmakuColor.Red;
                 case 2:
-                    return Color.FromArgb(30, 135, 240);
+                    return DanmakuColor.FromRgb(30, 135, 240);
                 case 3:
-                    return Color.FromArgb(122, 200, 75);
+                    return DanmakuColor.FromRgb(122, 200, 75);
                 case 4:
-                    return Color.FromArgb(255, 127, 0);
+                    return DanmakuColor.FromRgb(255, 127, 0);
                 case 5:
-                    return Color.FromArgb(155, 57, 244);
+                    return DanmakuColor.FromRgb(155, 57, 244);
                 case 6:
-                    return Color.FromArgb(255, 105, 180);
+                    return DanmakuColor.FromRgb(255, 105, 180);
                 default:
-                    return Color.White;
+                    return DanmakuColor.White;
             }
         }
 
@@ -142,6 +141,7 @@ namespace AllLive.Core.Danmaku
 
         public async Task Stop()
         {
+            timer.Stop();
             await Task.Run(() =>
             {
                 ws.Close();

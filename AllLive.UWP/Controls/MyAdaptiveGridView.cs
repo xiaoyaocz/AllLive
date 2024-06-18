@@ -38,15 +38,15 @@ namespace AllLive.UWP.Controls
 
 
 
-        public bool Loading
+        public bool DataLoading
         {
-            get { return (bool)GetValue(LoadingProperty); }
-            set { SetValue(LoadingProperty, value); }
+            get { return (bool)GetValue(DataLoadingProperty); }
+            set { SetValue(DataLoadingProperty, value); }
         }
 
         // Using a DependencyProperty as the backing store for Loading.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty LoadingProperty =
-            DependencyProperty.Register("Loading", typeof(bool), typeof(MyAdaptiveGridView), new PropertyMetadata(true));
+        public static readonly DependencyProperty DataLoadingProperty =
+            DependencyProperty.Register("DataLoading", typeof(bool), typeof(MyAdaptiveGridView), new PropertyMetadata(true));
 
 
 
@@ -57,8 +57,8 @@ namespace AllLive.UWP.Controls
         {
             scrollViewer = GetTemplateChild("ScrollViewer") as ScrollViewer;
             scrollViewer.ViewChanged += ScrollViewer_ViewChanged;
-            this.RegisterPropertyChangedCallback(LoadingProperty, new DependencyPropertyChangedCallback((obj, e) => {
-                if (!Loading)
+            this.RegisterPropertyChangedCallback(DataLoadingProperty, new DependencyPropertyChangedCallback((obj, e) => {
+                if (!DataLoading)
                 {
                     if (scrollViewer.ScrollableHeight == 0)
                     {

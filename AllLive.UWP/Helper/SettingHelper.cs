@@ -48,11 +48,9 @@ namespace AllLive.UWP.Helper
         public const string MOUSE_BACK = "MouseBack";
 
         /// <summary>
-        /// 解码
+        /// 视频解码
         /// </summary>
-        public const string SORTWARE_DECODING = "sortwareDecoding";
-
-        public const string DECODE = "Decode";
+        public const string VIDEO_DECODER = "VideoDecoder";
 
         /// <summary>
         /// 音量

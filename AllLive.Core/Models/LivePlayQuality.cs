@@ -17,5 +17,7 @@ namespace AllLive.Core.Models
         /// 清晰度信息
         /// </summary>
         public object Data { get; set; }
+
+        public int Sort { get; set; } = 0;
     }
 }

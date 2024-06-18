@@ -21,6 +21,7 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using AllLive.Core.Models;
 using Windows.ApplicationModel.Core;
+using System.Threading.Tasks;
 
 // https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x804 上介绍了“空白页”项模板
 
@@ -55,50 +56,30 @@ namespace AllLive.UWP
 
         }
         
-        private void searchBox_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
+        private async void searchBox_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
         {
             if (string.IsNullOrEmpty(args.QueryText))
             {
                 Helper.Utils.ShowMessageToast("关键字不能为空");
                 return;
             }
-            if (!ParseUrl(args.QueryText))
+            if (!await ParseUrl(args.QueryText))
             {
                 this.Frame.Navigate(typeof(SearchPage), args.QueryText);
             }
-
-
         }
 
-        private bool ParseUrl(string url)
+        private async Task<bool> ParseUrl(string url)
         {
-            ILiveSite site = null;
-            var id = "";
-            if (url.Contains("bilibili.com"))
-            {
-                id = url.MatchText(@"bilibili\.com/([\d|\w]+)", "");
-                site = MainVM.Sites[0].LiveSite;
-            }
-
-            if (url.Contains("douyu.com"))
-            {
-                id = url.MatchText(@"douyu\.com/([\d|\w]+)", "");
-                site = MainVM.Sites[1].LiveSite;
-            }
-            if (url.Contains("huya.com"))
-            {
-
-                id = url.MatchText(@"huya\.com/([\d|\w]+)", "");
-                site = MainVM.Sites[2].LiveSite;
-            }
-            if (site != null && !string.IsNullOrEmpty(id))
+            var parseResult=await SiteParser.ParseUrl(url);
+            if (parseResult.Item1 != LiveSite.Unknown && !string.IsNullOrEmpty(parseResult.Item2))
             {
                 this.Frame.Navigate(typeof(LiveRoomPage), new PageArgs()
                 {
-                    Site = site,
+                    Site = MainVM.Sites[(int)parseResult.Item1].LiveSite,
                     Data = new LiveRoomItem()
                     {
-                        RoomID = id
+                        RoomID = parseResult.Item2,
                     }
                 });
                 return true;

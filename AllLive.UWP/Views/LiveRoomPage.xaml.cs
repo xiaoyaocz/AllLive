@@ -28,10 +28,12 @@ using Windows.UI.Xaml.Media.Imaging;
 using Windows.Graphics.Display;
 using Windows.UI;
 using Windows.ApplicationModel.Core;
-using LibVLCSharp.Shared;
 using System.Diagnostics;
 using Newtonsoft.Json;
 using Windows.UI.Core;
+using FFmpegInteropX;
+using Windows.Media.Playback;
+using System.Text;
 
 // https://go.microsoft.com/fwlink/?LinkId=234238 上介绍了“空白页”项模板
 
@@ -44,9 +46,9 @@ namespace AllLive.UWP.Views
     {
         readonly LiveRoomVM liveRoomVM;
         readonly SettingVM settingVM;
-        private LibVLC LibVLC;
 
-        private MediaPlayer mediaPlayer;
+        FFmpegInteropX.FFmpegMediaSource interopMSS;
+        readonly MediaPlayer mediaPlayer;
 
         DisplayRequest dispRequest;
         PageArgs pageArgs;
@@ -72,214 +74,149 @@ namespace AllLive.UWP.Views
             timer_focus.Tick += Timer_focus_Tick;
             controlTimer = new DispatcherTimer() { Interval = TimeSpan.FromSeconds(1) };
             controlTimer.Tick += ControlTimer_Tick;
-            //mediaPlayer = new MediaPlayer();
-            //mediaPlayer.PlaybackSession.PlaybackStateChanged += PlaybackSession_PlaybackStateChanged;
-            //mediaPlayer.PlaybackSession.BufferingStarted += PlaybackSession_BufferingStarted;
-            //mediaPlayer.PlaybackSession.BufferingProgressChanged += PlaybackSession_BufferingProgressChanged;
-            //mediaPlayer.PlaybackSession.BufferingEnded += PlaybackSession_BufferingEnded;
-            //mediaPlayer.MediaOpened += MediaPlayer_MediaOpened;
-            //mediaPlayer.MediaEnded += MediaPlayer_MediaEnded; ;
-            //mediaPlayer.MediaFailed += MediaPlayer_MediaFailed;
+            mediaPlayer = new MediaPlayer();
+            mediaPlayer.PlaybackSession.PlaybackStateChanged += PlaybackSession_PlaybackStateChanged;
+            mediaPlayer.PlaybackSession.BufferingStarted += PlaybackSession_BufferingStarted;
+            mediaPlayer.PlaybackSession.BufferingProgressChanged += PlaybackSession_BufferingProgressChanged;
+            mediaPlayer.PlaybackSession.BufferingEnded += PlaybackSession_BufferingEnded;
+            mediaPlayer.MediaOpened += MediaPlayer_MediaOpened;
+            mediaPlayer.MediaEnded += MediaPlayer_MediaEnded; ;
+            mediaPlayer.MediaFailed += MediaPlayer_MediaFailed;
 
             timer_focus.Start();
             controlTimer.Start();
 
 
         }
-        private void player_Initialized(object sender, LibVLCSharp.Platforms.Windows.InitializedEventArgs e)
-        {
-            LibVLC = new LibVLC(enableDebugLogs: true, e.SwapChainOptions);
-            mediaPlayer = new MediaPlayer(LibVLC);
-            LoadSetting();
-        }
+
 
 
         #region 播放器事件
-
-        private async void Media_StateChanged(object sender, MediaStateChangedEventArgs e)
+        private async void MediaPlayer_MediaEnded(MediaPlayer sender, object args)
         {
-            Debug.WriteLine(e.State.ToString());
+            await this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+            {
+                var index = liveRoomVM.Lines.IndexOf(liveRoomVM.CurrentLine);
+                //尝试切换
+                if (index == liveRoomVM.Lines.Count - 1)
+                {
+                    liveRoomVM.Living = false;
+                }
+                else
+                {
+                    liveRoomVM.CurrentLine = liveRoomVM.Lines[index + 1];
+                }
+            });
+        }
+
+        private async void PlaybackSession_BufferingEnded(MediaPlaybackSession sender, object args)
+        {
+            await this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+            {
+                PlayerLoading.Visibility = Visibility.Collapsed;
+            });
+
+        }
+
+        private async void PlaybackSession_BufferingProgressChanged(MediaPlaybackSession sender, object args)
+        {
+            await this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+            {
+                PlayerLoadText.Text = sender.BufferingProgress.ToString("p");
+            });
+        }
+
+        private async void PlaybackSession_BufferingStarted(MediaPlaybackSession sender, object args)
+        {
+            await this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+            {
+                PlayerLoading.Visibility = Visibility.Visible;
+                PlayerLoadText.Text = "缓冲中";
+            });
+        }
+
+        private async void MediaPlayer_MediaFailed(MediaPlayer sender, MediaPlayerFailedEventArgs args)
+        {
             await this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
             {
-                switch (e.State)
+                if(liveRoomVM.CurrentLine==null)
                 {
-                    case VLCState.NothingSpecial:
-                        break;
-                    case VLCState.Opening:
-                        {
-                            PlayerLoading.Visibility = Visibility.Visible;
-                            PlayerLoadText.Text = "加载中...";
-                        }
-                        break;
-                    case VLCState.Buffering:
-                        {
-                            PlayerLoading.Visibility = Visibility.Visible;
-                            PlayerLoadText.Text = "缓冲中";
-                        }
-                        break;
-                    case VLCState.Playing:
-                        {
-                            PlayerLoading.Visibility = Visibility.Collapsed;
-                            PlayBtnPlay.Visibility = Visibility.Collapsed;
-                            PlayBtnPause.Visibility = Visibility.Visible;
-                            dispRequest.RequestActive();
-                            liveRoomVM.Living = true;
-                            SetMediaInfo();
-                        }
-                        break;
-                    case VLCState.Paused:
-                        {
-                            PlayerLoading.Visibility = Visibility.Collapsed;
-                            PlayBtnPlay.Visibility = Visibility.Visible;
-                            PlayBtnPause.Visibility = Visibility.Collapsed;
-                        }
-                        break;
-                    case VLCState.Stopped:
-                        {
-                            PlayerLoading.Visibility = Visibility.Collapsed;
-                            PlayBtnPlay.Visibility = Visibility.Collapsed;
-                            PlayBtnPause.Visibility = Visibility.Collapsed;
-                        }
-                        break;
-                    case VLCState.Ended:
-                        {
-                            var index = liveRoomVM.Lines.IndexOf(liveRoomVM.CurrentLine);
-                            //尝试切换
-                            if (index == liveRoomVM.Lines.Count - 1)
-                            {
-                                liveRoomVM.Living = false;
-                            }
-                            else
-                            {
-                                liveRoomVM.CurrentLine = liveRoomVM.Lines[index + 1];
-                            }
-                        }
-                        break;
-                    case VLCState.Error:
-                        {
-                            var index = liveRoomVM.Lines.IndexOf(liveRoomVM.CurrentLine);
-                            //尝试切换
-                            if (index == liveRoomVM.Lines.Count - 1)
-                            {
-                                PlayerLoading.Visibility = Visibility.Collapsed;
-                                LogHelper.Log("直播加载失败", LogType.ERROR, new Exception("vlc直播加载失败"));
-                                await new MessageDialog($"啊，直播播放失败了，请尝试以下操作\r\n1、更换清晰度或线路\r\n2、请尝试在直播设置中打开/关闭硬解试试", "播放失败").ShowAsync();
-                            }
-                            else
-                            {
-                                liveRoomVM.CurrentLine = liveRoomVM.Lines[index + 1];
-                            }
-
-                        }
-                        break;
-                    default:
-                        break;
+                    return;
+                }
+                var index = liveRoomVM.Lines.IndexOf(liveRoomVM.CurrentLine);
+                //尝试切换
+                if (index == liveRoomVM.Lines.Count - 1)
+                {
+                    PlayerLoading.Visibility = Visibility.Collapsed;
+                    LogHelper.Log("直播加载失败", LogType.ERROR, new Exception("vlc直播加载失败"));
+                    await new MessageDialog($"啊，直播播放失败了，请尝试以下操作\r\n1、更换清晰度或线路\r\n2、请尝试在直播设置中打开/关闭硬解试试", "播放失败").ShowAsync();
+                }
+                else
+                {
+                    liveRoomVM.CurrentLine = liveRoomVM.Lines[index + 1];
                 }
             });
 
         }
 
-        //private async void MediaPlayer_MediaEnded(MediaPlayer sender, object args)
-        //{
-        //    await this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
-        //    {
-        //        liveRoomVM.Living = false;
-        //        player.SetMediaPlayer(null);
-        //    });
-        //}
+        private async void MediaPlayer_MediaOpened(MediaPlayer sender, object args)
+        {
+            await this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+            {
+                //保持屏幕常亮
+                dispRequest.RequestActive();
+                PlayerLoading.Visibility = Visibility.Collapsed;
+                SetMediaInfo();
+            });
+        }
 
-        //private async void PlaybackSession_BufferingEnded(MediaPlaybackSession sender, object args)
-        //{
-        //    await this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
-        //    {
-        //        PlayerLoading.Visibility = Visibility.Collapsed;
-        //    });
-
-        //}
-
-        //private async void PlaybackSession_BufferingProgressChanged(MediaPlaybackSession sender, object args)
-        //{
-        //    await this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
-        //    {
-        //        PlayerLoadText.Text = sender.BufferingProgress.ToString("p");
-        //    });
-        //}
-
-        //private async void PlaybackSession_BufferingStarted(MediaPlaybackSession sender, object args)
-        //{
-        //    await this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
-        //    {
-        //        PlayerLoading.Visibility = Visibility.Visible;
-        //        PlayerLoadText.Text = "缓冲中";
-        //    });
-        //}
-
-        //private async void MediaPlayer_MediaFailed(MediaPlayer sender, MediaPlayerFailedEventArgs args)
-        //{
-        //    await this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
-        //    {
-        //        LogHelper.Log("直播加载失败", LogType.ERROR, new Exception(args.ErrorMessage));
-        //        await new MessageDialog($"啊，直播加载失败了\r\n错误信息:{args.ErrorMessage}\r\n请尝试在直播设置中打开/关闭硬解试试", "播放失败").ShowAsync();
-        //    });
-
-        //}
-
-        //private async void MediaPlayer_MediaOpened(MediaPlayer sender, object args)
-        //{
-        //    await this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
-        //    {
-        //        //保持屏幕常亮
-        //        dispRequest.RequestActive();
-        //        PlayerLoading.Visibility = Visibility.Collapsed;
-        //        SetMediaInfo();
-        //    });
-        //}
-
-        //private async void PlaybackSession_PlaybackStateChanged(MediaPlaybackSession sender, object args)
-        //{
-        //    await this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
-        //    {
-        //        switch (sender.PlaybackState)
-        //        {
-        //            case MediaPlaybackState.None:
-        //                break;
-        //            case MediaPlaybackState.Opening:
-        //                PlayerLoading.Visibility = Visibility.Visible;
-        //                PlayerLoadText.Text = "加载中";
-        //                break;
-        //            case MediaPlaybackState.Buffering:
-        //                PlayerLoading.Visibility = Visibility.Visible;
-        //                break;
-        //            case MediaPlaybackState.Playing:
-        //                PlayBtnPlay.Visibility = Visibility.Collapsed;
-        //                PlayBtnPause.Visibility = Visibility.Visible;
-        //                break;
-        //            case MediaPlaybackState.Paused:
-        //                PlayBtnPlay.Visibility = Visibility.Visible;
-        //                PlayBtnPause.Visibility = Visibility.Collapsed;
-        //                break;
-        //            default:
-        //                break;
-        //        }
-        //    });
-        //}
-
+        private async void PlaybackSession_PlaybackStateChanged(MediaPlaybackSession sender, object args)
+        {
+            await this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+            {
+                switch (sender.PlaybackState)
+                {
+                    case MediaPlaybackState.None:
+                        break;
+                    case MediaPlaybackState.Opening:
+                        PlayerLoading.Visibility = Visibility.Visible;
+                        PlayerLoadText.Text = "加载中";
+                        break;
+                    case MediaPlaybackState.Buffering:
+                        PlayerLoading.Visibility = Visibility.Visible;
+                        PlayerLoadText.Text = "缓冲中";
+                        break;
+                    case MediaPlaybackState.Playing:
+                        PlayerLoading.Visibility = Visibility.Collapsed;
+                        PlayBtnPlay.Visibility = Visibility.Collapsed;
+                        PlayBtnPause.Visibility = Visibility.Visible;
+                        dispRequest.RequestActive();
+                        liveRoomVM.Living = true;
+                        SetMediaInfo();
+                        break;
+                    case MediaPlaybackState.Paused:
+                        PlayerLoading.Visibility = Visibility.Collapsed;
+                        PlayBtnPlay.Visibility = Visibility.Visible;
+                        PlayBtnPause.Visibility = Visibility.Collapsed;
+                        break;
+                    default:
+                        break;
+                }
+            });
+        }
 
         private void SetMediaInfo()
         {
             try
             {
-                uint width = 0;
-                uint height = 0;
-                mediaPlayer.Size(0, ref width, ref height);
+               
                 var str = $"Url: {liveRoomVM.CurrentLine?.Url ?? ""}\r\n";
                 str += $"Quality: {liveRoomVM.CurrentQuality?.Quality ?? ""}\r\n";
-                //str += $"Video Codec: {mediaPlayer.VideoTrackDescription}\r\nAudio Codec:{interopMSS.CurrentAudioStream?.CodecName ?? ""}\r\n";
-                str += $"Resolution: {width} x {height}\r\n";
-                str += $"FPS: {mediaPlayer.Fps}\r\n";
-                //str += $"Video Bitrate: {mediaPlayer.bit} Kbps\r\n";
-                //str += $"Audio Bitrate: {interopMSS.AudioStreams[0].Bitrate / 1024} Kbps\r\n";
-                //str += $"Decoder Engine: {interopMSS.CurrentVideoStream.DecoderEngine.ToString()}";
+                str += $"Video Codec: {interopMSS.CurrentVideoStream.CodecName}\r\nAudio Codec:{interopMSS.AudioStreams[0].CodecName}\r\n";
+                str += $"Resolution: {interopMSS.CurrentVideoStream.PixelWidth} x {interopMSS.CurrentVideoStream.PixelHeight}\r\n";
+                str += $"Video Bitrate: {interopMSS.CurrentVideoStream.Bitrate / 1024} Kbps\r\n";
+                str += $"Audio Bitrate: {interopMSS.AudioStreams[0].Bitrate / 1024} Kbps\r\n";
+                str += $"Decoder Engine: {interopMSS.CurrentVideoStream.DecoderEngine.ToString()}";
                 txtInfo.Text = str;
             }
             catch (Exception ex)
@@ -396,9 +333,9 @@ namespace AllLive.UWP.Views
 
         private void LiveRoomVM_ChangedPlayUrl(object sender, string e)
         {
-            SetPlayer(e);
+            _=SetPlayer(e);
         }
-        private void SetPlayer(string url)
+        private async Task SetPlayer(string url)
         {
             try
             {
@@ -406,34 +343,44 @@ namespace AllLive.UWP.Views
                 PlayerLoadText.Text = "加载中";
                 if (mediaPlayer != null)
                 {
-                    mediaPlayer.Stop();
-
+                    mediaPlayer.Pause();
+                    mediaPlayer.Source = null;
                 }
-                //mediaPlayer.EnableHardwareDecoding=
-                //mediaPlayer = new MediaPlayer(LibVLC);
-                //mediaPlayer.Buffering += MediaPlayer_Buffering;
-
-                using (var media = new Media(LibVLC, new Uri(url)))
+                if (interopMSS != null)
                 {
-                    mediaPlayer.EnableHardwareDecoding = !swSoftwareDecode.IsOn;
-                    if (liveRoomVM.SiteName == "哔哩哔哩直播")
-                    {
-                        media.AddOption("http-referrer=https://live.bilibili.com");
-                        media.AddOption("http-user-agent=Mozilla/5.0 BiliDroid/1.12.0 (bbcallen@gmail.com)");
-                    }else if (liveRoomVM.SiteName == "虎牙直播")
-                    {
-                        media.AddOption("http-referrer=https://www.huya.com");
-                        media.AddOption("http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36 Edg/121.0.0.0");
-                    }
-                    media.StateChanged += Media_StateChanged;
-                    mediaPlayer.Play(media);
+                    interopMSS.Dispose();
+                    interopMSS = null;
                 }
 
-
-
-                //mediaPlayer.AutoPlay = true;
-                //mediaPlayer.Source = interopMSS.CreateMediaPlaybackItem();
-                //player.SetMediaPlayer(mediaPlayer);
+                var config = new MediaSourceConfig();
+                config.FFmpegOptions.Add("rtsp_transport", "tcp");
+                var decoder=SettingHelper.GetValue<int>(SettingHelper.VIDEO_DECODER, 0);
+                switch (decoder)
+                {
+                    case 1:
+                        config.Video.VideoDecoderMode = VideoDecoderMode.ForceSystemDecoder;
+                        break;
+                    case 2:
+                        config.Video.VideoDecoderMode = VideoDecoderMode.ForceFFmpegSoftwareDecoder;
+                        break;
+                    default:
+                        config.Video.VideoDecoderMode = VideoDecoderMode.Automatic;
+                        break;
+                }
+                if (liveRoomVM.SiteName == "哔哩哔哩直播")
+                {
+                    config.FFmpegOptions.Add("user_agent", "Mozilla/5.0 BiliDroid/1.12.0 (bbcallen@gmail.com)");
+                    config.FFmpegOptions.Add("referer", "https://live.bilibili.com/");
+                }
+                else if (liveRoomVM.SiteName == "虎牙直播")
+                {
+                    config.FFmpegOptions.Add("user_agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36 Edg/121.0.0.0");
+                    config.FFmpegOptions.Add("referer", "https://www.huya.com");
+                }
+                interopMSS = await FFmpegMediaSource.CreateFromUriAsync(url, config);
+                mediaPlayer.AutoPlay = true;
+                mediaPlayer.Source = interopMSS.CreateMediaPlaybackItem();
+                player.SetMediaPlayer(mediaPlayer);
             }
             catch (Exception ex)
             {
@@ -445,21 +392,21 @@ namespace AllLive.UWP.Views
 
         private void StopPlay()
         {
+            if (mediaPlayer != null)
+            {
+                mediaPlayer.Pause();
+                mediaPlayer.Source = null;
+            }
+            if (interopMSS != null)
+            {
+                interopMSS.Dispose();
+                interopMSS = null;
+            }
+
             timer_focus.Stop();
             controlTimer.Stop();
             Window.Current.CoreWindow.PointerCursor = new Windows.UI.Core.CoreCursor(Windows.UI.Core.CoreCursorType.Arrow, 0);
-            if (mediaPlayer != null)
-            {
-                mediaPlayer.Stop();
-                mediaPlayer.Dispose();
-                mediaPlayer = null;
-
-            }
-            if (LibVLC != null)
-            {
-                LibVLC?.Dispose();
-                LibVLC = null;
-            }
+           
             liveRoomVM?.Stop();
 
             SetFullScreen(false);
@@ -530,6 +477,7 @@ namespace AllLive.UWP.Views
             if (e.NavigationMode == Windows.UI.Xaml.Navigation.NavigationMode.New)
             {
                 pageArgs = e.Parameter as PageArgs;
+                LoadSetting();
                 var siteInfo = MainVM.Sites.FirstOrDefault(x => x.LiveSite.Equals(pageArgs.Site));
 
                 liveRoomVM.SiteLogo = siteInfo.Logo;
@@ -624,16 +572,25 @@ namespace AllLive.UWP.Views
             //    });
             //});
 
-            swSoftwareDecode.Loaded += new RoutedEventHandler((sender, e) =>
-            {
-                swSoftwareDecode.Toggled += new RoutedEventHandler((obj, args) =>
-                {
-                    SettingHelper.SetValue(SettingHelper.SORTWARE_DECODING, swSoftwareDecode.IsOn);
-                    if (mediaPlayer != null)
-                    {
-                        mediaPlayer.EnableHardwareDecoding = !swSoftwareDecode.IsOn;
-                    }
+            //swSoftwareDecode.Loaded += new RoutedEventHandler((sender, e) =>
+            //{
+            //    swSoftwareDecode.Toggled += new RoutedEventHandler((obj, args) =>
+            //    {
+            //        SettingHelper.SetValue(SettingHelper.SORTWARE_DECODING, swSoftwareDecode.IsOn);
+            //        //if (mediaPlayer != null)
+            //        //{
+            //        //    mediaPlayer.EnableHardwareDecoding = !swSoftwareDecode.IsOn;
+            //        //}
 
+            //        Utils.ShowMessageToast("更改清晰度或刷新后生效");
+            //    });
+            //});
+            cbDecoder.SelectedIndex = SettingHelper.GetValue<int>(SettingHelper.VIDEO_DECODER, 0);
+            cbDecoder.Loaded += new RoutedEventHandler((sender, e) =>
+            {
+                cbDecoder.SelectionChanged += new SelectionChangedEventHandler((obj, args) =>
+                {
+                    SettingHelper.SetValue(SettingHelper.VIDEO_DECODER, cbDecoder.SelectedIndex);
                     Utils.ShowMessageToast("更改清晰度或刷新后生效");
                 });
             });
@@ -1090,8 +1047,13 @@ namespace AllLive.UWP.Views
             if (liveRoomVM.Loading) return;
             if (mediaPlayer != null)
             {
-                mediaPlayer.Stop();
-                mediaPlayer.Media?.Dispose();
+                mediaPlayer.Pause();
+                mediaPlayer.Source = null;
+            }
+            if (interopMSS != null)
+            {
+                interopMSS.Dispose();
+                interopMSS = null;
             }
 
             liveRoomVM?.Stop();

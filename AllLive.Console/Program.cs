@@ -2,16 +2,18 @@
 using AllLive.Core.Danmaku;
 using AllLive.Core.Helper;
 using AllLive.Core.Interface;
+using AllLive.UWP.Helper;
 using Newtonsoft.Json;
 using QuickJS;
 using System;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace AllLive.ConsoleApp
 {
     class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             if (args.Length < 1)
             {
@@ -37,8 +39,29 @@ namespace AllLive.ConsoleApp
                     return;
                 }
                 var url = args[1];
-                var parseData = ParseUrl(url);
-                var site = parseData.Item1;
+                var parseData =  await SiteParser.ParseUrl(url);
+                ILiveSite site=null;
+                switch (parseData.Item1)
+                {
+                    case LiveSite.Bilibili:
+                        site = new BiliBili();
+                        break;
+                    case LiveSite.Douyu:
+                        site = new Douyu();
+                        break;
+                    case LiveSite.Huya:
+                        site = new Huya();
+                        break;
+                    case LiveSite.Douyin:
+                        site = new Douyin();
+                        break;
+                    case LiveSite.Unknown:
+                        Console.WriteLine("未知直播源");
+                        return;
+                    default:
+                        break;
+                }
+
                 var roomId = parseData.Item2;
                 if (action == "i"|| action == "-i")
                 {
@@ -98,25 +121,7 @@ namespace AllLive.ConsoleApp
 
         }
 
-        private static (ILiveSite, string) ParseUrl(string url)
-        {
-            if (url.Contains("bilibili.com"))
-            {
-                var id = Regex.Match(url, @"bilibili\.com/([\d|\w]+)").Groups[1].Value;
-                return (new BiliBili(), id);
-            }
-            if (url.Contains("huya.com"))
-            {
-                var id = Regex.Match(url, @"huya\.com/([\d|\w]+)").Groups[1].Value;
-                return (new Huya(), id);
-            }
-            if (url.Contains("douyu.com"))
-            {
-                var id = Regex.Match(url, @"douyu\.com/([\d|\w]+)").Groups[1].Value;
-                return (new Douyu(), id);
-            }
-            throw new Exception("链接解析失败");
-        }
+       
 
         private static void Danmaku_OnClose(object sender, string e)
         {

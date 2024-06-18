@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -103,34 +102,15 @@ namespace AllLive.Core.Helper
             }
         }
 
-        public static Color NumberToColor(this int intColor)
+        public static string BuildQueryString(Dictionary<string, string> dic)
         {
-
-            var obj = intColor.ToString("X2");
-
-            Color color = Color.White;
-            if (obj.Length == 4)
+            StringBuilder sb = new StringBuilder();
+            foreach (var item in dic)
             {
-                obj = "00" + obj;
+                var value = Uri.EscapeDataString(item.Value);
+                sb.Append($"{item.Key}={value}&");
             }
-            if (obj.Length == 6)
-            {
-                var R = byte.Parse(obj.Substring(0, 2), System.Globalization.NumberStyles.HexNumber);
-                var G = byte.Parse(obj.Substring(2, 2), System.Globalization.NumberStyles.HexNumber);
-                var B = byte.Parse(obj.Substring(4, 2), System.Globalization.NumberStyles.HexNumber);
-                var A = 255;
-                color = Color.FromArgb(A, R, G, B);
-            }
-            if (obj.Length == 8)
-            {
-                var R = byte.Parse(obj.Substring(2, 2), System.Globalization.NumberStyles.HexNumber);
-                var G = byte.Parse(obj.Substring(4, 2), System.Globalization.NumberStyles.HexNumber);
-                var B = byte.Parse(obj.Substring(6, 2), System.Globalization.NumberStyles.HexNumber);
-                var A = byte.Parse(obj.Substring(0, 2), System.Globalization.NumberStyles.HexNumber);
-                color = Color.FromArgb(A, R, G, B);
-            }
-
-            return color;
+            return sb.ToString().TrimEnd('&');
         }
     }
 }

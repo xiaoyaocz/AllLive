@@ -16,10 +16,11 @@
   <ItemGroup>
     <PackageReference Include="BrotliSharpLib" Version="0.3.3" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="protobuf-net" Version="3.2.30" />
     <PackageReference Include="QuickJS.NET" Version="0.0.3">
-      <PrivateAssets>all</PrivateAssets>
+      <PrivateAssets></PrivateAssets>
     </PackageReference>
-    <PackageReference Include="websocketsharp.core" Version="1.0.0" />
+    <PackageReference Include="WebSocketSharp-netstandard-customheaders" Version="1.0.3" />
   </ItemGroup>
 
 </Project>

@@ -118,6 +118,7 @@ namespace AllLive.Core.Danmaku
         }
         public async Task Stop()
         {
+            timer.Stop();
             await Task.Run(() =>
             {
                 ws.Close();
@@ -186,7 +187,7 @@ namespace AllLive.Core.Danmaku
                                 Type = LiveMessageType.Chat,
                                 Message = message,
                                 UserName = username,
-                                Color = color==0?Color.White: Utils.NumberToColor(color),
+                                Color = color==0? DanmakuColor.White:new DanmakuColor(color),
                             });
                         }
                     }

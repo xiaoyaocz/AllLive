@@ -1,28 +1,31 @@
-﻿<Page xmlns:my="using:Microsoft.UI.Xaml.Controls" 
+﻿<Page
     x:Class="AllLive.UWP.Views.SettingsPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:AllLive.UWP.Views"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="using:AllLive.UWP.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:my="using:Microsoft.UI.Xaml.Controls"
     mc:Ignorable="d">
 
     <Grid>
         <ScrollViewer>
             <StackPanel Margin="12">
-                <TextBlock FontSize="18" Margin="4 0 0 12">常规</TextBlock>
-                <Grid Background="{ThemeResource LayerFillColorDefaultBrush}" 
-                      Padding="8 12"
-                      BorderThickness="1" 
-                      BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" 
-                      CornerRadius="4">
-                    <StackPanel  VerticalAlignment="Center">
+                <TextBlock Margin="4,0,0,12" FontSize="18">常规</TextBlock>
+                <Grid
+                    Padding="8,12"
+                    Background="{ThemeResource LayerFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="4">
+                    <StackPanel VerticalAlignment="Center">
                         <TextBlock>显示模式</TextBlock>
                         <TextBlock FontSize="12" Foreground="Gray">切换深色与浅色模式</TextBlock>
                     </StackPanel>
-                    <ComboBox x:Name="cbTheme" 
-                              VerticalAlignment="Center"
-                              HorizontalAlignment="Right">
+                    <ComboBox
+                        x:Name="cbTheme"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center">
                         <ComboBox.Items>
                             <ComboBoxItem>跟随系统</ComboBoxItem>
                             <ComboBoxItem>浅色</ComboBoxItem>
@@ -30,149 +33,203 @@
                         </ComboBox.Items>
                     </ComboBox>
                 </Grid>
-                <Grid Background="{ThemeResource LayerFillColorDefaultBrush}" 
-                      Padding="8 12"
-                      Margin="0 8 0 0"
-                      BorderThickness="1" 
-                      BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" 
-                      CornerRadius="4">
+                <Grid
+                    Margin="0,8,0,0"
+                    Padding="8,12"
+                    Background="{ThemeResource LayerFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="4">
                     <StackPanel VerticalAlignment="Center">
                         <TextBlock>鼠标侧键返回</TextBlock>
                         <TextBlock FontSize="12" Foreground="Gray">按鼠标侧键返回上一页</TextBlock>
                     </StackPanel>
-                    <ToggleSwitch x:Name="swMouseClosePage"
-                                  MinWidth="72"
-                                  VerticalAlignment="Center" 
-                                  HorizontalAlignment="Right"></ToggleSwitch>
+                    <ToggleSwitch
+                        x:Name="swMouseClosePage"
+                        MinWidth="72"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center" />
                 </Grid>
 
-                <TextBlock FontSize="18" Margin="4 12">播放</TextBlock>
-                <Grid Background="{ThemeResource LayerFillColorDefaultBrush}" 
-                      Padding="8 12"
-                      BorderThickness="1" 
-                      BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" 
-                      CornerRadius="4">
+                <TextBlock Margin="4,12" FontSize="18">播放</TextBlock>
+                <Grid
+                    Padding="8,12"
+                    Background="{ThemeResource LayerFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="4"
+                    Visibility="Collapsed">
                     <StackPanel VerticalAlignment="Center">
                         <TextBlock>新窗口播放(暂不可用)</TextBlock>
                         <TextBlock FontSize="12" Foreground="Gray">使用新窗口打开直播间</TextBlock>
                     </StackPanel>
-                    <ToggleSwitch x:Name="swNewWindow"
-                                  MinWidth="72"
-                                  IsEnabled="False"
-                                  VerticalAlignment="Center" 
-                                  HorizontalAlignment="Right"></ToggleSwitch>
+                    <ToggleSwitch
+                        x:Name="swNewWindow"
+                        MinWidth="72"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center"
+                        IsEnabled="False" />
                 </Grid>
-                
-                <ToggleSwitch x:Name="swSoftwareDecode" Visibility="Collapsed" Header="强制软解" Margin="0 12 0 0"></ToggleSwitch>
-                <!--<TextBlock Margin="0 12 0 0">解码器(遇到播放失败尝试修改此项)</TextBlock>
-                <ComboBox x:Name="cbDecode" Margin="0 8 0 0" MinWidth="200" >
-                    <ComboBox.Items>
-                        <ComboBoxItem>自动</ComboBoxItem>
-                        <ComboBoxItem>强制硬解</ComboBoxItem>
-                        <ComboBoxItem>强制软解</ComboBoxItem>
-                    </ComboBox.Items>
-                </ComboBox>-->
-                <TextBlock FontSize="18" Margin="4 12">互动</TextBlock>
-                <Grid Background="{ThemeResource LayerFillColorDefaultBrush}" 
-                      Padding="8 12"
-                      BorderThickness="1" 
-                      BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" 
-                      CornerRadius="4">
+                <Grid
+                    Padding="8,12"
+                    Background="{ThemeResource LayerFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="4">
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock>视频解码器</TextBlock>
+                        <TextBlock FontSize="12" Foreground="Gray">播放失败可尝试修改此选项</TextBlock>
+                    </StackPanel>
+                    <ComboBox
+                        x:Name="cbDecoder"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center">
+                        <ComboBox.Items>
+                            <ComboBoxItem>自动</ComboBoxItem>
+                            <ComboBoxItem>硬件解码</ComboBoxItem>
+                            <ComboBoxItem>软件解码</ComboBoxItem>
+                        </ComboBox.Items>
+                    </ComboBox>
+                </Grid>
+
+                <TextBlock Margin="4,12" FontSize="18">互动</TextBlock>
+                <Grid
+                    Padding="8,12"
+                    Background="{ThemeResource LayerFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="4">
                     <StackPanel VerticalAlignment="Center">
                         <TextBlock>弹幕</TextBlock>
                         <TextBlock FontSize="12" Foreground="Gray">默认开启弹幕</TextBlock>
                     </StackPanel>
-                    <ToggleSwitch x:Name="DanmuSettingState"
-                                  MinWidth="72"
-                                  VerticalAlignment="Center" 
-                                  HorizontalAlignment="Right"></ToggleSwitch>
+                    <ToggleSwitch
+                        x:Name="DanmuSettingState"
+                        MinWidth="72"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center" />
                 </Grid>
-                <Grid Background="{ThemeResource LayerFillColorDefaultBrush}" 
-                      Padding="8 12"
-                      Margin="0 8 0 0"
-                      BorderThickness="1" 
-                      BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" 
-                      CornerRadius="4">
+                <Grid
+                    Margin="0,8,0,0"
+                    Padding="8,12"
+                    Background="{ThemeResource LayerFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="4">
                     <StackPanel VerticalAlignment="Center">
                         <TextBlock>互动文字大小</TextBlock>
                         <TextBlock FontSize="12" Foreground="Gray">互动聊天字体大小</TextBlock>
                     </StackPanel>
-                    <my:NumberBox x:Name="numFontsize" 
-                                  HorizontalAlignment="Right" 
-                                  PlaceholderText="文字大小" 
-                                  Minimum="10" Maximum="64" 
-                                  Width="100" 
-                                  SpinButtonPlacementMode="Compact"/>
+                    <my:NumberBox
+                        x:Name="numFontsize"
+                        Width="100"
+                        HorizontalAlignment="Right"
+                        Maximum="64"
+                        Minimum="10"
+                        PlaceholderText="文字大小"
+                        SpinButtonPlacementMode="Compact" />
                 </Grid>
-                <Grid Background="{ThemeResource LayerFillColorDefaultBrush}" 
-                      Padding="8 12"
-                      Margin="0 8 0 0"
-                      BorderThickness="1" 
-                      BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" 
-                      CornerRadius="4">
+                <Grid
+                    Margin="0,8,0,0"
+                    Padding="8,12"
+                    Background="{ThemeResource LayerFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="4">
                     <StackPanel VerticalAlignment="Center">
                         <TextBlock>互动自动清理</TextBlock>
                         <TextBlock FontSize="12" Foreground="Gray">互动聊天到指定条数自动清理</TextBlock>
                     </StackPanel>
-                    <my:NumberBox x:Name="numCleanCount" 
-                                  HorizontalAlignment="Right" 
-                                  PlaceholderText="清理条数" 
-                                  Minimum="40" 
-                                  Width="100" 
-                                  SpinButtonPlacementMode="Compact"/>
+                    <my:NumberBox
+                        x:Name="numCleanCount"
+                        Width="100"
+                        HorizontalAlignment="Right"
+                        Minimum="40"
+                        PlaceholderText="清理条数"
+                        SpinButtonPlacementMode="Compact" />
                 </Grid>
 
-                <StackPanel Background="{ThemeResource LayerFillColorDefaultBrush}" 
-                      Padding="8 12"
-                      Margin="0 8 0 0"
-                      BorderThickness="1" 
-                      BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" 
-                      CornerRadius="4">
-                    <TextBlock >屏蔽关键字</TextBlock>
-                    <AutoSuggestBox x:Name="LiveDanmuSettingTxtWord" QuerySubmitted="LiveDanmuSettingTxtWord_QuerySubmitted" HorizontalAlignment="Left" Margin="0 4 0 0" QueryIcon="Add" PlaceholderText="输入关键字" Width="280"></AutoSuggestBox>
-                    <ListView x:Name="LiveDanmuSettingListWords" 
-                              Margin="0 4 0 0" 
-                              BorderThickness="1" 
-                      BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" 
-                              Background="{ThemeResource LayerFillColorDefaultBrush}" CornerRadius="4" Height="240" Width="280" 
-                              HorizontalAlignment="Left">
+                <StackPanel
+                    Margin="0,8,0,0"
+                    Padding="8,12"
+                    Background="{ThemeResource LayerFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="4">
+                    <TextBlock>屏蔽关键字</TextBlock>
+                    <AutoSuggestBox
+                        x:Name="LiveDanmuSettingTxtWord"
+                        Width="280"
+                        Margin="0,4,0,0"
+                        HorizontalAlignment="Left"
+                        PlaceholderText="输入关键字"
+                        QueryIcon="Add"
+                        QuerySubmitted="LiveDanmuSettingTxtWord_QuerySubmitted" />
+                    <ListView
+                        x:Name="LiveDanmuSettingListWords"
+                        Width="280"
+                        Height="240"
+                        Margin="0,4,0,0"
+                        HorizontalAlignment="Left"
+                        Background="{ThemeResource LayerFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        CornerRadius="4">
                         <ListView.ItemContainerStyle>
-                            <Style  TargetType="ListViewItem">
-                                <Setter Property="HorizontalContentAlignment" Value="Stretch"></Setter>
-                                <Setter Property="Padding" Value="0"></Setter>
+                            <Style TargetType="ListViewItem">
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                <Setter Property="Padding" Value="0" />
                             </Style>
                         </ListView.ItemContainerStyle>
                         <ListView.ItemTemplate>
                             <DataTemplate>
                                 <Grid>
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Margin="8 0" VerticalAlignment="Center" Text="{Binding}"></TextBlock>
-                                    <AppBarButton Click="RemoveLiveDanmuWord_Click" Grid.Column="1" Height="40" Width="40" Icon="Delete"></AppBarButton>
+                                    <TextBlock
+                                        Margin="8,0"
+                                        VerticalAlignment="Center"
+                                        Text="{Binding}" />
+                                    <AppBarButton
+                                        Grid.Column="1"
+                                        Width="40"
+                                        Height="40"
+                                        Click="RemoveLiveDanmuWord_Click"
+                                        Icon="Delete" />
                                 </Grid>
                             </DataTemplate>
                         </ListView.ItemTemplate>
                     </ListView>
                 </StackPanel>
-                <TextBlock FontSize="18" Margin="4 12">关于</TextBlock>
-                <Grid Background="{ThemeResource LayerFillColorDefaultBrush}" 
-                      Padding="8 12"
-                      BorderThickness="1" 
-                      BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" 
-                      CornerRadius="4">
+                <TextBlock Margin="4,12" FontSize="18">关于</TextBlock>
+                <Grid
+                    Padding="8,12"
+                    Background="{ThemeResource LayerFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="4">
                     <StackPanel VerticalAlignment="Center">
                         <TextBlock>聚合直播</TextBlock>
-                        <TextBlock FontSize="12" Foreground="Gray">版本: <Run x:Name="version"/></TextBlock>
+                        <TextBlock FontSize="12" Foreground="Gray">
+                            版本:<Run x:Name="version" /></TextBlock>
                     </StackPanel>
-                    <StackPanel HorizontalAlignment="Right" VerticalAlignment="Center" Orientation="Horizontal">
-                        <Button x:Name="BtnLog" Margin="8 0" Click="BtnLog_Click">运行日志</Button>
+                    <StackPanel
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center"
+                        Orientation="Horizontal">
+                        <Button
+                            x:Name="BtnLog"
+                            Margin="8,0"
+                            Click="BtnLog_Click">
+                            运行日志
+                        </Button>
                         <Button x:Name="BtnGithub" Click="BtnGithub_Click">项目主页</Button>
                     </StackPanel>
                 </Grid>
-             
-               
+
+
             </StackPanel>
         </ScrollViewer>
     </Grid>

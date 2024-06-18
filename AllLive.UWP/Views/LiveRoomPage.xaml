@@ -11,7 +11,6 @@
     xmlns:models="using:AllLive.Core.Models"
     xmlns:my="using:Microsoft.UI.Xaml.Controls"
     xmlns:ui="using:Microsoft.Toolkit.Uwp.UI"
-    xmlns:vlc="using:LibVLCSharp.Platforms.Windows"
     xmlns:winui="using:Microsoft.UI.Xaml.Controls"
     winui:BackdropMaterial.ApplyToRootOrPageBackground="True"
     mc:Ignorable="d">
@@ -63,7 +62,7 @@
                             TextWrapping="Wrap" />
                     </Flyout>
                 </Grid.ContextFlyout>
-                <vlc:VideoView x:Name="player" Initialized="player_Initialized" />
+                <MediaPlayerElement x:Name="player" />
                 <!--  弹幕  -->
                 <Grid Tapped="Grid_Tapped">
                     <controls1:Danmaku x:Name="DanmuControl" />
@@ -595,18 +594,22 @@
                             <ScrollViewer>
                                 <StackPanel Margin="12">
 
-                                    <ToggleSwitch
+                                    <!--<ToggleSwitch
                                         x:Name="swSoftwareDecode"
                                         Margin="0,12,0,0"
-                                        Header="强制软解" />
-                                    <!--<TextBlock Margin="0 12 0 0">解码器(遇到播放失败尝试修改此项)</TextBlock>
-                            <ComboBox x:Name="cbDecode" Margin="0 8 0 0" MinWidth="200" >
-                                <ComboBox.Items>
-                                    <ComboBoxItem>自动</ComboBoxItem>
-                                    <ComboBoxItem>强制硬解</ComboBoxItem>
-                                    <ComboBoxItem>强制软解</ComboBoxItem>
-                                </ComboBox.Items>
-                            </ComboBox>-->
+                                        Header="强制软解" />-->
+                                    <TextBlock>解码器</TextBlock>
+                                    <TextBlock FontSize="12">当播放失败时可尝试修改此选项</TextBlock>
+                                    <ComboBox
+                                        x:Name="cbDecoder"
+                                        Width="140"
+                                        Margin="0,8,0,0">
+                                        <ComboBox.Items>
+                                            <ComboBoxItem>自动</ComboBoxItem>
+                                            <ComboBoxItem>强制硬解</ComboBoxItem>
+                                            <ComboBoxItem>强制软解</ComboBoxItem>
+                                        </ComboBox.Items>
+                                    </ComboBox>
                                     <TextBlock Margin="0,12,0,0">互动文字大小</TextBlock>
                                     <my:NumberBox
                                         x:Name="numFontsize"

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AllLive.Core.Helper;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
@@ -42,6 +43,6 @@ namespace AllLive.Core.Models
         /// <summary>
         /// 弹幕颜色
         /// </summary>
-        public Color Color { get; set; }= Color.White;
+        public DanmakuColor Color { get; set; }= DanmakuColor.White;
     }
 }

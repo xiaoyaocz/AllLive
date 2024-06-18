@@ -71,22 +71,14 @@ namespace AllLive.UWP.Views
                 });
             });
             //视频解码
-            swSoftwareDecode.IsOn = SettingHelper.GetValue<bool>(SettingHelper.SORTWARE_DECODING, false);
-            swSoftwareDecode.Loaded += new RoutedEventHandler((sender, e) =>
+            cbDecoder.SelectedIndex = SettingHelper.GetValue<int>(SettingHelper.VIDEO_DECODER, 0);
+            cbDecoder.Loaded += new RoutedEventHandler((sender, e) =>
             {
-                swSoftwareDecode.Toggled += new RoutedEventHandler((obj, args) =>
+                cbDecoder.SelectionChanged += new SelectionChangedEventHandler((obj, args) =>
                 {
-                    SettingHelper.SetValue(SettingHelper.SORTWARE_DECODING, swSoftwareDecode.IsOn);
+                    SettingHelper.SetValue(SettingHelper.VIDEO_DECODER, cbDecoder.SelectedIndex);
                 });
             });
-            //cbDecode.SelectedIndex = SettingHelper.GetValue<int>(SettingHelper.DECODE, 0);
-            //cbDecode.Loaded += new RoutedEventHandler((sender, e) =>
-            //{
-            //    cbDecode.SelectionChanged += new SelectionChangedEventHandler((obj, args) =>
-            //    {
-            //        SettingHelper.SetValue(SettingHelper.DECODE, cbDecode.SelectedIndex);
-            //    });
-            //});
 
             numFontsize.Value = SettingHelper.GetValue<double>(SettingHelper.MESSAGE_FONTSIZE, 14.0);
             numFontsize.Loaded += new RoutedEventHandler((sender, e) =>
