@@ -268,22 +268,22 @@ namespace AllLive.UWP.Views
                 //    break;
 
                 case Windows.System.VirtualKey.Up:
-                    mediaPlayer.Volume += 10;
-                    TxtToolTip.Text = "音量:" + mediaPlayer.Volume.ToString();
+                    mediaPlayer.Volume += 0.1;
+                    TxtToolTip.Text = "音量:" + mediaPlayer.Volume.ToString("P");
                     ToolTip.Visibility = Visibility.Visible;
                     await Task.Delay(2000);
                     ToolTip.Visibility = Visibility.Collapsed;
                     break;
 
                 case Windows.System.VirtualKey.Down:
-                    mediaPlayer.Volume -= 10;
+                    mediaPlayer.Volume -= 0.1;
                     if (mediaPlayer.Volume == 0)
                     {
                         TxtToolTip.Text = "静音";
                     }
                     else
                     {
-                        TxtToolTip.Text = "音量:" + mediaPlayer.Volume.ToString();
+                        TxtToolTip.Text = "音量:" + mediaPlayer.Volume.ToString("P");
                     }
                     ToolTip.Visibility = Visibility.Visible;
                     await Task.Delay(2000);
@@ -607,11 +607,11 @@ namespace AllLive.UWP.Views
 
             //音量
             var volume = SettingHelper.GetValue<double>(SettingHelper.PLAYER_VOLUME, 1.0);
-            mediaPlayer.Volume = Convert.ToInt32(volume * 100);
+            mediaPlayer.Volume = volume;
             SliderVolume.Value = volume;
             SliderVolume.ValueChanged += new RangeBaseValueChangedEventHandler((e, args) =>
             {
-                mediaPlayer.Volume = Convert.ToInt32(SliderVolume.Value * 100);
+                mediaPlayer.Volume = SliderVolume.Value;
                 SettingHelper.SetValue<double>(SettingHelper.PLAYER_VOLUME, SliderVolume.Value);
             });
             //亮度
