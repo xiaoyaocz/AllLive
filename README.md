@@ -23,12 +23,12 @@
 ## UWP安装
 
 <p align="left">
-    <a title="从 Microsoft Store 中获取" href="https://www.microsoft.com/store/apps/9N1TWG2G84VD" target="_blank">
+    <a title="从 Microsoft Store 中获取" href="https://apps.microsoft.com/detail/9n1twg2g84vd" target="_blank">
         <img src="https://get.microsoft.com/images/en-US%20dark.svg" width=120 />
     </a>
 </p>
 
-可以在Microsoft Store中搜索“[聚合直播](https://www.microsoft.com/store/apps/9N1TWG2G84VD)”下载安装。
+可以在Microsoft Store中搜索“[聚合直播](https://apps.microsoft.com/detail/9n1twg2g84vd)”下载安装。
 
 免费试用永不过期，购买应用视为无偿赞助作者。
 
@@ -73,4 +73,4 @@
 
 [爱发电](https://afdian.net/a/xiaoyaocz)
 
-[应用商店购买](https://www.microsoft.com/store/apps/9N1TWG2G84VD)
+[应用商店购买](https://apps.microsoft.com/detail/9n1twg2g84vd)
