@@ -22,21 +22,28 @@ using WebSocketSharp;
 */
 namespace AllLive.Core.Danmaku
 {
-
+    public class BiliDanmakuArgs
+    {
+        public int RoomId { get; set; }
+        public long UserId { get; set; } = 0;
+        public string Cookie { get; set; }
+    }
     public class BiliBiliDanmaku : ILiveDanmaku
     {
         public event EventHandler<LiveMessage> NewMessage;
         public event EventHandler<string> OnClose;
         public int HeartbeatTime => 60 * 1000;
         private int roomId = 0;
-        private readonly string ServerUrl = "wss://broadcastlv.chat.bilibili.com/sub";
+        //private readonly string ServerUrl = "wss://broadcastlv.chat.bilibili.com/sub";
         Timer timer;
         WebSocket ws;
         private DanmuInfo danmuInfo;
         private string buvid;
+        private BiliDanmakuArgs Args;
+
         public BiliBiliDanmaku()
         {
-          
+
         }
         private async void Ws_OnOpen(object sender, EventArgs e)
         {
@@ -46,9 +53,11 @@ namespace AllLive.Core.Danmaku
                 ws.Send(EncodeData(JsonConvert.SerializeObject(new
                 {
                     roomid = roomId,
-                    uid = 0,
+                    uid =Args.UserId,
                     protover = 3,
                     key = danmuInfo.token,
+                    platform = "web",
+                    type=2,
                     buvid,
                 }), 7));
 
@@ -79,7 +88,10 @@ namespace AllLive.Core.Danmaku
 
         public async Task Start(object args)
         {
-            roomId = args.ToInt32();
+            var _args = args as BiliDanmakuArgs;
+            Args = _args;
+            roomId = Args.RoomId;
+
             var _buvid = await GetBuvid();
             buvid = _buvid;
             var info = await GetDanmuInfo(roomId);
@@ -89,8 +101,15 @@ namespace AllLive.Core.Danmaku
                 return;
             }
             danmuInfo = info;
-            var host=info.host_list.First();
+            var host = info.host_list.First();
             ws = new WebSocket($"wss://{host.host}/sub");
+            if (!string.IsNullOrEmpty(Args.Cookie))
+            {
+                ws.CustomHeaders = new Dictionary<string, string>() {
+                    {"Cookie", Args.Cookie},
+                };
+            }
+
             ws.OnOpen += Ws_OnOpen;
             ws.OnError += Ws_OnError;
             ws.OnMessage += Ws_OnMessage;
@@ -187,7 +206,7 @@ namespace AllLive.Core.Danmaku
                                 Type = LiveMessageType.Chat,
                                 Message = message,
                                 UserName = username,
-                                Color = color==0? DanmakuColor.White:new DanmakuColor(color),
+                                Color = color == 0 ? DanmakuColor.White : new DanmakuColor(color),
                             });
                         }
                     }
@@ -245,7 +264,7 @@ namespace AllLive.Core.Danmaku
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        private byte[] DecompressData(byte[] data,int protocolVersion)
+        private byte[] DecompressData(byte[] data, int protocolVersion)
         {
             if (protocolVersion == 3)
             {
@@ -299,7 +318,22 @@ namespace AllLive.Core.Danmaku
         {
             try
             {
-                var result = await HttpUtil.GetString($"https://api.bilibili.com/x/frontend/finger/spi");
+                if (!string.IsNullOrEmpty(Args.Cookie) &&Args.Cookie.Contains("buvid3"))
+                {
+                    var regex = new Regex("buvid3=(.*?);");
+                    var match = regex.Match(Args.Cookie);
+                    if (match.Success)
+                    {
+                        return match.Groups[1].Value;
+                    }
+                }
+
+                var result = await HttpUtil.GetString($"https://api.bilibili.com/x/frontend/finger/spi",
+                    headers: string.IsNullOrEmpty(Args.Cookie) ? null : new Dictionary<string, string>
+                    {
+                        { "cookie", Args.Cookie }
+                    }
+                  );
                 var obj = JObject.Parse(result);
 
                 return obj["data"]["b_3"].ToString();
@@ -314,7 +348,11 @@ namespace AllLive.Core.Danmaku
         {
             try
             {
-                var result = await HttpUtil.GetString($"https://api.live.bilibili.com/xlive/web-room/v1/index/getDanmuInfo?id={roomId}");
+                var result = await HttpUtil.GetString($"https://api.live.bilibili.com/xlive/web-room/v1/index/getDanmuInfo?id={roomId}",
+                    headers: string.IsNullOrEmpty(Args.Cookie) ? null : new Dictionary<string, string>
+                    {
+                        { "cookie", Args.Cookie }
+                    });
                 var obj = JObject.Parse(result);
                 var info = obj["data"].ToObject<DanmuInfo>();
                 return info;
@@ -325,7 +363,7 @@ namespace AllLive.Core.Danmaku
             }
             return null;
         }
-    
+
         private void SendSystemMessage(string msg)
         {
             NewMessage(this, new LiveMessage()
@@ -337,7 +375,7 @@ namespace AllLive.Core.Danmaku
         }
     }
 
-    
+
 
     class DanmuInfo
     {

@@ -137,7 +137,7 @@ namespace AllLive.UWP.Views
 
         private async void MediaPlayer_MediaFailed(MediaPlayer sender, MediaPlayerFailedEventArgs args)
         {
-            await this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
+            await this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal,  () =>
             {
                
                 PlayError();

@@ -135,7 +135,12 @@ namespace AllLive.Core
                 UserAvatar = obj["data"]["anchor_info"]["base_info"]["face"].ToString() + "@100w.jpg",
                 Notice = "",
                 Status = obj["data"]["room_info"]["live_status"].ToInt32() == 1,
-                DanmakuData = obj["data"]["room_info"]["room_id"].ToInt32(),
+                DanmakuData = new BiliDanmakuArgs()
+                {
+                    RoomId= obj["data"]["room_info"]["room_id"].ToInt32(),
+                    UserId=UserId,
+                    Cookie=Cookie,
+                },
                 Url = "https://live.bilibili.com/" + roomId
             };
         }

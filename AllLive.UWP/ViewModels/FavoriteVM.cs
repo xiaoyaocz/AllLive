@@ -57,7 +57,10 @@ namespace AllLive.UWP.ViewModels
                     Items.Add(item);
                 }
                 IsEmpty = Items.Count == 0;
-                LoadLiveStatus();
+                if (!IsEmpty)
+                {
+                    LoadLiveStatus();
+                }
             }
             catch (Exception ex)
             {
