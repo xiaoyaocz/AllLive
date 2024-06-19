@@ -1,6 +1,6 @@
 {
-	"version": "1.2.9",
-	"versionCode": 10209,
-	"message": "1.修复虎牙播放问题\r\n请前往应用商店更新",
-	"url": "https://www.microsoft.com/store/apps/9N1TWG2G84VD"
+	"version": "2.0.5",
+	"versionCode": 20005,
+	"message": "1. 支持抖音直播\r\n2. 修复音量问题\r\n3. 支持关注列表显示直播状态\r\n4. 优化哔哩哔哩\r\n5. 支持导入、导出关注列表\r\n请前往应用商店更新",
+	"url": "ms-windows-store://pdp?productid=9N1TWG2G84VD"
 }
