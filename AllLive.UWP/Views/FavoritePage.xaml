@@ -11,115 +11,137 @@
     mc:Ignorable="d">
 
     <Grid>
-        <controls:MyAdaptiveGridView
-            Margin="8"
-            CanLoadMore="False"
-            DesiredWidth="400"
-            IsItemClickEnabled="True"
-            ItemClick="ls_ItemClick"
-            ItemHeight="72"
-            ItemsSource="{x:Bind Path=favoriteVM.Items, Mode=OneWay}"
-            SelectionMode="None"
-            StretchContentForSingleRow="False">
-            <controls:MyAdaptiveGridView.ItemContainerStyle>
-                <Style BasedOn="{StaticResource GridViewItemCornerRadiusStyle}" TargetType="GridViewItem">
-                    <Setter Property="Margin" Value="4" />
-                    <Setter Property="Padding" Value="8,4" />
-                    <Setter Property="BorderThickness" Value="1" />
-                    <Setter Property="BorderBrush" Value="{ThemeResource CardStrokeColorDefaultBrush}" />
-                    <Setter Property="Background" Value="{ThemeResource ButtonBackground}" />
-                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <Grid Padding="16,8">
+            <TextBlock FontSize="24">我的关注</TextBlock>
+            <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                <Button Margin="8,0" Command="{x:Bind Path=favoriteVM.InputCommand}">导入列表</Button>
+                <Button Command="{x:Bind Path=favoriteVM.OutputCommand}">导出列表</Button>
+                <HyperlinkButton
+                    Margin="8,0,0,0"
+                    VerticalContentAlignment="Center"
+                    Command="{x:Bind Path=favoriteVM.TipCommand}">
+                    <FontIcon
+                        FontFamily="{StaticResource SegoeFluent}"
+                        FontSize="16"
+                        Glyph="&#xE783;" />
+                </HyperlinkButton>
+            </StackPanel>
+        </Grid>
+        <Grid Grid.Row="1">
+            <controls:MyAdaptiveGridView
+                Margin="8,0,8,8"
+                CanLoadMore="False"
+                DesiredWidth="400"
+                IsItemClickEnabled="True"
+                ItemClick="ls_ItemClick"
+                ItemHeight="72"
+                ItemsSource="{x:Bind Path=favoriteVM.Items, Mode=OneWay}"
+                SelectionMode="None"
+                StretchContentForSingleRow="False">
+                <controls:MyAdaptiveGridView.ItemContainerStyle>
+                    <Style BasedOn="{StaticResource GridViewItemCornerRadiusStyle}" TargetType="GridViewItem">
+                        <Setter Property="Margin" Value="4" />
+                        <Setter Property="Padding" Value="8,4" />
+                        <Setter Property="BorderThickness" Value="1" />
+                        <Setter Property="BorderBrush" Value="{ThemeResource CardStrokeColorDefaultBrush}" />
+                        <Setter Property="Background" Value="{ThemeResource ButtonBackground}" />
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
 
-                </Style>
-            </controls:MyAdaptiveGridView.ItemContainerStyle>
-            <controls:MyAdaptiveGridView.ItemTemplate>
-                <DataTemplate x:DataType="models:FavoriteItem">
-                    <Grid>
-                        <Grid.ContextFlyout>
-                            <MenuFlyout>
-                                <MenuFlyoutItem
-                                    Click="MenuFlyoutItem_Click"
-                                    Icon="Delete"
-                                    Text="移除" />
-                            </MenuFlyout>
-                        </Grid.ContextFlyout>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition />
-                        </Grid.ColumnDefinitions>
-                        <PersonPicture
-                            Width="56"
-                            Height="48"
-                            Background="Blue"
-                            BorderThickness="0"
-                            ProfilePicture="{x:Bind Path=Photo}" />
-                        <StackPanel
-                            Grid.Column="1"
-                            Margin="8,0,0,0"
-                            VerticalAlignment="Center">
-                            <TextBlock Text="{x:Bind Path=UserName}" />
-                            <TextBlock
-                                Margin="0,4,0,0"
-                                FontSize="12"
-                                Foreground="Gray"
-                                Text="{x:Bind Path=SiteName}" />
-                        </StackPanel>
-                        <StackPanel
-                            Grid.ColumnSpan="2"
-                            Margin="4"
-                            HorizontalAlignment="Right"
-                            VerticalAlignment="Center"
-                            Orientation="Horizontal"
-                            Visibility="{x:Bind Path=LiveStatus, Mode=OneWay}">
-                            <Ellipse
-                                Width="8"
-                                Height="8"
-                                Margin="0,0,4,0"
+                    </Style>
+                </controls:MyAdaptiveGridView.ItemContainerStyle>
+                <controls:MyAdaptiveGridView.ItemTemplate>
+                    <DataTemplate x:DataType="models:FavoriteItem">
+                        <Grid>
+                            <Grid.ContextFlyout>
+                                <MenuFlyout>
+                                    <MenuFlyoutItem
+                                        Click="MenuFlyoutItem_Click"
+                                        Icon="Delete"
+                                        Text="移除" />
+                                </MenuFlyout>
+                            </Grid.ContextFlyout>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <PersonPicture
+                                Width="56"
+                                Height="48"
+                                Background="Blue"
+                                BorderThickness="0"
+                                ProfilePicture="{x:Bind Path=Photo}" />
+                            <StackPanel
+                                Grid.Column="1"
+                                Margin="8,0,0,0"
+                                VerticalAlignment="Center">
+                                <TextBlock Text="{x:Bind Path=UserName}" />
+                                <TextBlock
+                                    Margin="0,4,0,0"
+                                    FontSize="12"
+                                    Foreground="Gray"
+                                    Text="{x:Bind Path=SiteName}" />
+                            </StackPanel>
+                            <StackPanel
+                                Grid.ColumnSpan="2"
+                                Margin="4"
+                                HorizontalAlignment="Right"
                                 VerticalAlignment="Center"
-                                Fill="Green" />
-                            <TextBlock
-                                VerticalAlignment="Center"
-                                FontSize="12"
-                                Foreground="Green"
-                                Text="直播中"
-                                Visibility="{x:Bind Path=LiveStatus, Mode=OneWay}" />
-                        </StackPanel>
+                                Orientation="Horizontal"
+                                Visibility="{x:Bind Path=LiveStatus, Mode=OneWay}">
+                                <Ellipse
+                                    Width="8"
+                                    Height="8"
+                                    Margin="0,0,4,0"
+                                    VerticalAlignment="Center"
+                                    Fill="Green" />
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    FontSize="12"
+                                    Foreground="Green"
+                                    Text="直播中"
+                                    Visibility="{x:Bind Path=LiveStatus, Mode=OneWay}" />
+                            </StackPanel>
 
-                    </Grid>
-                </DataTemplate>
-            </controls:MyAdaptiveGridView.ItemTemplate>
-        </controls:MyAdaptiveGridView>
-        <TextBlock
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center"
-            Foreground="Gray"
-            Visibility="{x:Bind Path=favoriteVM.IsEmpty, Mode=OneWay}">
-            这里还什么都没有~
-        </TextBlock>
-        <Button
-            Width="48"
-            Height="48"
-            Margin="12"
-            Padding="0"
-            HorizontalAlignment="Right"
-            VerticalAlignment="Bottom"
-            Windows10version1809:CornerRadius="24"
-            Command="{x:Bind Path=favoriteVM.RefreshCommand}"
-            Visibility="{x:Bind Path=favoriteVM.LoaddingLiveStatus, Mode=OneWay, Converter={StaticResource displayConvert}}">
+                        </Grid>
+                    </DataTemplate>
+                </controls:MyAdaptiveGridView.ItemTemplate>
+            </controls:MyAdaptiveGridView>
+            <TextBlock
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Foreground="Gray"
+                Visibility="{x:Bind Path=favoriteVM.IsEmpty, Mode=OneWay}">
+                这里还什么都没有~
+            </TextBlock>
+            <Button
+                Width="48"
+                Height="48"
+                Margin="12"
+                Padding="0"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Bottom"
+                Windows10version1809:CornerRadius="24"
+                Command="{x:Bind Path=favoriteVM.RefreshCommand}"
+                Visibility="{x:Bind Path=favoriteVM.LoaddingLiveStatus, Mode=OneWay, Converter={StaticResource displayConvert}}">
 
-            <FontIcon FontFamily="{StaticResource SegoeFluent}" Glyph="&#xE72C;" />
+                <FontIcon FontFamily="{StaticResource SegoeFluent}" Glyph="&#xE72C;" />
 
-        </Button>
-        <Border
-            Width="48"
-            Height="48"
-            Margin="12"
-            HorizontalAlignment="Right"
-            VerticalAlignment="Bottom"
-            Background="{ThemeResource ButtonBackground}"
-            CornerRadius="24"
-            Visibility="{x:Bind Path=favoriteVM.LoaddingLiveStatus, Mode=OneWay}">
-            <ProgressRing Width="24" IsActive="True" />
-        </Border>
+            </Button>
+            <Border
+                Width="48"
+                Height="48"
+                Margin="12"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Bottom"
+                Background="{ThemeResource ButtonBackground}"
+                CornerRadius="24"
+                Visibility="{x:Bind Path=favoriteVM.LoaddingLiveStatus, Mode=OneWay}">
+                <ProgressRing Width="24" IsActive="True" />
+            </Border>
+        </Grid>
     </Grid>
 </Page>

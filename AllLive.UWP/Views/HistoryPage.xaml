@@ -2,65 +2,103 @@
     x:Class="AllLive.UWP.Views.HistoryPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:AllLive.UWP.Views"
+    xmlns:Windows10version1809="http://schemas.microsoft.com/winfx/2006/xaml/presentation?IsApiContractPresent(Windows.Foundation.UniversalApiContract, 7)"
+    xmlns:controls="using:AllLive.UWP.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:models="using:AllLive.UWP.Models" xmlns:controls="using:AllLive.UWP.Controls" xmlns:Windows10version1809="http://schemas.microsoft.com/winfx/2006/xaml/presentation?IsApiContractPresent(Windows.Foundation.UniversalApiContract, 7)"
-    mc:Ignorable="d"
-    >
+    xmlns:local="using:AllLive.UWP.Views"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="using:AllLive.UWP.Models"
+    mc:Ignorable="d">
 
     <Grid>
-        <controls:MyAdaptiveGridView ItemsSource="{x:Bind Path=historyVM.Items}"
-                                     ItemHeight="72" 
-                                     CanLoadMore="False"
-                                     Margin="8"
-                                     StretchContentForSingleRow="False"
-                                     SelectionMode="None"
-                                     IsItemClickEnabled="True"
-                                     ItemClick="ls_ItemClick"
-                                     DesiredWidth="400" >
+        <controls:MyAdaptiveGridView
+            Margin="8"
+            CanLoadMore="False"
+            DesiredWidth="400"
+            IsItemClickEnabled="True"
+            ItemClick="ls_ItemClick"
+            ItemHeight="72"
+            ItemsSource="{x:Bind Path=historyVM.Items}"
+            SelectionMode="None"
+            StretchContentForSingleRow="False">
             <controls:MyAdaptiveGridView.ItemContainerStyle>
-                <Style TargetType="GridViewItem" BasedOn="{StaticResource GridViewItemCornerRadiusStyle}">
-                    <Setter Property="Margin" Value="4"></Setter>
-                    <Setter Property="Padding" Value="8 4"></Setter>
-                    <Setter Property="BorderThickness" Value="1"></Setter>
-                    <Setter Property="BorderBrush" Value="{ThemeResource CardStrokeColorDefaultBrush}"></Setter>
-                    <Setter Property="Background" Value="{ThemeResource ButtonBackground}"></Setter>
-                    <Setter Property="HorizontalContentAlignment" Value="Stretch"></Setter>
+                <Style BasedOn="{StaticResource GridViewItemCornerRadiusStyle}" TargetType="GridViewItem">
+                    <Setter Property="Margin" Value="4" />
+                    <Setter Property="Padding" Value="8,4" />
+                    <Setter Property="BorderThickness" Value="1" />
+                    <Setter Property="BorderBrush" Value="{ThemeResource CardStrokeColorDefaultBrush}" />
+                    <Setter Property="Background" Value="{ThemeResource ButtonBackground}" />
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                 </Style>
             </controls:MyAdaptiveGridView.ItemContainerStyle>
             <controls:MyAdaptiveGridView.ItemTemplate>
                 <DataTemplate x:DataType="models:HistoryItem">
-                    <Grid >
+                    <Grid>
                         <Grid.ContextFlyout>
                             <MenuFlyout>
-                                <MenuFlyoutItem Click="MenuFlyoutItem_Click" Icon="Delete" Text="移除"></MenuFlyoutItem>
+                                <MenuFlyoutItem
+                                    Click="MenuFlyoutItem_Click"
+                                    Icon="Delete"
+                                    Text="移除" />
                             </MenuFlyout>
                         </Grid.ContextFlyout>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition/>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition />
                         </Grid.ColumnDefinitions>
-                        <PersonPicture Width="56" BorderThickness="0" ProfilePicture="{x:Bind Path=Photo}" Height="48" Background="Blue"></PersonPicture>
-                        <StackPanel Grid.Column="1" Margin="8 0 0 0" VerticalAlignment="Center">
-                            <TextBlock Text="{x:Bind Path=UserName}"></TextBlock>
-                            <TextBlock  Margin="0 4 0 0" FontSize="12" Foreground="Gray">观看于<Run Text="{x:Bind Path=WatchTime}"/>
+                        <PersonPicture
+                            Width="56"
+                            Height="48"
+                            Background="Blue"
+                            BorderThickness="0"
+                            ProfilePicture="{x:Bind Path=Photo}" />
+                        <StackPanel
+                            Grid.Column="1"
+                            Margin="8,0,0,0"
+                            VerticalAlignment="Center">
+                            <TextBlock Text="{x:Bind Path=UserName}" />
+                            <TextBlock
+                                Margin="0,4,0,0"
+                                FontSize="12"
+                                Foreground="Gray">
+                                观看于<Run Text="{x:Bind Path=WatchTime}" />
                             </TextBlock>
                         </StackPanel>
                     </Grid>
                 </DataTemplate>
             </controls:MyAdaptiveGridView.ItemTemplate>
         </controls:MyAdaptiveGridView>
-        <TextBlock Visibility="{x:Bind Path=historyVM.IsEmpty,Mode=OneWay}" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="Gray">这里还什么都没有~</TextBlock>
-        <StackPanel HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="12">
-            <Button Command="{x:Bind Path=historyVM.CleanCommand}" Windows10version1809:CornerRadius="24" Visibility="{x:Bind Path=historyVM.Loading,Mode=OneWay,Converter={StaticResource displayConvert}}" Padding="0"  BorderThickness="0" Background="Transparent">
-                <Border Width="48" Height="48" CornerRadius="24" Background="#33000000">
-                    <SymbolIcon Symbol="Delete" Foreground="White"></SymbolIcon>
-                </Border>
+        <TextBlock
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Foreground="Gray"
+            Visibility="{x:Bind Path=historyVM.IsEmpty, Mode=OneWay}">
+            这里还什么都没有~
+        </TextBlock>
+        <StackPanel
+            Margin="12"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Bottom">
+            <Button
+                Width="48"
+                Height="48"
+                Windows10version1809:CornerRadius="24"
+                Command="{x:Bind Path=historyVM.CleanCommand}"
+                Visibility="{x:Bind Path=historyVM.Loading, Mode=OneWay, Converter={StaticResource displayConvert}}">
+
+                <SymbolIcon Symbol="Delete" />
+
             </Button>
-            <Button Margin="0 12 0 0" Command="{x:Bind Path=historyVM.RefreshCommand}" Windows10version1809:CornerRadius="24" Visibility="{x:Bind Path=historyVM.Loading,Mode=OneWay,Converter={StaticResource displayConvert}}" Padding="0"  BorderThickness="0" Background="Transparent">
-                <Border Width="48" Height="48" CornerRadius="24" Background="#33000000">
-                    <SymbolIcon Symbol="Refresh" Foreground="White"></SymbolIcon>
-                </Border>
+            <Button
+                Width="48"
+                Height="48"
+                Margin="0,12,0,0"
+                Windows10version1809:CornerRadius="24"
+                Command="{x:Bind Path=historyVM.RefreshCommand}"
+                Visibility="{x:Bind Path=historyVM.Loading, Mode=OneWay, Converter={StaticResource displayConvert}}">
+
+                <SymbolIcon Symbol="Refresh" />
+
             </Button>
         </StackPanel>
     </Grid>
