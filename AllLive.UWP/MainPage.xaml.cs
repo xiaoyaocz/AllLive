@@ -22,6 +22,8 @@ using Windows.UI.Xaml.Navigation;
 using AllLive.Core.Models;
 using Windows.ApplicationModel.Core;
 using System.Threading.Tasks;
+using Windows.Services.Store;
+using Windows.UI.Popups;
 
 // https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x804 上介绍了“空白页”项模板
 
@@ -35,7 +37,7 @@ namespace AllLive.UWP
 
         public MainPage()
         {
-           
+
             this.NavigationCacheMode = NavigationCacheMode.Enabled;
             this.InitializeComponent();
             MessageCenter.UpdatePanelDisplayModeEvent += MessageCenter_UpdatePanelDisplayModeEvent;
@@ -63,8 +65,7 @@ namespace AllLive.UWP
         {
             base.OnNavigatedTo(e);
             _ = BiliAccount.Instance.InitLoginInfo();
-            _ = Helper.Utils.CheckVersion();
-
+            _ = CheckUpdate();
         }
 
         private void NavigationView_SelectionChanged(Microsoft.UI.Xaml.Controls.NavigationView sender, Microsoft.UI.Xaml.Controls.NavigationViewSelectionChangedEventArgs args)
@@ -117,6 +118,38 @@ namespace AllLive.UWP
         private void navigationView_Loaded(object sender, RoutedEventArgs e)
         {
             navigationView.IsPaneOpen = false;
+        }
+
+        private async Task CheckUpdate()
+        {
+            try
+            {
+                StoreContext context = StoreContext.GetDefault();
+                IReadOnlyList<StorePackageUpdate> updates = await context.GetAppAndOptionalStorePackageUpdatesAsync();
+
+                if (updates.Count > 0)
+                {
+                    MessageDialog dialog = new MessageDialog("发现新版本，是否前往应用商店更新？", "发现新版本");
+                    dialog.Commands.Add(new UICommand("确定", async (cmd) =>
+                    {
+                        var product = await context.GetStoreProductForCurrentAppAsync();
+                        // 打开应用商店
+                        var uri = new Uri($"ms-windows-store://pdp?productid={product.Product.StoreId}");
+                        await Windows.System.Launcher.LaunchUriAsync(uri);
+                    }));
+                    dialog.Commands.Add(new UICommand("取消"));
+                    await dialog.ShowAsync();
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Log("CheckUpdate", LogType.ERROR, ex);
+                await Helper.Utils.CheckVersion();
+            }
+
+
         }
     }
 }
