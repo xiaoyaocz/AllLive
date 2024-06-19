@@ -1,7 +1,6 @@
 ﻿using AllLive.Core.Helper;
 using AllLive.Core.Interface;
 using AllLive.Core.Models;
-using BrotliSharpLib;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -54,7 +53,7 @@ namespace AllLive.Core.Danmaku
                 {
                     roomid = roomId,
                     uid =Args.UserId,
-                    protover = 3,
+                    protover = 2,
                     key = danmuInfo.token,
                     platform = "web",
                     type=2,
@@ -172,7 +171,7 @@ namespace AllLive.Core.Danmaku
             else if (operation == 5)
             {
 
-                if (protocolVersion == 2 || protocolVersion == 3)
+                if (protocolVersion == 2)//|| protocolVersion == 3
                 {
                     body = DecompressData(body, protocolVersion);
                 }
@@ -273,7 +272,6 @@ namespace AllLive.Core.Danmaku
             using (MemoryStream outBuffer = new MemoryStream())
             using (System.IO.Compression.DeflateStream compressedzipStream = new System.IO.Compression.DeflateStream(new MemoryStream(data, 2, data.Length - 2), System.IO.Compression.CompressionMode.Decompress))
             {
-
                 byte[] block = new byte[1024];
                 while (true)
                 {
@@ -296,21 +294,23 @@ namespace AllLive.Core.Danmaku
         /// <returns></returns>
         private byte[] DecompressDataWithBrotli(byte[] data)
         {
-            using (var decompressedStream = new BrotliStream(new MemoryStream(data), CompressionMode.Decompress))
-            {
-                using (var outBuffer = new MemoryStream())
-                {
-                    var block = new byte[1024];
-                    while (true)
-                    {
-                        var bytesRead = decompressedStream.Read(block, 0, block.Length);
-                        if (bytesRead <= 0)
-                            break;
-                        outBuffer.Write(block, 0, bytesRead);
-                    }
-                    return outBuffer.ToArray();
-                }
-            }
+            
+            //using (var decompressedStream = new BrotliStream(new MemoryStream(data), CompressionMode.Decompress))
+            //{
+            //    using (var outBuffer = new MemoryStream())
+            //    {
+            //        var block = new byte[1024];
+            //        while (true)
+            //        {
+            //            var bytesRead = decompressedStream.Read(block, 0, block.Length);
+            //            if (bytesRead <= 0)
+            //                break;
+            //            outBuffer.Write(block, 0, bytesRead);
+            //        }
+            //        return outBuffer.ToArray();
+            //    }
+            //}
+            throw new NotImplementedException();
 
 
         }
