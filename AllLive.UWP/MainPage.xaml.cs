@@ -35,17 +35,39 @@ namespace AllLive.UWP
 
         public MainPage()
         {
+           
             this.NavigationCacheMode = NavigationCacheMode.Enabled;
             this.InitializeComponent();
-         
-        }
-        protected async override void OnNavigatedTo(NavigationEventArgs e)
-        {
-            base.OnNavigatedTo(e);
-            await Helper.Utils.CheckVersion();
+            MessageCenter.UpdatePanelDisplayModeEvent += MessageCenter_UpdatePanelDisplayModeEvent;
+            SetPaneMode();
         }
 
-        private  void NavigationView_SelectionChanged(Microsoft.UI.Xaml.Controls.NavigationView sender, Microsoft.UI.Xaml.Controls.NavigationViewSelectionChangedEventArgs args)
+        private void MessageCenter_UpdatePanelDisplayModeEvent(object sender, EventArgs e)
+        {
+            SetPaneMode();
+        }
+
+        private void SetPaneMode()
+        {
+            if (SettingHelper.GetValue<int>(SettingHelper.PANE_DISPLAY_MODE, 0) == 0)
+            {
+                navigationView.PaneDisplayMode = Microsoft.UI.Xaml.Controls.NavigationViewPaneDisplayMode.Left;
+            }
+            else
+            {
+                navigationView.PaneDisplayMode = Microsoft.UI.Xaml.Controls.NavigationViewPaneDisplayMode.Top;
+            }
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+            _ = BiliAccount.Instance.InitLoginInfo();
+            _ = Helper.Utils.CheckVersion();
+
+        }
+
+        private void NavigationView_SelectionChanged(Microsoft.UI.Xaml.Controls.NavigationView sender, Microsoft.UI.Xaml.Controls.NavigationViewSelectionChangedEventArgs args)
         {
             var item = args.SelectedItem as Microsoft.UI.Xaml.Controls.NavigationViewItem;
             if (item.Tag.ToString() == "设置" || item.Tag.ToString() == "Settings")
@@ -55,7 +77,7 @@ namespace AllLive.UWP
             frame.Navigate(Type.GetType("AllLive.UWP.Views." + item.Tag));
 
         }
-        
+
         private async void searchBox_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
         {
             if (string.IsNullOrEmpty(args.QueryText))
@@ -71,7 +93,7 @@ namespace AllLive.UWP
 
         private async Task<bool> ParseUrl(string url)
         {
-            var parseResult=await SiteParser.ParseUrl(url);
+            var parseResult = await SiteParser.ParseUrl(url);
             if (parseResult.Item1 != LiveSite.Unknown && !string.IsNullOrEmpty(parseResult.Item2))
             {
                 this.Frame.Navigate(typeof(LiveRoomPage), new PageArgs()
@@ -92,5 +114,9 @@ namespace AllLive.UWP
 
         }
 
+        private void navigationView_Loaded(object sender, RoutedEventArgs e)
+        {
+            navigationView.IsPaneOpen = false;
+        }
     }
 }

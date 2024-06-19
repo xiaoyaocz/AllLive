@@ -428,19 +428,19 @@
                     <AppBarButton
                         x:Name="BottomBtnAddFavorite"
                         Command="{x:Bind Path=liveRoomVM.AddFavoriteCommand}"
-                        Label="收藏"
+                        Label="关注"
                         Visibility="{x:Bind Path=liveRoomVM.IsFavorite, Mode=OneWay, Converter={StaticResource displayConvert}}">
                         <AppBarButton.Icon>
-                            <FontIcon FontFamily="{StaticResource SegoeFluent}" Glyph="&#xE1CE;" />
+                            <FontIcon FontFamily="{StaticResource SegoeFluent}" Glyph="&#xEB51;" />
                         </AppBarButton.Icon>
                     </AppBarButton>
                     <AppBarButton
                         x:Name="BottomBtnRemoveFavorite"
                         Command="{x:Bind Path=liveRoomVM.RemoveFavoriteCommand}"
-                        Label="已收藏"
+                        Label="已关注"
                         Visibility="{x:Bind Path=liveRoomVM.IsFavorite, Mode=OneWay}">
                         <AppBarButton.Icon>
-                            <FontIcon FontFamily="{StaticResource SegoeFluent}" Glyph="&#xE1CF;" />
+                            <FontIcon FontFamily="{StaticResource SegoeFluent}" Glyph="&#xEB52;" />
                         </AppBarButton.Icon>
                     </AppBarButton>
                     <AppBarButton

@@ -9,13 +9,13 @@ namespace AllLive.Core.Helper
 {
     public static class HttpUtil
     {
-        public static async Task<string> GetString(string url,IDictionary<string,string> headers=null,IDictionary<string,string> queryParameters=null)
+        public static async Task<string> GetString(string url, IDictionary<string, string> headers = null, IDictionary<string, string> queryParameters = null)
         {
             HttpClientHandler httpClientHandler = new HttpClientHandler
             {
-                AutomaticDecompression = DecompressionMethods.GZip| DecompressionMethods.Deflate
+                AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
             };
-            using (HttpClient httpClient=new HttpClient(httpClientHandler))
+            using (HttpClient httpClient = new HttpClient(httpClientHandler))
             {
                 if (headers != null)
                 {
@@ -33,11 +33,41 @@ namespace AllLive.Core.Helper
                     }
                     url = url.TrimEnd('&');
                 }
-                var result=await httpClient.GetAsync(url);
+                var result = await httpClient.GetAsync(url);
                 result.EnsureSuccessStatusCode();
                 return await result.Content.ReadAsStringAsync();
             }
         }
+        public static async Task<HttpResponseMessage> Get(string url, IDictionary<string, string> headers = null, IDictionary<string, string> queryParameters = null)
+        {
+            HttpClientHandler httpClientHandler = new HttpClientHandler
+            {
+                AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
+            };
+            using (HttpClient httpClient = new HttpClient(httpClientHandler))
+            {
+                if (headers != null)
+                {
+                    foreach (var item in headers)
+                    {
+                        httpClient.DefaultRequestHeaders.Add(item.Key, item.Value);
+                    }
+                }
+                if (queryParameters != null)
+                {
+                    url += "?";
+                    foreach (var item in queryParameters)
+                    {
+                        url += $"{item.Key}={Uri.EscapeDataString(item.Value)}&";
+                    }
+                    url = url.TrimEnd('&');
+                }
+                var result = await httpClient.GetAsync(url);
+                result.EnsureSuccessStatusCode();
+                return result;
+            }
+        }
+
         public static async Task<string> GetUtf8String(string url, IDictionary<string, string> headers = null)
         {
             using (HttpClient httpClient = new HttpClient())
@@ -51,10 +81,10 @@ namespace AllLive.Core.Helper
                 }
                 var result = await httpClient.GetAsync(url);
                 result.EnsureSuccessStatusCode();
-                return Encoding.UTF8.GetString( await result.Content.ReadAsByteArrayAsync());
+                return Encoding.UTF8.GetString(await result.Content.ReadAsByteArrayAsync());
             }
         }
-        public static async Task<string> PostString(string url, string data,IDictionary<string, string> headers = null)
+        public static async Task<string> PostString(string url, string data, IDictionary<string, string> headers = null)
         {
             using (HttpClient httpClient = new HttpClient())
             {

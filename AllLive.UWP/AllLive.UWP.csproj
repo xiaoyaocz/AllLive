@@ -134,6 +134,9 @@
     <Compile Include="BaseFramePage.xaml.cs">
       <DependentUpon>BaseFramePage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\BiliLoginDialog.xaml.cs">
+      <DependentUpon>BiliLoginDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\MessageToast.xaml.cs">
       <DependentUpon>MessageToast.xaml</DependentUpon>
     </Compile>
@@ -142,6 +145,7 @@
     <Compile Include="Converters\DisplayConvert.cs" />
     <Compile Include="Converters\ImageCovert.cs" />
     <Compile Include="Converters\NumberToStringConvert.cs" />
+    <Compile Include="Helper\BiliAccount.cs" />
     <Compile Include="Helper\ExceptionHandler.cs" />
     <Compile Include="Helper\DatabaseHelper.cs" />
     <Compile Include="Helper\LogHelper.cs" />
@@ -275,6 +279,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Controls\BiliLoginDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\MessageToast.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -343,7 +351,7 @@
       <Version>7.1.1</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.UI.Xaml">
-      <Version>2.8.4</Version>
+      <Version>2.8.6</Version>
     </PackageReference>
     <PackageReference Include="NLog">
       <Version>4.7.12</Version>
@@ -359,6 +367,9 @@
     </PackageReference>
     <PackageReference Include="VideoLAN.LibVLC.UWP">
       <Version>3.3.2</Version>
+    </PackageReference>
+    <PackageReference Include="ZXing.Net">
+      <Version>0.16.9</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>

@@ -18,7 +18,7 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="protobuf-net" Version="3.2.30" />
     <PackageReference Include="QuickJS.NET" Version="0.0.3">
-      <PrivateAssets></PrivateAssets>
+      <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="WebSocketSharp-netstandard-customheaders" Version="1.0.3" />
   </ItemGroup>

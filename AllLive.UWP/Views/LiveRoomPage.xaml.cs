@@ -254,7 +254,16 @@ namespace AllLive.UWP.Views
                 //    break;
 
                 case Windows.System.VirtualKey.Up:
-                    mediaPlayer.Volume += 0.1;
+                    if(mediaPlayer.Volume+0.1>1)
+                    {
+                        mediaPlayer.Volume = 1;
+                    }
+                    else
+                    {
+                        mediaPlayer.Volume += 0.1;
+                    }
+                   
+
                     TxtToolTip.Text = "音量:" + mediaPlayer.Volume.ToString("P");
                     ToolTip.Visibility = Visibility.Visible;
                     await Task.Delay(2000);
@@ -262,7 +271,16 @@ namespace AllLive.UWP.Views
                     break;
 
                 case Windows.System.VirtualKey.Down:
-                    mediaPlayer.Volume -= 0.1;
+                    if (mediaPlayer.Volume  -0.1 < 0)
+                    {
+                        mediaPlayer.Volume = 0;
+                    }
+                    else
+                    {
+                        mediaPlayer.Volume -= 0.1;
+                    }
+
+                    
                     if (mediaPlayer.Volume == 0)
                     {
                         TxtToolTip.Text = "静音";
@@ -785,6 +803,12 @@ namespace AllLive.UWP.Views
         }
         private void Grid_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
+            if(isMini)
+            {
+                MiniWidnows(false);
+                return;
+            }
+           
             if (PlayBtnFullScreen.Visibility == Visibility.Visible)
             {
                 PlayBtnFullScreen_Click(sender, null);

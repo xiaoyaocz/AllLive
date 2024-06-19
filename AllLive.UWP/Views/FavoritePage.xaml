@@ -68,7 +68,7 @@
                             Grid.ColumnSpan="2"
                             Margin="4"
                             HorizontalAlignment="Right"
-                            VerticalAlignment="Top"
+                            VerticalAlignment="Center"
                             Orientation="Horizontal"
                             Visibility="{x:Bind Path=LiveStatus, Mode=OneWay}">
                             <Ellipse

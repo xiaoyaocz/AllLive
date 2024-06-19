@@ -7,21 +7,24 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
     mc:Ignorable="d">
-
+    <Page.Resources>
+        <Thickness x:Key="NavigationViewContentPresenterMargin">0,0,0,0</Thickness>
+    </Page.Resources>
     <Grid>
 
 
         <muxc:NavigationView
             x:Name="navigationView"
             IsBackButtonVisible="Collapsed"
-            IsSettingsVisible="False"
-            PaneDisplayMode="Top"
-            PaneTitle="聚合直播"
+            IsPaneOpen="False"
+            IsSettingsVisible="true"
+            Loaded="navigationView_Loaded"
+            OpenPaneLength="260"
+            PaneDisplayMode="Left"
             SelectionChanged="NavigationView_SelectionChanged">
             <muxc:NavigationView.AutoSuggestBox>
                 <AutoSuggestBox
                     x:Name="searchBox"
-                    Width="200"
                     AutomationProperties.Name="Search"
                     PlaceholderText="链接跳转或关键字搜索"
                     QueryIcon="Find"
@@ -43,9 +46,9 @@
                         <FontIcon FontFamily="{StaticResource SegoeFluent}" Glyph="&#xE74C;" />
                     </muxc:NavigationViewItem.Icon>
                 </muxc:NavigationViewItem>
-                <muxc:NavigationViewItem Content="收藏" Tag="FavoritePage">
+                <muxc:NavigationViewItem Content="关注" Tag="FavoritePage">
                     <muxc:NavigationViewItem.Icon>
-                        <FontIcon FontFamily="{StaticResource SegoeFluent}" Glyph="&#xE1CE;" />
+                        <FontIcon FontFamily="{StaticResource SegoeFluent}" Glyph="&#xEB51;" />
                     </muxc:NavigationViewItem.Icon>
                 </muxc:NavigationViewItem>
                 <muxc:NavigationViewItem Content="历史" Tag="HistoryPage">
@@ -53,16 +56,14 @@
                         <FontIcon FontFamily="{StaticResource SegoeFluent}" Glyph="&#xE121;" />
                     </muxc:NavigationViewItem.Icon>
                 </muxc:NavigationViewItem>
-                <muxc:NavigationViewItem Content="设置" Tag="SettingsPage">
+                <!--<muxc:NavigationViewItem Content="设置" Tag="SettingsPage">
                     <muxc:NavigationViewItem.Icon>
                         <FontIcon FontFamily="{StaticResource SegoeFluent}" Glyph="&#xE115;" />
                     </muxc:NavigationViewItem.Icon>
-                </muxc:NavigationViewItem>
+                </muxc:NavigationViewItem>-->
             </muxc:NavigationView.MenuItems>
-            <muxc:NavigationView.Content>
-                <Frame x:Name="frame" />
 
-            </muxc:NavigationView.Content>
+            <Frame x:Name="frame" />
         </muxc:NavigationView>
 
     </Grid>
