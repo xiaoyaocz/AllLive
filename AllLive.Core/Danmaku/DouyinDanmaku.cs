@@ -13,6 +13,8 @@ using ProtoBuf;
 using System.IO;
 using System.Security.Cryptography;
 using System.IO.Compression;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace AllLive.Core.Danmaku
 {
@@ -72,8 +74,12 @@ namespace AllLive.Core.Danmaku
             { "identity", "audience" },
             { "room_id", danmakuArgs.RoomId },
             { "heartbeatDuration", "0" },
-            { "signature", "00000000" }
+            //{ "signature", "00000000" }
         };
+
+            var sign = await GetSign(danmakuArgs.RoomId, danmakuArgs.UserId);
+            query.Add("signature", sign);
+
             // 将参数拼接到url
             var url = $"{baseUrl}?{Utils.BuildQueryString(query)}";
             ServerUrl = url;
@@ -279,6 +285,30 @@ namespace AllLive.Core.Danmaku
                 return Serializer.Deserialize<T>(ms);
             }
 
+        }
+
+        /// <summary>
+        /// 获取Websocket签名
+        /// 服务端代码：https://github.com/lovelyyoshino/douyin_python
+        /// </summary>
+        /// <param name="roomId">房间ID</param>
+        /// <param name="uniqueId">用户唯一ID</param>
+        /// <returns></returns>
+        private async Task<string> GetSign(string roomId, string uniqueId)
+        {
+            try
+            {
+                var body=JsonConvert.SerializeObject(new { roomId, uniqueId });
+                var result = await HttpUtil.PostJsonString("https://dy.nsapps.cn/signature", body);
+                var json = JObject.Parse(result);
+                return json["data"]["signature"].ToString();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex);
+
+                return "00000000";
+            }
         }
     }
 }

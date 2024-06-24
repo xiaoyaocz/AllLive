@@ -2,7 +2,7 @@
   "profiles": {
     "AllLive.ConsoleApp": {
       "commandName": "Project",
-      "commandLineArgs": "-i https://www.huya.com/998"
+      "commandLineArgs": "-d https://live.douyin.com/277469397780"
     },
     "WSL": {
       "commandName": "WSL2",

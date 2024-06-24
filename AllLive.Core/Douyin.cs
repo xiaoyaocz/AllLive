@@ -11,6 +11,7 @@ using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Web;
 using System.Xml.Linq;
 
 namespace AllLive.Core
@@ -127,7 +128,7 @@ namespace AllLive.Core
                     Title = item["room"]["title"].ToString(),
                     Cover = item["room"]["cover"]["url_list"][0].ToString(),
                     UserName = item["room"]["owner"]["nickname"].ToString(),
-                    Online = item["room"]["room_view_stats"]["display_value"].ToObject<int>(),
+                    Online = item["room"]["room_view_stats"]?["display_value"]?.ToObject<int>()??0,
                 };
                 items.Add(roomItem);
             }
@@ -163,7 +164,7 @@ namespace AllLive.Core
                     Title = item["room"]["title"].ToString(),
                     Cover = item["room"]["cover"]["url_list"][0].ToString(),
                     UserName = item["room"]["owner"]["nickname"].ToString(),
-                    Online = item["room"]["room_view_stats"]["display_value"].ToObject<int>(),
+                    Online = item["room"]["room_view_stats"]?["display_value"]?.ToObject<int>()??0,
                 };
                 items.Add(roomItem);
             }
@@ -227,7 +228,7 @@ namespace AllLive.Core
                 UserName = owner["nickname"].ToString(),
                 UserAvatar = owner["avatar_thumb"]["url_list"][0].ToString(),
                 Online = roomStatus
-                  ? room["room_view_stats"]["display_value"].ToObject<int>()
+                  ? (room["room_view_stats"]?["display_value"]?.ToObject<int>()??0)
                   : 0,
                 Status = roomStatus,
                 Url = $"https://live.douyin.com/{webRid}",
@@ -300,7 +301,7 @@ namespace AllLive.Core
                     ? owner["avatar_thumb"]["url_list"][0].ToString()
                     : userData["avatar_thumb"]["url_list"][0].ToString(),
                 Online = roomStatus
-                    ? roomData["room_view_stats"]["display_value"].ToObject<int>()
+                    ? (roomData["room_view_stats"]?["display_value"]?.ToObject<int>()??0)
                     : 0,
                 Status = roomStatus,
                 Url = $"https://live.douyin.com/{webRid}",
@@ -344,7 +345,7 @@ namespace AllLive.Core
                     ? owner["avatar_thumb"]["url_list"][0].ToString()
                     : anchor["avatar_thumb"]["url_list"][0].ToString(),
                 Online = roomStatus
-                    ? room["room_view_stats"]["display_value"].ToObject<int>()
+                    ? (room["room_view_stats"]?["display_value"]?.ToObject<int>()??0)
                     : 0,
                 Status = roomStatus,
                 Url = $"https://live.douyin.com/{webRid}",
@@ -548,9 +549,83 @@ namespace AllLive.Core
             return Task.FromResult(qn.Data as List<string>);
         }
 
-        public Task<LiveSearchResult> Search(string keyword, int page = 1)
+        public async Task<LiveSearchResult> Search(string keyword, int page = 1)
         {
-            throw new Exception("抖音直播不支持搜索");
+            var query = new Dictionary<string, string>
+            {
+                { "device_platform", "webapp" },
+                { "aid", "6383" },
+                { "channel", "channel_pc_web" },
+                { "search_channel", "aweme_live" },
+                { "keyword", keyword },  // 动态值
+                { "search_source", "switch_tab" },
+                { "query_correct_type", "1" },
+                { "is_filter_search", "0" },
+                { "from_group_id", "" },
+                { "offset", ((page - 1) * 10).ToString() },  // 动态计算值
+                { "count", "10" },
+                { "pc_client_type", "1" },
+                { "version_code", "170400" },
+                { "version_name", "17.4.0" },
+                { "cookie_enabled", "true" },
+                { "screen_width", "1980" },
+                { "screen_height", "1080" },
+                { "browser_language", "zh-CN" },
+                { "browser_platform", "Win32" },
+                { "browser_name", "Edge" },
+                { "browser_version", "125.0.0.0" },
+                { "browser_online", "true" },
+                { "engine_name", "Blink" },
+                { "engine_version", "125.0.0.0" },
+                { "os_name", "Windows" },
+                { "os_version", "10" },
+                { "cpu_core_num", "12" },
+                { "device_memory", "8" },
+                { "platform", "PC" },
+                { "downlink", "10" },
+                { "effective_type", "4g" },
+                { "round_trip_time", "100" },
+                { "webid", "7382872326016435738" }
+            };
+
+            var requestUrl = $"https://www.douyin.com/aweme/v1/web/live/search/?{Utils.BuildQueryString(query)}";
+            var cookie = (await GetRequestHeaders())["Cookie"];
+            var headers = new Dictionary<string, string>
+            {
+                { "accept", "application/json, text/plain, */*" },
+                { "accept-language", "zh-CN,zh;q=0.9,en;q=0.8" },
+                { "cookie", cookie },  
+                { "priority", "u=1, i" },
+                { "referer", $"https://www.douyin.com/search/{Uri.EscapeUriString(keyword)}?type=live" }, 
+                { "sec-ch-ua", "\"Microsoft Edge\";v=\"125\", \"Chromium\";v=\"125\", \"Not.A/Brand\";v=\"24\"" },
+                { "sec-ch-ua-mobile", "?0" },
+                { "sec-ch-ua-platform", "\"Windows\"" },
+                { "sec-fetch-dest", "empty" },
+                { "sec-fetch-mode", "cors" },
+                { "sec-fetch-site", "same-origin" },
+                { "user-agent", USER_AGENT }
+            };
+            var resp = await HttpUtil.GetString(requestUrl, headers);
+            var json = JObject.Parse(resp);
+            var items =new List<LiveRoomItem>();
+            foreach (var item in json["data"])
+            {
+                var itemData = JObject.Parse(item["lives"]["rawdata"].ToString());
+                var roomItem = new LiveRoomItem()
+                {
+                    RoomID = itemData["owner"]["web_rid"].ToString(),
+                    Title = itemData["title"].ToString(),
+                    Cover = itemData["cover"]["url_list"][0].ToString(),
+                    UserName = itemData["owner"]["nickname"].ToString(),
+                    Online = itemData["stats"]["total_user"].ToObject<int>(),
+                };
+                items.Add(roomItem);
+            }
+            return new LiveSearchResult()
+            {
+                HasMore = items.Count >= 10,
+                Rooms = items
+            };
         }
         public async Task<bool> GetLiveStatus(object roomId)
         {
