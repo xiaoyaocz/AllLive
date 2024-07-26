@@ -32,6 +32,7 @@ namespace AllLive.Core.Danmaku
         public event EventHandler<LiveMessage> NewMessage;
         public event EventHandler<string> OnClose;
         private string baseUrl = "wss://webcast3-ws-web-lq.douyin.com/webcast/im/push/v2/";
+
         Timer timer;
         WebSocket ws;
         DouyinDanmakuArgs danmakuArgs;
@@ -87,8 +88,9 @@ namespace AllLive.Core.Danmaku
             ws = new WebSocket(ServerUrl);
             // 添加请求头
             ws.CustomHeaders = new Dictionary<string, string>() {
+                {"Origin","https://live.douyin.com" },
                 {"Cookie", danmakuArgs.Cookie},
-                  {"User-Agnet","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36 Edg/125.0.0.0" }
+                {"User-Agnet","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36 Edg/125.0.0.0" }
               };
             // 必须设置ssl协议为Tls12
             ws.SslConfiguration.EnabledSslProtocols = System.Security.Authentication.SslProtocols.Tls12;

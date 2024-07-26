@@ -124,7 +124,7 @@ namespace AllLive.Core
             {
                 var roomItem = new LiveRoomItem()
                 {
-                    RoomID = item["room"]["id_str"].ToString(),
+                    RoomID = item["web_rid"].ToString(),
                     Title = item["room"]["title"].ToString(),
                     Cover = item["room"]["cover"]["url_list"][0].ToString(),
                     UserName = item["room"]["owner"]["nickname"].ToString(),
@@ -160,7 +160,7 @@ namespace AllLive.Core
             {
                 var roomItem = new LiveRoomItem()
                 {
-                    RoomID = item["room"]["id_str"].ToString(),
+                    RoomID = item["web_rid"].ToString(),
                     Title = item["room"]["title"].ToString(),
                     Cover = item["room"]["cover"]["url_list"][0].ToString(),
                     UserName = item["room"]["owner"]["nickname"].ToString(),

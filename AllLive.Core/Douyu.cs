@@ -7,6 +7,10 @@ using AllLive.Core.Danmaku;
 using AllLive.Core.Helper;
 using Newtonsoft.Json.Linq;
 using System.Text.RegularExpressions;
+using System.Xml.Linq;
+using System.Linq;
+
+
 #if !WINDOWS_UWP
 using QuickJS;
 #endif
@@ -22,61 +26,42 @@ namespace AllLive.Core
         public ILiveDanmaku GetDanmaku() => new DouyuDanmaku();
         public async Task<List<LiveCategory>> GetCategores()
         {
-            List<LiveCategory> categories = new List<LiveCategory>() {
-                new LiveCategory() {
-                    ID="PCgame",
-                    Name="网游竞技",
-                },
-                new LiveCategory() {
-                    ID="djry",
-                    Name="单机热游",
-                },
-                new LiveCategory() {
-                    ID="syxx",
-                    Name="手游休闲",
-                },
-                new LiveCategory() {
-                    ID="yl",
-                    Name="娱乐天地",
-                },
-                new LiveCategory() {
-                    ID="yz",
-                    Name="颜值",
-                },
-                new LiveCategory() {
-                    ID="kjwh",
-                    Name="科技文化",
-                },
-                new LiveCategory() {
-                    ID="yp",
-                    Name="语言互动",
-                },
-
-            };
-            foreach (var item in categories)
+            List<LiveCategory> categories = new List<LiveCategory>();
+            var result = await HttpUtil.GetString("https://m.douyu.com/api/cate/list");
+            var obj = JObject.Parse(result);
+            var cate1 = obj["data"]["cate1Info"] as JArray;
+            var cate2 = obj["data"]["cate2Info"] as JArray;
+            foreach (var item in cate1)
             {
-                item.Children = await GetSubCategories(item.ID);
+                var cate1Id = item["cate1Id"].ToString();
+                var cate1Name = item["cate1Name"].ToString();
+                List<LiveSubCategory> subCategories = new List<LiveSubCategory>();
+                cate2.Where(x => x["cate1Id"].ToString() == cate1Id).ToList().ForEach(element =>
+                {
+                    subCategories.Add(new LiveSubCategory()
+                    {
+                        Pic = element["icon"].ToString(),
+                        ID = element["cate2Id"].ToString(),
+                        ParentID = cate1Id,
+                        Name = element["cate2Name"].ToString(),
+                    });
+                });
+               
+                categories.Add(
+                  new LiveCategory()
+                  {
+                      ID = cate1Id,
+                      Name = cate1Name,
+                      // 只取前30个子分类
+                      Children = subCategories.Take(30).ToList()
+                  }
+                );
             }
+            categories.Sort((x, y) => x.ID.CompareTo(y.ID));
             return categories;
         }
 
-        private async Task<List<LiveSubCategory>> GetSubCategories(string id)
-        {
-            List<LiveSubCategory> subs = new List<LiveSubCategory>();
-            var result = await HttpUtil.GetString($"https://www.douyu.com/japi/weblist/api/getC2List?shortName={ id}&offset=0&limit=200");
-            var obj = JObject.Parse(result);
-            foreach (var item in obj["data"]["list"])
-            {
-                subs.Add(new LiveSubCategory()
-                {
-                    Pic = item["squareIconUrlW"].ToString(),
-                    ID = item["cid2"].ToString(),
-                    ParentID = item["cid1"].ToString(),
-                    Name = item["cname2"].ToString(),
-                });
-            }
-            return subs;
-        }
+      
         public async Task<LiveCategoryResult> GetCategoryRooms(LiveSubCategory category, int page = 1)
         {
             LiveCategoryResult categoryResult = new LiveCategoryResult()
