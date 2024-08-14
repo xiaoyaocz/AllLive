@@ -9,6 +9,8 @@ using Newtonsoft.Json.Linq;
 using System.Text.RegularExpressions;
 using WebSocketSharp;
 using System.Linq;
+using Newtonsoft.Json;
+using System.Web;
 
 namespace AllLive.Core
 {
@@ -121,7 +123,10 @@ namespace AllLive.Core
         }
         public async Task<LiveRoomDetail> GetRoomDetail(object roomId)
         {
-            var result = await HttpUtil.GetString($"https://api.live.bilibili.com/xlive/web-room/v1/index/getH5InfoByRoom?room_id={roomId}", headers: GetRequestHeader());
+            var url= "https://api.live.bilibili.com/xlive/web-room/v1/index/getInfoByRoom";
+            var query = $"room_id={roomId}";
+            query = await GetWbiSign(query);
+            var result = await HttpUtil.GetString($"{url}?{query}", headers: GetRequestHeader());
             var obj = JObject.Parse(result);
 
             return new LiveRoomDetail()
@@ -137,9 +142,9 @@ namespace AllLive.Core
                 Status = obj["data"]["room_info"]["live_status"].ToInt32() == 1,
                 DanmakuData = new BiliDanmakuArgs()
                 {
-                    RoomId= obj["data"]["room_info"]["room_id"].ToInt32(),
-                    UserId=UserId,
-                    Cookie=Cookie,
+                    RoomId = obj["data"]["room_info"]["room_id"].ToInt32(),
+                    UserId = UserId,
+                    Cookie = Cookie,
                 },
                 Url = "https://live.bilibili.com/" + roomId
             };
@@ -316,5 +321,69 @@ namespace AllLive.Core
             var obj = JObject.Parse(resp);
             return obj["data"]["live_status"].ToObject<int>() == 1;
         }
+
+        private string _imgKey;
+        private string _subKey;
+        private int[] mixinKeyEncTab = new int[] {
+            46, 47, 18, 2, 53, 8, 23, 32, 15, 50, 10, 31, 58, 3, 45, 35, 27, 43, 5, 49,
+            33, 9, 42, 19, 29, 28, 14, 39, 12, 38, 41, 13, 37, 48, 7, 16, 24, 55, 40,
+            61, 26, 17, 0, 1, 60, 51, 30, 4, 22, 25, 54, 21, 56, 59, 6, 63, 57, 62, 11,
+            36, 20, 34, 44, 52
+        };
+        private async Task<(string, string)> GetWbiKeys()
+        {
+            if (_imgKey != null && _subKey != null)
+            {
+                return (_imgKey, _subKey);
+            }
+            // 获取最新的 img_key 和 sub_key
+            var response = await HttpUtil.GetString(
+                "https://api.bilibili.com/x/web-interface/nav",
+                headers: GetRequestHeader());
+            var obj=JObject.Parse(response);
+            
+            var imgUrl = obj["data"]["wbi_img"]["img_url"].ToString();
+            var subUrl = obj["data"]["wbi_img"]["sub_url"].ToString();
+            var imgKey = imgUrl.Substring(imgUrl.LastIndexOf('/') + 1).Split('.')[0];
+            var subKey = subUrl.Substring(subUrl.LastIndexOf('/') + 1).Split('.')[0];
+
+            _imgKey = imgKey;
+            _subKey = subKey;
+
+            return (imgKey, subKey);
+        }
+
+        private string GetMixinKey(string origin)
+        {
+            // 对 imgKey 和 subKey 进行字符顺序打乱编码
+            return mixinKeyEncTab.Aggregate("", (s, i) => s + origin[i]).Substring(0, 32);
+        }
+
+        public async Task<string> GetWbiSign(string url)
+        {
+            var (imgKey, subKey) = await GetWbiKeys();
+
+            // 为请求参数进行 wbi 签名
+            var mixinKey = GetMixinKey(imgKey + subKey);
+            var currentTime = (long)Math.Round(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds);
+
+            var queryString = HttpUtility.ParseQueryString(url);
+
+            var queryParams = queryString.Cast<string>().ToDictionary(k => k, v => queryString[v]);
+            queryParams["wts"] = currentTime + ""; // 添加 wts 字段
+            queryParams = queryParams.OrderBy(x => x.Key).ToDictionary(x => x.Key, x => x.Value); // 按照 key 重排参数
+                                                                                                  // 过滤 value 中的 "!'()*" 字符
+            queryParams = queryParams.ToDictionary(x => x.Key, x => string.Join("", x.Value.ToString().Where(c => "!'()*".Contains(c) == false)));
+
+            var query = string.Join("&", queryParams.Select(kvp => $"{kvp.Key}={Uri.EscapeDataString(kvp.Value)}"));
+
+            var wbi_sign = Utils.ToMD5($"{query}{mixinKey}");
+
+            return $"{query}&w_rid={wbi_sign}";
+        }
+
+
     }
+
+
 }
