@@ -81,6 +81,11 @@ namespace AllLive.UWP.Helper
         /// </summary>
         public const string IGNORE_BILI_LOGIN_TIP = "IgnoreBiliLoginTip";
 
+        /// <summary>
+        /// XBOX模式
+        /// </summary>
+        public const string XBOX_MODE = "XboxMode";
+
         public class LiveDanmaku
         {
             public const string TOP_MARGIN = "LiveTopMargin";

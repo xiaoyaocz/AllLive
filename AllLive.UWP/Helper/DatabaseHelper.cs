@@ -77,6 +77,16 @@ watch_time DATETIME);
             command.ExecuteNonQuery();
 
         }
+
+        public static void DeleteFavorite()
+        {
+            SqliteCommand command = new SqliteCommand();
+            command.Connection = db;
+            command.CommandText = "DELETE FROM Favorite";
+            command.ExecuteNonQuery();
+
+        }
+
         public async static Task<List<FavoriteItem>> GetFavorites()
         {
             List<FavoriteItem> favoriteItems = new List<FavoriteItem>();

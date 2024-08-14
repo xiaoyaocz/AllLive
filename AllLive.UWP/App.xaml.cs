@@ -35,7 +35,11 @@ namespace AllLive.UWP
         {
 
             this.InitializeComponent();
-
+            if(Utils.IsXbox&& SettingHelper.GetValue<int>(SettingHelper.XBOX_MODE, 0)==0)
+            {
+                this.RequiresPointerMode = Windows.UI.Xaml.ApplicationRequiresPointerMode.WhenRequested;
+            }
+           
             App.Current.UnhandledException += App_UnhandledException;
             this.Suspending += OnSuspending;
         }
@@ -83,6 +87,14 @@ namespace AllLive.UWP
             await DatabaseHelper.InitializeDatabase();
             //初始化弹幕DPI
             NSDanmaku.Controls.Danmaku.InitDanmakuDpi();
+            if (Utils.IsXbox)
+            {
+                //bool result = Windows.UI.ViewManagement.ApplicationViewScaling.TrySetDisableLayoutScaling(true);
+                Windows.UI.ViewManagement.ApplicationView.GetForCurrentView().SetDesiredBoundsMode(Windows.UI.ViewManagement.ApplicationViewBoundsMode.UseCoreWindow);
+                App.Current.Resources["GridViewDesiredWidth"] = 200;
+                App.Current.Resources["GridViewItemHeight"] = 148;
+            }
+
 
             Frame rootFrame = Window.Current.Content as Frame;
 

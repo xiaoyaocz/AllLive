@@ -1,4 +1,5 @@
 ﻿using AllLive.UWP.Helper;
+using AllLive.UWP.Views;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -29,15 +30,39 @@ namespace AllLive.UWP
         {
             this.InitializeComponent();
             MessageCenter.NavigatePageEvent += MessageCenter_NavigatePageEvent;
+            Windows.UI.Core.SystemNavigationManager.GetForCurrentView().BackRequested += BaseFramePage_BackRequested;
+
             MessageCenter.ChangeTitleEvent += MessageCenter_ChangeTitleEvent;
             MessageCenter.HideTitlebarEvent += MessageCenter_HideTitlebarEvent;
             this.PointerPressed += BaseFramePage_PointerPressed;
+            Window.Current.CoreWindow.KeyDown += CoreWindow_KeyDown;
             BtnBack.Click += BtnBack_Click;
             MainFrame.Navigated += MainFrame_Navigated;
-            Windows.UI.Core.SystemNavigationManager.GetForCurrentView().BackRequested += BaseFramePage_BackRequested;
             var coreTitleBar = CoreApplication.GetCurrentView().TitleBar;
             coreTitleBar.ExtendViewIntoTitleBar = true;
             Window.Current.SetTitleBar(TitleBar);
+
+
+        }
+
+        private void CoreWindow_KeyDown(Windows.UI.Core.CoreWindow sender, Windows.UI.Core.KeyEventArgs args)
+        {
+            // 如果当前页面处于LiveRoomPage,不做处理
+            if (MainFrame.Content is LiveRoomPage)
+            {
+                return;
+            }
+
+            // 如果是XBOX的B键
+            if (args.VirtualKey == Windows.System.VirtualKey.GamepadB)
+            {
+                if (MainFrame.CanGoBack)
+                {
+                    args.Handled = true;
+                    MainFrame.GoBack();
+                }
+            }
+
         }
 
         private void MessageCenter_HideTitlebarEvent(object sender, bool e)
@@ -46,27 +71,38 @@ namespace AllLive.UWP
             {
                 if (e)
                 {
-                    Grid.SetRow(MainFrame, 0);
-                    Grid.SetRowSpan(MainFrame, 2);
-                    TitleBarGrid.Visibility = Visibility.Collapsed;
-                    TitleBar2.Visibility = Visibility.Visible;
-                    Window.Current.SetTitleBar(TitleBar2);
+                    HideTitleBar();
                 }
                 else
                 {
-                    Grid.SetRow(MainFrame, 1);
-                    Grid.SetRowSpan(MainFrame, 1);
-                    TitleBarGrid.Visibility = Visibility.Visible;
-                    TitleBar2.Visibility = Visibility.Collapsed;
-                    Window.Current.SetTitleBar(TitleBar);
+                    ShowTitleBar();
                 }
             }
             catch (Exception)
             {
 
-                
+
             }
-           
+
+        }
+
+        private void HideTitleBar()
+        {
+            Grid.SetRow(MainFrame, 0);
+            Grid.SetRowSpan(MainFrame, 2);
+            TitleBarGrid.Visibility = Visibility.Collapsed;
+            //TitleBar2.Visibility = Visibility.Visible;
+            //Window.Current.SetTitleBar(TitleBar2);
+            Window.Current.SetTitleBar(null);
+        }
+
+        private void ShowTitleBar()
+        {
+            Grid.SetRow(MainFrame, 1);
+            Grid.SetRowSpan(MainFrame, 1);
+            TitleBarGrid.Visibility = Visibility.Visible;
+            TitleBar2.Visibility = Visibility.Collapsed;
+            Window.Current.SetTitleBar(TitleBar);
         }
 
         private void MessageCenter_ChangeTitleEvent(string title, string logo)
@@ -81,8 +117,8 @@ namespace AllLive.UWP
                 //TODO 新窗口调用此方法会出现线程错误，待处理
                 //throw;
             }
-           
-           
+
+
         }
 
         private void MessageCenter_NavigatePageEvent(Type page, object data)
@@ -94,9 +130,9 @@ namespace AllLive.UWP
             catch (Exception)
             {
 
-               
+
             }
-            
+
         }
 
         private void BtnBack_Click(object sender, RoutedEventArgs e)
@@ -109,15 +145,30 @@ namespace AllLive.UWP
 
         private void MainFrame_Navigated(object sender, NavigationEventArgs e)
         {
+
             Title.Text = "聚合直播";
             AppIcon.Source = new BitmapImage(new Uri("ms-appx:///Assets/Square44x44Logo.png"));
             BtnBack.Visibility = MainFrame.CanGoBack ? Visibility.Visible : Visibility.Collapsed;
+            if (Utils.IsXbox)
+            {
+                if (MainFrame.Content is MainPage)
+                {
+                    HideTitleBar();
+                }
+                else
+                {
+                    ShowTitleBar();
+                }
+
+            }
+           
         }
 
         private void BaseFramePage_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
             var par = e.GetCurrentPoint(sender as Page).Properties.PointerUpdateKind;
-            if (SettingHelper.GetValue<bool>(SettingHelper.MOUSE_BACK, true) && par == Windows.UI.Input.PointerUpdateKind.XButton1Pressed || par == Windows.UI.Input.PointerUpdateKind.MiddleButtonPressed)
+            if (SettingHelper.GetValue<bool>(SettingHelper.MOUSE_BACK, true) && par == Windows.UI.Input.PointerUpdateKind.XButton1Pressed
+                || par == Windows.UI.Input.PointerUpdateKind.MiddleButtonPressed)
             {
                 if (MainFrame.CanGoBack)
                 {

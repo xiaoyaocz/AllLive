@@ -56,6 +56,11 @@
                         <FontIcon FontFamily="{StaticResource SegoeFluent}" Glyph="&#xE121;" />
                     </muxc:NavigationViewItem.Icon>
                 </muxc:NavigationViewItem>
+                <muxc:NavigationViewItem Content="同步" Tag="SyncPage">
+                    <muxc:NavigationViewItem.Icon>
+                        <FontIcon FontFamily="{StaticResource SegoeFluent}" Glyph="&#xEA6C;" />
+                    </muxc:NavigationViewItem.Icon>
+                </muxc:NavigationViewItem>
                 <!--<muxc:NavigationViewItem Content="设置" Tag="SettingsPage">
                     <muxc:NavigationViewItem.Icon>
                         <FontIcon FontFamily="{StaticResource SegoeFluent}" Glyph="&#xE115;" />

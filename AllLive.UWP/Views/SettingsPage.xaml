@@ -36,6 +36,30 @@
                         </ComboBox>
                     </Grid>
                     <Grid
+                        x:Name="SettingsXboxMode"
+                        Margin="0,8,0,0"
+                        Padding="8,12"
+                        Background="{ThemeResource LayerFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        CornerRadius="4"
+                        Visibility="Collapsed">
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock>操作模式</TextBlock>
+                            <TextBlock FontSize="12" Foreground="Gray">切换鼠标或手柄操作</TextBlock>
+                        </StackPanel>
+                        <ComboBox
+                            x:Name="cbXboxMode"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center">
+                            <ComboBox.Items>
+                                <ComboBoxItem>手柄</ComboBoxItem>
+                                <ComboBoxItem>鼠标</ComboBoxItem>
+                            </ComboBox.Items>
+                        </ComboBox>
+                    </Grid>
+                    <Grid
+                        x:Name="SettingsPaneDiaplsyMode"
                         Margin="0,8,0,0"
                         Padding="8,12"
                         Background="{ThemeResource LayerFillColorDefaultBrush}"
@@ -57,6 +81,7 @@
                         </ComboBox>
                     </Grid>
                     <Grid
+                        x:Name="SettingsMouseClosePage"
                         Margin="0,8,0,0"
                         Padding="8,12"
                         Background="{ThemeResource LayerFillColorDefaultBrush}"
@@ -170,6 +195,7 @@
                             VerticalAlignment="Center" />
                     </Grid>
                     <Grid
+                        x:Name="SettingsFontSize"
                         Margin="0,8,0,0"
                         Padding="8,12"
                         Background="{ThemeResource LayerFillColorDefaultBrush}"
@@ -190,6 +216,7 @@
                             SpinButtonPlacementMode="Compact" />
                     </Grid>
                     <Grid
+                        x:Name="SettingsAutoClean"
                         Margin="0,8,0,0"
                         Padding="8,12"
                         Background="{ThemeResource LayerFillColorDefaultBrush}"

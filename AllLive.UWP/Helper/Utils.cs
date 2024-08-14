@@ -16,6 +16,14 @@ namespace AllLive.UWP.Helper
 {
     public static class Utils
     {
+        public static bool IsXbox
+        {
+            get
+            {
+                return Windows.System.Profile.AnalyticsInfo.VersionInfo.DeviceFamily == "Windows.Xbox";
+            }
+        }
+
         public  static void ShowMessageToast(string message, int seconds = 2)
         {
             MessageToast ms = new MessageToast(message, TimeSpan.FromSeconds(seconds));

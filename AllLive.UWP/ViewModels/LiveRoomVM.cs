@@ -51,7 +51,7 @@ namespace AllLive.UWP.ViewModels
             set { _siteName = value; DoPropertyChanged("SiteName"); }
         }
 
-        private bool _isFavorite=false;
+        private bool _isFavorite = false;
         public bool IsFavorite
         {
             get { return _isFavorite; }
@@ -137,6 +137,7 @@ namespace AllLive.UWP.ViewModels
             set { lines = value; DoPropertyChanged("Lines"); }
         }
 
+
         private PlayurlLine currentLine;
         public PlayurlLine CurrentLine
         {
@@ -149,12 +150,59 @@ namespace AllLive.UWP.ViewModels
                 }
                 currentLine = value;
                 DoPropertyChanged("CurrentLine");
-                ChangedPlayUrl?.Invoke(this,value.Url);
+                ChangedPlayUrl?.Invoke(this, value.Url);
             }
 
         }
 
         public ObservableCollection<LiveMessage> Messages { get; set; }
+
+        public List<SettingsItem<double>> DanmakuOpacityItems { get; } = new List<SettingsItem<double>>()
+        {
+            new SettingsItem<double>(){ Name="100%",Value=1},
+            new SettingsItem<double>(){ Name="90%",Value=0.9},
+            new SettingsItem<double>(){ Name="80%",Value=0.8},
+            new SettingsItem<double>(){ Name="70%",Value=0.7},
+            new SettingsItem<double>(){ Name="60%",Value=0.6},
+            new SettingsItem<double>(){ Name="50%",Value=0.5},
+            new SettingsItem<double>(){ Name="40%",Value=0.4},
+            new SettingsItem<double>(){ Name="30%",Value=0.3},
+            new SettingsItem<double>(){ Name="20%",Value=0.2},
+            new SettingsItem<double>(){ Name="10%",Value=0.1},
+        };
+        public List<SettingsItem<double>> DanmakuDiaplayAreaItems { get; } = new List<SettingsItem<double>>()
+        {
+            new SettingsItem<double>(){ Name="100%",Value=1},
+            new SettingsItem<double>(){ Name="75%",Value=0.75},
+            new SettingsItem<double>(){ Name="50%",Value=0.5},
+            new SettingsItem<double>(){ Name="25%",Value=0.25},
+        };
+        public List<SettingsItem<int>> DanmakuSpeedItems { get; } = new List<SettingsItem<int>>()
+        {
+            new SettingsItem<int>(){ Name="极快",Value=2},
+            new SettingsItem<int>(){ Name="很快",Value=4},
+            new SettingsItem<int>(){ Name="较快",Value=6},
+            new SettingsItem<int>(){ Name="快",Value=8},
+            new SettingsItem<int>(){ Name="正常",Value=10},
+            new SettingsItem<int>(){ Name="慢",Value=12},
+            new SettingsItem<int>(){ Name="较慢",Value=14},
+            new SettingsItem<int>(){ Name="很慢",Value=16},
+            new SettingsItem<int>(){ Name="极慢",Value=18},
+        };
+        public List<SettingsItem<double>> DnamakuFontZoomItems { get; } = new List<SettingsItem<double>>()
+        {
+            new SettingsItem<double>(){ Name="极小",Value=0.2},
+            new SettingsItem<double>(){ Name="很小",Value=0.4},
+            new SettingsItem<double>(){ Name="较小",Value=0.6},
+            new SettingsItem<double>(){ Name="小",Value=0.8},
+            new SettingsItem<double>(){ Name="正常",Value=1.0},
+            new SettingsItem<double>(){ Name="大",Value=1.2},
+            new SettingsItem<double>(){ Name="较大",Value=1.4},
+            new SettingsItem<double>(){ Name="很大",Value=1.6},
+            new SettingsItem<double>(){ Name="极大",Value=1.8},
+            new SettingsItem<double>(){ Name="特大",Value=2.0},
+        };
+
 
         public async void LoadData(ILiveSite site, object roomId)
         {
@@ -167,11 +215,11 @@ namespace AllLive.UWP.ViewModels
                 var result = await Site.GetRoomDetail(roomId);
                 detail = result;
                 RoomID = result.RoomID;
-             
+
                 Online = result.Online;
                 Title = result.Title;
                 Name = result.UserName;
-                MessageCenter.ChangeTitle(Title + " - "+ Name, Site);
+                MessageCenter.ChangeTitle(Title + " - " + Name, Site);
                 if (!string.IsNullOrEmpty(result.UserAvatar))
                 {
                     Photo = result.UserAvatar;
@@ -181,7 +229,7 @@ namespace AllLive.UWP.ViewModels
                 //检查收藏情况
                 FavoriteID = DatabaseHelper.CheckFavorite(RoomID, Site.Name);
                 IsFavorite = FavoriteID != null;
-           
+
                 LiveDanmaku = Site.GetDanmaku();
                 Messages.Add(new LiveMessage()
                 {
@@ -189,7 +237,7 @@ namespace AllLive.UWP.ViewModels
                     UserName = "系统",
                     Message = "开始接收弹幕"
                 });
-             
+
                 LiveDanmaku.NewMessage += LiveDanmaku_NewMessage;
                 LiveDanmaku.OnClose += LiveDanmaku_OnClose;
                 await LiveDanmaku.Start(result.DanmakuData);
@@ -201,7 +249,7 @@ namespace AllLive.UWP.ViewModels
                         //HDR无法播放
                         qualities = qualities.Where(x => !x.Quality.Contains("HDR")).ToList();
                     }
-                    Qualities=qualities;
+                    Qualities = qualities;
                     if (Qualities != null && Qualities.Count > 0)
                     {
                         CurrentQuality = Qualities[0];
@@ -229,19 +277,20 @@ namespace AllLive.UWP.ViewModels
 
         private void AddFavorite()
         {
-            if (Site == null || RoomID == null|| RoomID=="0" || RoomID=="") return;
-            DatabaseHelper.AddFavorite(new Models.FavoriteItem() { 
-                Photo= Photo,
-                RoomID=RoomID,
-                SiteName=Site.Name,
-                UserName= Name
+            if (Site == null || RoomID == null || RoomID == "0" || RoomID == "") return;
+            DatabaseHelper.AddFavorite(new Models.FavoriteItem()
+            {
+                Photo = Photo,
+                RoomID = RoomID,
+                SiteName = Site.Name,
+                UserName = Name
             });
             IsFavorite = true;
             MessageCenter.UpdateFavorite();
         }
         private void RemoveFavorite()
         {
-            if (FavoriteID==null)
+            if (FavoriteID == null)
             {
                 return;
             }
@@ -254,7 +303,7 @@ namespace AllLive.UWP.ViewModels
         {
             try
             {
-               var  data = await Site.GetPlayUrls(detail,CurrentQuality);
+                var data = await Site.GetPlayUrls(detail, CurrentQuality);
                 if (data.Count == 0)
                 {
                     Utils.ShowMessageToast("加载播放地址失败");
@@ -263,12 +312,13 @@ namespace AllLive.UWP.ViewModels
                 List<PlayurlLine> ls = new List<PlayurlLine>();
                 for (int i = 0; i < data.Count; i++)
                 {
-                    ls.Add(new PlayurlLine() { 
-                        Name=$"线路{i+1}",
-                        Url= data[i]
+                    ls.Add(new PlayurlLine()
+                    {
+                        Name = $"线路{i + 1}",
+                        Url = data[i]
                     });
                 }
-              
+
                 Lines = ls;
                 CurrentLine = Lines[0];
             }
@@ -276,7 +326,7 @@ namespace AllLive.UWP.ViewModels
             {
                 Utils.ShowMessageToast("加载播放地址失败");
             }
-            
+
 
 
 
@@ -285,7 +335,7 @@ namespace AllLive.UWP.ViewModels
 
         private async void LiveDanmaku_OnClose(object sender, string e)
         {
-            
+
             await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
                 Messages.Add(new LiveMessage()
@@ -317,8 +367,11 @@ namespace AllLive.UWP.ViewModels
                     {
                         if (settingVM.ShieldWords.FirstOrDefault(x => e.Message.Contains(x)) != null) return;
                     }
-
-                    Messages.Add(e);
+                    if (!Utils.IsXbox)
+                    {
+                        Messages.Add(e);
+                    }
+                   
                     AddDanmaku?.Invoke(this, e);
                     return;
                 }
@@ -343,5 +396,11 @@ namespace AllLive.UWP.ViewModels
     {
         public string Name { get; set; }
         public string Url { get; set; }
+    }
+    public class SettingsItem<T>
+    {
+
+        public string Name { get; set; }
+        public T Value { get; set; }
     }
 }

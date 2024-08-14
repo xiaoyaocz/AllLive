@@ -33,7 +33,15 @@ namespace AllLive.UWP.Views
         {
             settingVM = new SettingVM();
             this.InitializeComponent();
-            BiliAccount.Instance.OnAccountChanged += BiliAccount_OnAccountChanged; ;
+            if (Utils.IsXbox)
+            {
+                SettingsPaneDiaplsyMode.Visibility = Visibility.Collapsed;
+                SettingsMouseClosePage.Visibility = Visibility.Collapsed;
+                SettingsFontSize.Visibility = Visibility.Collapsed;
+                SettingsAutoClean.Visibility = Visibility.Collapsed;
+                SettingsXboxMode.Visibility = Visibility.Visible;
+            }
+            BiliAccount.Instance.OnAccountChanged += BiliAccount_OnAccountChanged; 
             LoadUI();
 
         }
@@ -79,6 +87,18 @@ namespace AllLive.UWP.Views
                     App.SetTitleBar();
                 });
             });
+
+            // xbox操作模式
+            cbXboxMode.SelectedIndex = SettingHelper.GetValue<int>(SettingHelper.XBOX_MODE, 0);
+            cbXboxMode.Loaded += new RoutedEventHandler((sender, e) =>
+            {
+                cbXboxMode.SelectionChanged += new SelectionChangedEventHandler((obj, args) =>
+                {
+                    SettingHelper.SetValue(SettingHelper.XBOX_MODE, cbXboxMode.SelectedIndex);
+                    Utils.ShowMessageToast("重启应用生效");
+                });
+            });
+
             //导航栏显示模式
             cbPaneDisplayMode.SelectedIndex = SettingHelper.GetValue<int>(SettingHelper.PANE_DISPLAY_MODE, 0);
             cbPaneDisplayMode.Loaded += new RoutedEventHandler((sender, e) =>

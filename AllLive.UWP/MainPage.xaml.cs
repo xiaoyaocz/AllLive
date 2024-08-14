@@ -1,5 +1,4 @@
 ﻿using AllLive.Core.Interface;
-using AllLive.Core.Helper;
 using AllLive.UWP.Helper;
 using AllLive.UWP.Models;
 using AllLive.UWP.ViewModels;
@@ -41,7 +40,24 @@ namespace AllLive.UWP
             this.NavigationCacheMode = NavigationCacheMode.Enabled;
             this.InitializeComponent();
             MessageCenter.UpdatePanelDisplayModeEvent += MessageCenter_UpdatePanelDisplayModeEvent;
+            this.KeyDown += MainPage_KeyDown;
             SetPaneMode();
+        }
+
+        private void MainPage_KeyDown(object sender, KeyRoutedEventArgs e)
+        {
+            if (e.Key == Windows.System.VirtualKey.GamepadMenu)
+            {
+                e.Handled = true;
+                // 切换设置
+
+                navigationView.SelectedItem = navigationView.SettingsItem;
+            }
+            else if (e.Key == Windows.System.VirtualKey.GamepadY)
+            {
+                e.Handled = true;
+                searchBox.Focus(FocusState.Programmatic);
+            }
         }
 
         private void MessageCenter_UpdatePanelDisplayModeEvent(object sender, EventArgs e)
@@ -51,6 +67,12 @@ namespace AllLive.UWP
 
         private void SetPaneMode()
         {
+            if (Utils.IsXbox)
+            {
+                navigationView.PaneDisplayMode = Microsoft.UI.Xaml.Controls.NavigationViewPaneDisplayMode.Top;
+                MessageCenter.HideTitlebar(true);
+                return;
+            }
             if (SettingHelper.GetValue<int>(SettingHelper.PANE_DISPLAY_MODE, 0) == 0)
             {
                 navigationView.PaneDisplayMode = Microsoft.UI.Xaml.Controls.NavigationViewPaneDisplayMode.Left;

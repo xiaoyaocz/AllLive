@@ -2,39 +2,65 @@
     x:Class="AllLive.UWP.Views.SearchPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:AllLive.UWP.Views"
+    xmlns:controls="using:AllLive.UWP.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:viewmodels="using:AllLive.UWP.ViewModels" xmlns:controls="using:AllLive.UWP.Controls"
+    xmlns:local="using:AllLive.UWP.Views"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewmodels="using:AllLive.UWP.ViewModels"
     mc:Ignorable="d">
     <Page.Resources>
-        <SolidColorBrush x:Key="PivotHeaderBackground" Color="Transparent"></SolidColorBrush>
+        <SolidColorBrush x:Key="PivotHeaderBackground" Color="Transparent" />
     </Page.Resources>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition/>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
         </Grid.RowDefinitions>
-        <Grid BorderThickness="0 0 0 1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
+        <Grid BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="0,0,0,1">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="0"/>
-                <ColumnDefinition/>
+                <ColumnDefinition Width="0" />
+                <ColumnDefinition />
             </Grid.ColumnDefinitions>
-            <Button x:Name="btnBack" Click="btnBack_Click" Background="Transparent" Height="48" Width="56">
-                <SymbolIcon Symbol="Back"></SymbolIcon>
+            <Button
+                x:Name="btnBack"
+                Width="56"
+                Height="48"
+                Background="Transparent"
+                Click="btnBack_Click">
+                <SymbolIcon Symbol="Back" />
             </Button>
-            <AutoSuggestBox x:Name="searchBox" QuerySubmitted="searchBox_QuerySubmitted" Grid.Column="1" VerticalAlignment="Center" Margin="12 0" QueryIcon="Find" PlaceholderText="输入关键字搜索直播间"></AutoSuggestBox>
+            <AutoSuggestBox
+                x:Name="searchBox"
+                Grid.Column="1"
+                Margin="12,0"
+                VerticalAlignment="Center"
+                PlaceholderText="输入关键字搜索直播间"
+                QueryIcon="Find"
+                QuerySubmitted="searchBox_QuerySubmitted" />
         </Grid>
-        <Pivot x:Name="pivot" Background="{ThemeResource LayerFillColorDefaultBrush}" Grid.Row="1" SelectionChanged="pivot_SelectionChanged" ItemsSource="{x:Bind Path=searchVM.Items}" >
+        <Pivot
+            x:Name="pivot"
+            Grid.Row="1"
+            Background="{ThemeResource LayerFillColorDefaultBrush}"
+            ItemsSource="{x:Bind Path=searchVM.Items}"
+            SelectionChanged="pivot_SelectionChanged">
             <Pivot.ItemContainerStyle>
                 <Style TargetType="PivotItem">
-                    <Setter Property="Margin" Value="0"></Setter>
+                    <Setter Property="Margin" Value="0" />
                 </Style>
             </Pivot.ItemContainerStyle>
             <Pivot.HeaderTemplate>
                 <DataTemplate x:DataType="viewmodels:SearchItemVM">
                     <StackPanel Orientation="Horizontal">
-                        <Image Width="20" Height="20" Margin="0 0 8 0" Source="{x:Bind Path=site.Logo}"></Image>
-                        <TextBlock  VerticalAlignment="Center" FontSize="14" Text="{x:Bind Path=site.Name}"></TextBlock>
+                        <Image
+                            Width="20"
+                            Height="20"
+                            Margin="0,0,8,0"
+                            Source="{x:Bind Path=site.Logo}" />
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            FontSize="14"
+                            Text="{x:Bind Path=site.Name}" />
                     </StackPanel>
                 </DataTemplate>
             </Pivot.HeaderTemplate>
@@ -42,37 +68,52 @@
                 <DataTemplate x:DataType="viewmodels:SearchItemVM">
                     <Grid>
                         <controls:MyAdaptiveGridView
-                            OneRowModeEnabled="False"
+                            Padding="8,4"
+                            CanLoadMore="{x:Bind Path=CanLoadMore, Mode=OneWay}"
+                            DesiredWidth="{StaticResource GridViewDesiredWidth}"
+                            IsItemClickEnabled="True"
                             ItemClick="MyAdaptiveGridView_ItemClick"
-                            StretchContentForSingleRow="False"
-                            ItemsSource="{x:Bind Path=Items,Mode=OneWay}"
-                            ItemHeight="196" DesiredWidth="260" 
-                            Padding="8 4"
-                            LoadMoreCommand="{x:Bind Path=LoadMoreCommand,Mode=OneWay}"
-                            CanLoadMore="{x:Bind Path=CanLoadMore,Mode=OneWay}"
+                            ItemHeight="{StaticResource GridViewItemHeight}"
                             ItemTemplate="{StaticResource RoomItemTemplate}"
-                            SelectionMode="None" IsItemClickEnabled="True">
+                            ItemsSource="{x:Bind Path=Items, Mode=OneWay}"
+                            LoadMoreCommand="{x:Bind Path=LoadMoreCommand, Mode=OneWay}"
+                            OneRowModeEnabled="False"
+                            SelectionMode="None"
+                            StretchContentForSingleRow="False">
                             <controls:MyAdaptiveGridView.ItemContainerStyle>
-                                <Style TargetType="GridViewItem" BasedOn="{StaticResource GridViewItemCornerRadiusStyle}">
-                                    <Setter Property="Margin" Value="4"></Setter>
-                                    <Setter Property="BorderThickness" Value="1"></Setter>
-                                    <Setter Property="BorderBrush" Value="{ThemeResource CardStrokeColorDefaultBrush}"></Setter>
-                                    <Setter Property="Background" Value="{ThemeResource ButtonBackground}"></Setter>
-                                    <Setter Property="HorizontalContentAlignment" Value="Stretch"></Setter>
+                                <Style BasedOn="{StaticResource GridViewItemCornerRadiusStyle}" TargetType="GridViewItem">
+                                    <Setter Property="Margin" Value="4" />
+                                    <Setter Property="BorderThickness" Value="1" />
+                                    <Setter Property="BorderBrush" Value="{ThemeResource CardStrokeColorDefaultBrush}" />
+                                    <Setter Property="Background" Value="{ThemeResource ButtonBackground}" />
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                                 </Style>
                             </controls:MyAdaptiveGridView.ItemContainerStyle>
 
                             <controls:MyAdaptiveGridView.Footer>
                                 <Grid>
-                                    <HyperlinkButton Command="{x:Bind Path=LoadMoreCommand}" HorizontalAlignment="Center" Visibility="{x:Bind Path=CanLoadMore,Mode=OneWay}">
+                                    <HyperlinkButton
+                                        HorizontalAlignment="Center"
+                                        Command="{x:Bind Path=LoadMoreCommand}"
+                                        Visibility="{x:Bind Path=CanLoadMore, Mode=OneWay}">
                                         <TextBlock>加载更多</TextBlock>
                                     </HyperlinkButton>
-                                    <ProgressRing  IsActive="True" Visibility="{x:Bind Path=Loading,Mode=OneWay}"  VerticalAlignment="Center" Width="24"></ProgressRing>
+                                    <ProgressRing
+                                        Width="24"
+                                        VerticalAlignment="Center"
+                                        IsActive="True"
+                                        Visibility="{x:Bind Path=Loading, Mode=OneWay}" />
                                 </Grid>
                             </controls:MyAdaptiveGridView.Footer>
                         </controls:MyAdaptiveGridView>
 
-                        <TextBlock Visibility="{x:Bind Path=IsEmpty,Mode=OneWay}" VerticalAlignment="Center"  HorizontalAlignment="Center" Foreground="Gray">什么都没有找到~</TextBlock>
+                        <TextBlock
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Foreground="Gray"
+                            Visibility="{x:Bind Path=IsEmpty, Mode=OneWay}">
+                            什么都没有找到~
+                        </TextBlock>
 
                     </Grid>
                 </DataTemplate>

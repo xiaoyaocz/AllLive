@@ -85,7 +85,17 @@ namespace AllLive.UWP.Views
 
             timer_focus.Start();
             controlTimer.Start();
-
+            if (Utils.IsXbox&& SettingHelper.GetValue<int>(SettingHelper.XBOX_MODE, 0) == 0)
+            {
+                XBoxControl.Visibility = Visibility.Visible;
+                StandardControl.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                XBoxControl.Visibility = Visibility.Collapsed;
+                StandardControl.Visibility = Visibility.Visible;
+            }
+         
 
         }
 
@@ -239,6 +249,22 @@ namespace AllLive.UWP.Views
                 args.Handled = false;
                 return;
             }
+            if (XBoxSplitView.IsPaneOpen)
+            {
+                if (args.VirtualKey == Windows.System.VirtualKey.GamepadMenu)
+                {
+                    XBoxSplitView.IsPaneOpen = false;
+                    args.Handled = true;
+                    return;
+                }
+                if (args.VirtualKey == Windows.System.VirtualKey.GamepadB)
+                {
+                    args.Handled = true;
+                    return;
+                }
+                args.Handled = false;
+                return;
+            }
             args.Handled = true;
             switch (args.VirtualKey)
             {
@@ -313,10 +339,12 @@ namespace AllLive.UWP.Views
                     SetFullScreen(PlayBtnFullScreen.Visibility == Visibility.Visible);
                     break;
                 case Windows.System.VirtualKey.F10:
+                case Windows.System.VirtualKey.GamepadLeftTrigger:
                     await CaptureVideo();
                     break;
                 case Windows.System.VirtualKey.F9:
                 case Windows.System.VirtualKey.D:
+                case Windows.System.VirtualKey.GamepadX:
                     //if (DanmuControl.Visibility == Visibility.Visible)
                     //{
                     //    DanmuControl.Visibility = Visibility.Collapsed;
@@ -328,7 +356,35 @@ namespace AllLive.UWP.Views
                     //}
                     PlaySWDanmu.IsOn = DanmuControl.Visibility != Visibility.Visible;
                     break;
-
+                case Windows.System.VirtualKey.GamepadA:
+                    ShowControl(control.Visibility == Visibility.Collapsed);
+                    break;
+                case Windows.System.VirtualKey.GamepadMenu:
+                    //打开设置
+                    XBoxSplitView.IsPaneOpen = true;
+                    break;
+                case Windows.System.VirtualKey.GamepadY:
+                    //刷新直播间
+                    BottomBtnRefresh_Click(this,null);
+                    break;
+                case Windows.System.VirtualKey.GamepadB:
+                    //退出直播间
+                    this.Frame.GoBack();
+                    break;
+                case Windows.System.VirtualKey.GamepadRightTrigger:
+                    //关注/取消关注
+                    if(liveRoomVM.IsFavorite)
+                    {
+                        liveRoomVM.RemoveFavoriteCommand.Execute(null);
+                        Utils.ShowMessageToast("已取消关注");
+                    }
+                    else
+                    {
+                        liveRoomVM.AddFavoriteCommand.Execute(null);
+                        Utils.ShowMessageToast("已添加关注");
+                    }
+                  
+                    break;
                 default:
                     break;
             }
@@ -512,7 +568,16 @@ namespace AllLive.UWP.Views
             if (e.NavigationMode == Windows.UI.Xaml.Navigation.NavigationMode.New)
             {
                 pageArgs = e.Parameter as PageArgs;
-                LoadSetting();
+                if (Utils.IsXbox)
+                {
+                    LoadSetting();
+                    LoadXboxSetting();
+                }
+                else
+                {
+                    LoadSetting();
+                }
+                
                 var siteInfo = MainVM.Sites.FirstOrDefault(x => x.LiveSite.Equals(pageArgs.Site));
 
                 liveRoomVM.SiteLogo = siteInfo.Logo;
@@ -520,8 +585,14 @@ namespace AllLive.UWP.Views
 
                 var data = pageArgs.Data as LiveRoomItem;
                 MessageCenter.ChangeTitle("", pageArgs.Site);
+                
                 liveRoomVM.LoadData(pageArgs.Site, data.RoomID);
 
+                // 如果是XBOX，自动进入全屏
+                if (Utils.IsXbox)
+                {
+                    SetFullScreen(true);
+                }
             }
         }
 
@@ -742,7 +813,126 @@ namespace AllLive.UWP.Views
                 SettingHelper.SetValue<bool>(SettingHelper.LiveDanmaku.COLOURFUL, DanmuSettingColourful.IsOn);
             });
         }
+        private void LoadXboxSetting()
+        {
 
+            xboxSettingsDecoder.SelectedIndex = SettingHelper.GetValue<int>(SettingHelper.VIDEO_DECODER, 0);
+            xboxSettingsDecoder.Loaded += new RoutedEventHandler((sender, e) =>
+            {
+                xboxSettingsDecoder.SelectionChanged += new SelectionChangedEventHandler((obj, args) =>
+                {
+                    SettingHelper.SetValue(SettingHelper.VIDEO_DECODER, xboxSettingsDecoder.SelectedIndex);
+                    Utils.ShowMessageToast("更改清晰度或刷新后生效");
+                });
+            });
+
+            //弹幕开关
+            var state = SettingHelper.GetValue<bool>(SettingHelper.LiveDanmaku.SHOW, true) ? Visibility.Visible : Visibility.Collapsed;
+            DanmuControl.Visibility = state;
+            PlaySWDanmu.IsOn = state == Visibility.Visible;
+            PlaySWDanmu.Toggled += new RoutedEventHandler((e, args) =>
+            {
+                var visibility = PlaySWDanmu.IsOn ? Visibility.Visible : Visibility.Collapsed;
+                DanmuControl.Visibility = visibility;
+                SettingHelper.SetValue(SettingHelper.LiveDanmaku.SHOW, PlaySWDanmu.IsOn);
+            });
+
+            ////音量
+            var volume = SettingHelper.GetValue<double>(SettingHelper.PLAYER_VOLUME, 1.0);
+            mediaPlayer.Volume = volume;
+            SliderVolume.Value = volume;
+            SliderVolume.ValueChanged += new RangeBaseValueChangedEventHandler((e, args) =>
+            {
+                mediaPlayer.Volume = SliderVolume.Value;
+                SettingHelper.SetValue<double>(SettingHelper.PLAYER_VOLUME, SliderVolume.Value);
+            });
+
+            //亮度
+            _brightness = SettingHelper.GetValue<double>(SettingHelper.PLAYER_BRIGHTNESS, 0);
+            BrightnessShield.Opacity = _brightness;
+
+
+
+            //弹幕关键词
+            LiveDanmuSettingListWords.ItemsSource = settingVM.ShieldWords;
+
+
+            //弹幕大小
+            DanmuControl.DanmakuSizeZoom = SettingHelper.GetValue<double>(SettingHelper.LiveDanmaku.FONT_ZOOM, 1);
+            xboxSettingsDMSize.SelectionChanged += new SelectionChangedEventHandler((e, args) =>
+            {
+                if (xboxSettingsDMSize.SelectedValue == null)
+                {
+                    return;
+                }
+                SettingHelper.SetValue<double>(SettingHelper.LiveDanmaku.FONT_ZOOM, (double)xboxSettingsDMSize.SelectedValue);
+            });
+
+            //弹幕速度
+            DanmuControl.DanmakuDuration = SettingHelper.GetValue<int>(SettingHelper.LiveDanmaku.SPEED, 10);
+            xboxSettingsDMSpeed.SelectionChanged += new SelectionChangedEventHandler((e, args) =>
+            {
+                if (xboxSettingsDMSpeed.SelectedValue == null)
+                {
+                    return;
+                }
+                SettingHelper.SetValue<double>(SettingHelper.LiveDanmaku.SPEED, (int)xboxSettingsDMSpeed.SelectedValue);
+            });
+
+            //弹幕透明度
+            DanmuControl.Opacity = SettingHelper.GetValue<double>(SettingHelper.LiveDanmaku.OPACITY, 1.0);
+            xboxSettingsDMOpacity.SelectionChanged += new SelectionChangedEventHandler((e, args) =>
+            {
+                if (xboxSettingsDMOpacity.SelectedValue == null)
+                {
+                    return;
+                }
+                SettingHelper.SetValue<double>(SettingHelper.LiveDanmaku.OPACITY, (double)xboxSettingsDMOpacity.SelectedValue);
+            });
+
+
+            //弹幕加粗
+            DanmuControl.DanmakuBold = SettingHelper.GetValue<bool>(SettingHelper.LiveDanmaku.BOLD, false);
+            xboxSettingsDMBold.Toggled += new RoutedEventHandler((e, args) =>
+            {
+                SettingHelper.SetValue<bool>(SettingHelper.LiveDanmaku.BOLD, xboxSettingsDMBold.IsOn);
+            });
+
+            //弹幕样式
+            var danmuStyle = SettingHelper.GetValue<int>(SettingHelper.LiveDanmaku.BORDER_STYLE, 2);
+            if (danmuStyle > 2)
+            {
+                danmuStyle = 2;
+            }
+            DanmuControl.DanmakuStyle = (DanmakuBorderStyle)danmuStyle;
+            xboxSettingsDMStyle.SelectionChanged += new SelectionChangedEventHandler((e, args) =>
+            {
+                if (xboxSettingsDMStyle.SelectedIndex != -1)
+                {
+                    SettingHelper.SetValue<int>(SettingHelper.LiveDanmaku.BORDER_STYLE, xboxSettingsDMStyle.SelectedIndex);
+                }
+            });
+
+
+            //弹幕显示区域
+            DanmuControl.DanmakuArea = SettingHelper.GetValue<double>(SettingHelper.LiveDanmaku.AREA, 1);
+            xboxSettingsDMArea.SelectionChanged += new SelectionChangedEventHandler((e, args) =>
+            {
+                if (xboxSettingsDMArea.SelectedValue == null)
+                {
+                    return;
+                }
+                SettingHelper.SetValue<double>(SettingHelper.LiveDanmaku.AREA, (double)xboxSettingsDMArea.SelectedValue);
+            });
+
+            //彩色弹幕
+            xboxSettingsDMColorful.IsOn = SettingHelper.GetValue<bool>(SettingHelper.LiveDanmaku.COLOURFUL, true);
+            xboxSettingsDMColorful.Toggled += new RoutedEventHandler((e, args) =>
+            {
+                SettingHelper.SetValue<bool>(SettingHelper.LiveDanmaku.COLOURFUL, xboxSettingsDMColorful.IsOn);
+            });
+
+        }
         private void RemoveLiveDanmuWord_Click(object sender, RoutedEventArgs e)
         {
             var word = (sender as AppBarButton).DataContext as string;
@@ -976,6 +1166,7 @@ namespace AllLive.UWP.Views
 
                 ColumnRight.Width = new GridLength(0, GridUnitType.Pixel);
                 ColumnRight.MinWidth = 0;
+              
                 BottomInfo.Height = new GridLength(0, GridUnitType.Pixel);
                 //全屏
                 if (!view.IsFullScreenMode)
@@ -1007,7 +1198,15 @@ namespace AllLive.UWP.Views
             if (mini)
             {
                 SetFullWindow(true);
-                StandardControl.Visibility = Visibility.Collapsed;
+                if (Utils.IsXbox && SettingHelper.GetValue<int>(SettingHelper.XBOX_MODE, 0) == 0)
+                {
+                    XBoxControl.Visibility = Visibility.Collapsed;
+                }
+                else
+                {
+                    StandardControl.Visibility = Visibility.Collapsed;
+                }
+             
                 MiniControl.Visibility = Visibility.Visible;
 
                 if (ApplicationView.GetForCurrentView().IsViewModeSupported(ApplicationViewMode.CompactOverlay))
@@ -1021,7 +1220,15 @@ namespace AllLive.UWP.Views
             else
             {
                 SetFullWindow(false);
-                StandardControl.Visibility = Visibility.Visible;
+                if (Utils.IsXbox && SettingHelper.GetValue<int>(SettingHelper.XBOX_MODE, 0) == 0)
+                {
+                    XBoxControl.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    StandardControl.Visibility = Visibility.Visible;
+                }
+               
                 MiniControl.Visibility = Visibility.Collapsed;
                 await ApplicationView.GetForCurrentView().TryEnterViewModeAsync(ApplicationViewMode.Default);
                 DanmuControl.DanmakuSizeZoom = SettingHelper.GetValue<double>(SettingHelper.LiveDanmaku.FONT_ZOOM, 1);

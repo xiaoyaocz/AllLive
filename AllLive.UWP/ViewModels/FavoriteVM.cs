@@ -232,8 +232,7 @@ namespace AllLive.UWP.ViewModels
 
         public void Tip()
         {
-            MessageDialog dialog = new MessageDialog(@"该程序兼容Simple Live，您可以导入Simple Live的关注数据，导出的数据也可以在Simple Live中导入。
-由于UWP限制，无法实现与Simple Live数据同步，请手动导出、导出数据。", "导入导出说明");
+            MessageDialog dialog = new MessageDialog(@"该程序兼容Simple Live，您可以导入Simple Live的关注数据，导出的数据也可以在Simple Live中导入。", "导入导出说明");
            _= dialog.ShowAsync();
         }
     }

@@ -41,379 +41,706 @@
                 VerticalAlignment="Top"
                 Background="Transparent"
                 BorderThickness="0" />
-            <Grid
-                ui:UIElementExtensions.ClipToBounds="True"
-                Background="Black"
-                DoubleTapped="Grid_DoubleTapped"
-                ManipulationCompleted="Grid_ManipulationCompleted"
-                ManipulationDelta="Grid_ManipulationDelta"
-                ManipulationMode="TranslateY,TranslateRailsY"
-                ManipulationStarted="Grid_ManipulationStarted"
-                PointerEntered="Grid_PointerEntered"
-                PointerExited="Grid_PointerExited"
-                PointerMoved="Grid_PointerMoved"
-                RequestedTheme="Dark">
-                <Grid.ContextFlyout>
-                    <Flyout>
-                        <TextBlock
-                            x:Name="txtInfo"
-                            MaxWidth="400"
-                            IsTextSelectionEnabled="True"
-                            TextWrapping="Wrap" />
-                    </Flyout>
-                </Grid.ContextFlyout>
-                <MediaPlayerElement x:Name="player" />
-                <!--  弹幕  -->
-                <Grid Tapped="Grid_Tapped">
-                    <controls1:Danmaku x:Name="DanmuControl" />
-                </Grid>
-                <!--  亮度  -->
+            <SplitView
+                x:Name="XBoxSplitView"
+                DisplayMode="Overlay"
+                PanePlacement="Right">
+                <SplitView.Pane>
+                    <ScrollViewer>
+                        <StackPanel Margin="8">
+                            <TextBlock Margin="4,12" FontSize="18">播放</TextBlock>
+                            <Grid
+                                Padding="8,4"
+                                Background="{ThemeResource LayerFillColorDefaultBrush}"
+                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                BorderThickness="1"
+                                CornerRadius="4">
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock>清晰度</TextBlock>
+                                </StackPanel>
+                                <ComboBox
+                                    x:Name="xboxSettingsQuality"
+                                    MinWidth="80"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Center"
+                                    HorizontalContentAlignment="Center"
+                                    DisplayMemberPath="Quality"
+                                    ItemsSource="{x:Bind Path=liveRoomVM.Qualities, Mode=OneWay}"
+                                    SelectedItem="{x:Bind Path=liveRoomVM.CurrentQuality, Mode=TwoWay}"
+                                    ToolTipService.ToolTip="清晰度" />
+                            </Grid>
+                            <Grid
+                                Margin="0,8,0,0"
+                                Padding="8,4"
+                                Background="{ThemeResource LayerFillColorDefaultBrush}"
+                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                BorderThickness="1"
+                                CornerRadius="4">
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock>线路</TextBlock>
+                                </StackPanel>
+                                <ComboBox
+                                    x:Name="xboxSettingsLine"
+                                    MinWidth="80"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Center"
+                                    HorizontalContentAlignment="Center"
+                                    DisplayMemberPath="Name"
+                                    ItemsSource="{x:Bind Path=liveRoomVM.Lines, Mode=OneWay}"
+                                    SelectedItem="{x:Bind Path=liveRoomVM.CurrentLine, Mode=TwoWay}"
+                                    ToolTipService.ToolTip="线路" />
+                            </Grid>
+                            <Grid
+                                Margin="0,8,0,0"
+                                Padding="8,4"
+                                Background="{ThemeResource LayerFillColorDefaultBrush}"
+                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                BorderThickness="1"
+                                CornerRadius="4">
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock>解码器</TextBlock>
+                                </StackPanel>
+                                <ComboBox
+                                    x:Name="xboxSettingsDecoder"
+                                    MinWidth="80"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Center"
+                                    HorizontalContentAlignment="Center">
+                                    <ComboBox.Items>
+                                        <ComboBoxItem>自动</ComboBoxItem>
+                                        <ComboBoxItem>强制硬解</ComboBoxItem>
+                                        <ComboBoxItem>强制软解</ComboBoxItem>
+                                    </ComboBox.Items>
+                                </ComboBox>
+                            </Grid>
+                            <TextBlock Margin="4,12" FontSize="18">弹幕</TextBlock>
+                            <Grid
+                                Padding="8,4"
+                                Background="{ThemeResource LayerFillColorDefaultBrush}"
+                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                BorderThickness="1"
+                                CornerRadius="4">
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock>弹幕开关</TextBlock>
+                                </StackPanel>
+                                <ToggleSwitch
+                                    x:Name="xboxSettingsDMEnable"
+                                    MinWidth="72"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Center"
+                                    IsOn="{Binding ElementName=PlaySWDanmu, Path=IsOn, Mode=TwoWay}" />
+                            </Grid>
+                            <Grid
+                                Margin="0,8,0,0"
+                                Padding="8,4"
+                                Background="{ThemeResource LayerFillColorDefaultBrush}"
+                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                BorderThickness="1"
+                                CornerRadius="4">
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock>透明度</TextBlock>
+                                </StackPanel>
+                                <ComboBox
+                                    x:Name="xboxSettingsDMOpacity"
+                                    MinWidth="80"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Center"
+                                    HorizontalContentAlignment="Center"
+                                    DisplayMemberPath="Name"
+                                    ItemsSource="{x:Bind Path=liveRoomVM.DanmakuOpacityItems, Mode=OneWay}"
+                                    SelectedValue="{x:Bind Path=DanmuControl.Opacity, Mode=TwoWay}"
+                                    SelectedValuePath="Value"
+                                    ToolTipService.ToolTip="透明度" />
+                            </Grid>
+                            <Grid
+                                Margin="0,8,0,0"
+                                Padding="8,4"
+                                Background="{ThemeResource LayerFillColorDefaultBrush}"
+                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                BorderThickness="1"
+                                CornerRadius="4">
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock>弹幕速度</TextBlock>
+                                </StackPanel>
+                                <ComboBox
+                                    x:Name="xboxSettingsDMSpeed"
+                                    MinWidth="80"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Center"
+                                    HorizontalContentAlignment="Center"
+                                    DisplayMemberPath="Name"
+                                    ItemsSource="{x:Bind Path=liveRoomVM.DanmakuSpeedItems, Mode=OneWay}"
+                                    SelectedValue="{x:Bind Path=DanmuControl.DanmakuDuration, Mode=TwoWay}"
+                                    SelectedValuePath="Value"
+                                    ToolTipService.ToolTip="弹幕速度" />
+                            </Grid>
+                            <Grid
+                                Margin="0,8,0,0"
+                                Padding="8,4"
+                                Background="{ThemeResource LayerFillColorDefaultBrush}"
+                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                BorderThickness="1"
+                                CornerRadius="4">
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock>字体大小</TextBlock>
+                                </StackPanel>
+                                <ComboBox
+                                    x:Name="xboxSettingsDMSize"
+                                    MinWidth="80"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Center"
+                                    HorizontalContentAlignment="Center"
+                                    DisplayMemberPath="Name"
+                                    ItemsSource="{x:Bind Path=liveRoomVM.DnamakuFontZoomItems, Mode=OneWay}"
+                                    SelectedValue="{x:Bind Path=DanmuControl.DanmakuSizeZoom, Mode=TwoWay}"
+                                    SelectedValuePath="Value"
+                                    ToolTipService.ToolTip="字体大小" />
+                            </Grid>
+                            <Grid
+                                Margin="0,8,0,0"
+                                Padding="8,4"
+                                Background="{ThemeResource LayerFillColorDefaultBrush}"
+                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                BorderThickness="1"
+                                CornerRadius="4">
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock>显示区域</TextBlock>
+                                </StackPanel>
+                                <ComboBox
+                                    x:Name="xboxSettingsDMArea"
+                                    MinWidth="80"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Center"
+                                    HorizontalContentAlignment="Center"
+                                    DisplayMemberPath="Name"
+                                    ItemsSource="{x:Bind Path=liveRoomVM.DanmakuDiaplayAreaItems, Mode=OneWay}"
+                                    SelectedValue="{x:Bind Path=DanmuControl.DanmakuArea, Mode=TwoWay}"
+                                    SelectedValuePath="Value"
+                                    ToolTipService.ToolTip="显示区域" />
+                            </Grid>
+                            <Grid
+                                Margin="0,8,0,0"
+                                Padding="8,4"
+                                Background="{ThemeResource LayerFillColorDefaultBrush}"
+                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                BorderThickness="1"
+                                CornerRadius="4">
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock>显示样式</TextBlock>
+                                </StackPanel>
+                                <ComboBox
+                                    x:Name="xboxSettingsDMStyle"
+                                    MinWidth="80"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Center"
+                                    HorizontalContentAlignment="Center"
+                                    SelectedIndex="{x:Bind Path=DanmuControl.DanmakuStyle, Converter={StaticResource styleConvert}, Mode=TwoWay}"
+                                    ToolTipService.ToolTip="显示样式">
+                                    <ComboBox.Items>
+                                        <ComboBoxItem>重叠</ComboBoxItem>
+                                        <ComboBoxItem>无边</ComboBoxItem>
+                                        <ComboBoxItem>描边</ComboBoxItem>
+                                    </ComboBox.Items>
+                                </ComboBox>
+                            </Grid>
+                            <Grid
+                                Margin="0,8,0,0"
+                                Padding="8,4"
+                                Background="{ThemeResource LayerFillColorDefaultBrush}"
+                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                BorderThickness="1"
+                                CornerRadius="4">
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock>字体加粗</TextBlock>
+                                </StackPanel>
+                                <ToggleSwitch
+                                    x:Name="xboxSettingsDMBold"
+                                    MinWidth="72"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Center"
+                                    IsOn="{x:Bind Path=DanmuControl.DanmakuBold, Mode=TwoWay}" />
+                            </Grid>
+                            <Grid
+                                Margin="0,8,0,0"
+                                Padding="8,4"
+                                Background="{ThemeResource LayerFillColorDefaultBrush}"
+                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                BorderThickness="1"
+                                CornerRadius="4">
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock>彩色弹幕</TextBlock>
+                                </StackPanel>
+                                <ToggleSwitch
+                                    x:Name="xboxSettingsDMColorful"
+                                    MinWidth="72"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Center" />
+                            </Grid>
+                        </StackPanel>
+                    </ScrollViewer>
+                </SplitView.Pane>
                 <Grid
-                    x:Name="BrightnessShield"
-                    Background="#99000000"
-                    Opacity="0"
-                    Tapped="Grid_Tapped" />
-                <TextBlock
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    FontSize="24"
-                    Foreground="Gray"
-                    Visibility="{x:Bind Path=liveRoomVM.Living, Mode=OneWay, Converter={StaticResource displayConvert}}">
-                    暂未开播
-                </TextBlock>
-                <StackPanel
-                    x:Name="PlayerLoading"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    Visibility="Collapsed">
-                    <ProgressRing
-                        Width="56"
-                        Height="56"
-                        IsActive="True" />
+                    ui:UIElementExtensions.ClipToBounds="True"
+                    Background="Black"
+                    DoubleTapped="Grid_DoubleTapped"
+                    ManipulationCompleted="Grid_ManipulationCompleted"
+                    ManipulationDelta="Grid_ManipulationDelta"
+                    ManipulationMode="TranslateY,TranslateRailsY"
+                    ManipulationStarted="Grid_ManipulationStarted"
+                    PointerEntered="Grid_PointerEntered"
+                    PointerExited="Grid_PointerExited"
+                    PointerMoved="Grid_PointerMoved"
+                    RequestedTheme="Dark">
+                    <Grid.ContextFlyout>
+                        <Flyout>
+                            <TextBlock
+                                x:Name="txtInfo"
+                                MaxWidth="400"
+                                IsTextSelectionEnabled="True"
+                                TextWrapping="Wrap" />
+                        </Flyout>
+                    </Grid.ContextFlyout>
+                    <MediaPlayerElement x:Name="player" />
+                    <!--  弹幕  -->
+                    <Grid Tapped="Grid_Tapped">
+                        <controls1:Danmaku x:Name="DanmuControl" />
+                    </Grid>
+                    <!--  亮度  -->
+                    <Grid
+                        x:Name="BrightnessShield"
+                        Background="#99000000"
+                        Opacity="0"
+                        Tapped="Grid_Tapped" />
                     <TextBlock
-                        x:Name="PlayerLoadText"
-                        Margin="0,8"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        FontSize="24"
                         Foreground="Gray"
-                        TextAlignment="Center">
-                        加载中
+                        Visibility="{x:Bind Path=liveRoomVM.Living, Mode=OneWay, Converter={StaticResource displayConvert}}">
+                        暂未开播
                     </TextBlock>
-                </StackPanel>
-                <Border
-                    x:Name="ToolTip"
-                    Padding="16"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    Background="#CCFFFFFF"
-                    CornerRadius="8"
-                    Visibility="Collapsed">
-                    <TextBlock
-                        x:Name="TxtToolTip"
-                        FontSize="20"
-                        Foreground="Black"
-                        Text="" />
-                </Border>
-                <Grid x:Name="control">
+                    <StackPanel
+                        x:Name="PlayerLoading"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Visibility="Collapsed">
+                        <ProgressRing
+                            Width="56"
+                            Height="56"
+                            IsActive="True" />
+                        <TextBlock
+                            x:Name="PlayerLoadText"
+                            Margin="0,8"
+                            Foreground="Gray"
+                            TextAlignment="Center">
+                            加载中
+                        </TextBlock>
+                    </StackPanel>
+                    <Border
+                        x:Name="ToolTip"
+                        Padding="16"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Background="#CCFFFFFF"
+                        CornerRadius="8"
+                        Visibility="Collapsed">
+                        <TextBlock
+                            x:Name="TxtToolTip"
+                            FontSize="20"
+                            Foreground="Black"
+                            Text="" />
+                    </Border>
+                    <Grid x:Name="control">
 
-                    <Grid x:Name="StandardControl">
+                        <Grid x:Name="StandardControl">
+                            <Grid Height="48" VerticalAlignment="Bottom">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.Background>
+                                    <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
+                                        <GradientStop Color="#00000000" />
+                                        <GradientStop Offset="1" Color="#C8000000" />
+                                    </LinearGradientBrush>
+                                </Grid.Background>
+                                <StackPanel Orientation="Horizontal">
 
-                        <Grid Height="48" VerticalAlignment="Bottom">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
+                                    <Button
+                                        x:Name="PlayBtnPlay"
+                                        Width="48"
+                                        Height="48"
+                                        Background="Transparent"
+                                        BorderThickness="0"
+                                        Click="PlayBtnPlay_Click"
+                                        ToolTipService.ToolTip="播放">
+                                        <FontIcon FontFamily="{StaticResource SegoeFluent}" Glyph="&#xE102;" />
+                                    </Button>
+                                    <Button
+                                        x:Name="PlayBtnPause"
+                                        Width="48"
+                                        Height="48"
+                                        Background="Transparent"
+                                        BorderThickness="0"
+                                        Click="PlayBtnPause_Click"
+                                        ToolTipService.ToolTip="暂停"
+                                        Visibility="Collapsed">
+                                        <FontIcon FontFamily="{StaticResource SegoeFluent}" Glyph="&#xE103;" />
+                                    </Button>
+                                    <Button
+                                        x:Name="PlayBtnSettingsDanmaku"
+                                        Width="48"
+                                        Height="48"
+                                        Background="Transparent"
+                                        BorderThickness="0"
+                                        ToolTipService.ToolTip="弹幕设置">
+                                        <FontIcon FontFamily="{StaticResource SegoeFluent}" Glyph="&#xE713;" />
+                                        <Button.Flyout>
+                                            <Flyout>
+                                                <StackPanel Width="240">
+                                                    <TextBlock Margin="0,4,0,0">
+                                                        弹幕顶部距离<Run Text="{x:Bind Path=DanmuControl.Margin.Top, Mode=OneWay, Converter={StaticResource numberToStringConvert}}" /></TextBlock>
+                                                    <Slider
+                                                        x:Name="DanmuTopMargin"
+                                                        Minimum="0"
+                                                        StepFrequency="4"
+                                                        Value="0" />
+                                                    <TextBlock Margin="0,4,0,0">
+                                                        弹幕显示区域<Run Text="{x:Bind Path=DanmuControl.DanmakuArea, Mode=OneWay, Converter={StaticResource numberToStringConvert}}" /></TextBlock>
+                                                    <Slider
+                                                        x:Name="DanmuSettingArea"
+                                                        Maximum="1"
+                                                        Minimum="0.1"
+                                                        StepFrequency="0.1"
+                                                        Value="{x:Bind Path=DanmuControl.DanmakuArea, Mode=TwoWay}" />
+                                                    <TextBlock Margin="0,4,0,0">
+                                                        弹幕缩放<Run Text="{x:Bind Path=DanmuControl.DanmakuSizeZoom, Mode=OneWay, Converter={StaticResource numberToStringConvert}}" /></TextBlock>
+                                                    <Slider
+                                                        x:Name="DanmuSettingFontZoom"
+                                                        Maximum="2"
+                                                        Minimum="0.1"
+                                                        StepFrequency="0.05"
+                                                        Value="{x:Bind Path=DanmuControl.DanmakuSizeZoom, Mode=TwoWay}" />
+                                                    <TextBlock Margin="0,4,0,0">
+                                                        弹幕速度<Run Text="{x:Bind Path=DanmuControl.DanmakuDuration, Mode=OneWay, Converter={StaticResource numberToStringConvert}}" /></TextBlock>
+                                                    <Slider
+                                                        x:Name="DanmuSettingSpeed"
+                                                        Maximum="25"
+                                                        Minimum="1"
+                                                        StepFrequency="1"
+                                                        Value="{x:Bind Path=DanmuControl.DanmakuDuration, Mode=TwoWay}" />
+                                                    <TextBlock Margin="0,4,0,0">
+                                                        弹幕透明度<Run Text="{x:Bind Path=DanmuControl.Opacity, Mode=OneWay, Converter={StaticResource numberToStringConvert}}" /></TextBlock>
+                                                    <Slider
+                                                        x:Name="DanmuSettingOpacity"
+                                                        Maximum="1"
+                                                        Minimum="0.1"
+                                                        StepFrequency="0.1"
+                                                        Value="{x:Bind Path=DanmuControl.Opacity, Mode=TwoWay}" />
+                                                    <TextBlock Margin="0,4">弹幕样式</TextBlock>
+                                                    <ComboBox
+                                                        x:Name="DanmuSettingStyle"
+                                                        HorizontalAlignment="Stretch"
+                                                        SelectedIndex="{x:Bind Path=DanmuControl.DanmakuStyle, Converter={StaticResource styleConvert}, Mode=TwoWay}">
+                                                        <ComboBox.Items>
+                                                            <ComboBoxItem>重叠</ComboBoxItem>
+                                                            <ComboBoxItem>无边</ComboBoxItem>
+                                                            <ComboBoxItem>描边</ComboBoxItem>
+                                                        </ComboBox.Items>
+                                                    </ComboBox>
+                                                    <ToggleSwitch
+                                                        x:Name="DanmuSettingBold"
+                                                        Margin="0,8,0,0"
+                                                        IsOn="{x:Bind Path=DanmuControl.DanmakuBold, Mode=TwoWay}">
+                                                        <ToggleSwitch.Header>
+                                                            <TextBlock>字体加粗</TextBlock>
+                                                        </ToggleSwitch.Header>
+                                                    </ToggleSwitch>
+                                                    <ToggleSwitch x:Name="DanmuSettingColourful" Margin="0,8,0,0">
+                                                        <ToggleSwitch.Header>
+                                                            <TextBlock>彩色弹幕</TextBlock>
+                                                        </ToggleSwitch.Header>
+                                                    </ToggleSwitch>
+
+
+                                                </StackPanel>
+                                            </Flyout>
+                                        </Button.Flyout>
+                                    </Button>
+                                    <ToggleSwitch
+                                        x:Name="PlaySWDanmu"
+                                        Width="110"
+                                        Margin="8,2,8,0"
+                                        VerticalAlignment="Center"
+                                        OffContent="关闭弹幕"
+                                        OnContent="开启弹幕" />
+
+                                </StackPanel>
+
+
+                                <StackPanel Grid.Column="2" Orientation="Horizontal">
+                                    <Button
+                                        x:Name="PlayBtnVolume"
+                                        Width="48"
+                                        Height="48"
+                                        Background="Transparent"
+                                        BorderThickness="0"
+                                        ToolTipService.ToolTip="音量">
+                                        <FontIcon FontFamily="{StaticResource SegoeFluent}" Glyph="&#xE15D;" />
+                                        <Button.Flyout>
+                                            <Flyout>
+                                                <StackPanel>
+                                                    <TextBlock>音量</TextBlock>
+                                                    <Slider
+                                                        x:Name="SliderVolume"
+                                                        Width="200"
+                                                        Maximum="1"
+                                                        Minimum="0"
+                                                        StepFrequency="0.1"
+                                                        Value="1" />
+                                                </StackPanel>
+                                            </Flyout>
+                                        </Button.Flyout>
+                                    </Button>
+
+                                    <ComboBox
+                                        x:Name="PlayQuality"
+                                        MinWidth="80"
+                                        VerticalAlignment="Center"
+                                        HorizontalContentAlignment="Center"
+                                        Background="Transparent"
+                                        BorderThickness="0"
+                                        DisplayMemberPath="Quality"
+                                        FontSize="16"
+                                        Foreground="White"
+                                        ItemsSource="{x:Bind Path=liveRoomVM.Qualities, Mode=OneWay}"
+                                        SelectedItem="{x:Bind Path=liveRoomVM.CurrentQuality, Mode=TwoWay}"
+                                        ToolTipService.ToolTip="清晰度" />
+                                    <ComboBox
+                                        x:Name="PlayLine"
+                                        MinWidth="80"
+                                        Margin="8,0,0,0"
+                                        VerticalAlignment="Center"
+                                        HorizontalContentAlignment="Center"
+                                        Background="Transparent"
+                                        BorderThickness="0"
+                                        DisplayMemberPath="Name"
+                                        FontSize="16"
+                                        Foreground="White"
+                                        ItemsSource="{x:Bind Path=liveRoomVM.Lines, Mode=OneWay}"
+                                        SelectedItem="{x:Bind Path=liveRoomVM.CurrentLine, Mode=TwoWay}"
+                                        ToolTipService.ToolTip="线路" />
+                                    <Button
+                                        x:Name="PlayBtnMinWindow"
+                                        Width="48"
+                                        Height="48"
+                                        Background="Transparent"
+                                        BorderThickness="0"
+                                        Click="PlayBtnMinWindow_Click"
+                                        ToolTipService.ToolTip="小窗">
+                                        <FontIcon FontFamily="{StaticResource SegoeFluent}" Glyph="&#xE17C;" />
+                                    </Button>
+                                    <Button
+                                        x:Name="PlayBtnFullWindow"
+                                        Width="48"
+                                        Height="48"
+                                        Background="Transparent"
+                                        BorderThickness="0"
+                                        Click="PlayBtnFullWindow_Click"
+                                        ToolTipService.ToolTip="铺满窗口">
+                                        <FontIcon FontFamily="{StaticResource SegoeFluent}" Glyph="&#xE9A6;" />
+                                    </Button>
+                                    <Button
+                                        x:Name="PlayBtnExitFullWindow"
+                                        Width="48"
+                                        Height="48"
+                                        Background="Transparent"
+                                        BorderThickness="0"
+                                        Click="PlayBtnExitFullWindow_Click"
+                                        ToolTipService.ToolTip="取消铺满窗口"
+                                        Visibility="Collapsed">
+                                        <FontIcon FontFamily="{StaticResource SegoeFluent}" Glyph="&#xE146;" />
+                                    </Button>
+                                    <Button
+                                        x:Name="PlayBtnFullScreen"
+                                        Width="48"
+                                        Height="48"
+                                        Background="Transparent"
+                                        BorderThickness="0"
+                                        Click="PlayBtnFullScreen_Click"
+                                        ToolTipService.ToolTip="全屏">
+                                        <FontIcon FontFamily="{StaticResource SegoeFluent}" Glyph="&#xE1D9;" />
+                                    </Button>
+                                    <Button
+                                        x:Name="PlayBtnExitFullScreen"
+                                        Width="48"
+                                        Height="48"
+                                        Background="Transparent"
+                                        BorderThickness="0"
+                                        Click="PlayBtnExitFullScreen_Click"
+                                        ToolTipService.ToolTip="退出全屏"
+                                        Visibility="Collapsed">
+                                        <FontIcon FontFamily="{StaticResource SegoeFluent}" Glyph="&#xE1D8;" />
+                                    </Button>
+                                </StackPanel>
+                            </Grid>
+                        </Grid>
+                        <Grid
+                            x:Name="MiniControl"
+                            VerticalAlignment="Bottom"
+                            Visibility="Collapsed">
                             <Grid.Background>
                                 <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
                                     <GradientStop Color="#00000000" />
                                     <GradientStop Offset="1" Color="#C8000000" />
                                 </LinearGradientBrush>
                             </Grid.Background>
-                            <StackPanel Orientation="Horizontal">
-
-                                <Button
-                                    x:Name="PlayBtnPlay"
+                            <StackPanel
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Bottom"
+                                Orientation="Horizontal">
+                                <HyperlinkButton
                                     Width="48"
                                     Height="48"
-                                    Background="Transparent"
-                                    BorderThickness="0"
-                                    Click="PlayBtnPlay_Click"
-                                    ToolTipService.ToolTip="播放">
-                                    <FontIcon FontFamily="{StaticResource SegoeFluent}" Glyph="&#xE102;" />
-                                </Button>
-                                <Button
-                                    x:Name="PlayBtnPause"
+                                    Padding="8"
+                                    Foreground="White"
+                                    Visibility="{Binding ElementName=PlayBtnPause, Path=Visibility, Mode=OneWay}">
+                                    <PathIcon
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        Data="{StaticResource ResourceKey=IconPause}" />
+                                </HyperlinkButton>
+                                <HyperlinkButton
                                     Width="48"
                                     Height="48"
-                                    Background="Transparent"
-                                    BorderThickness="0"
-                                    Click="PlayBtnPause_Click"
-                                    ToolTipService.ToolTip="暂停"
-                                    Visibility="Collapsed">
-                                    <FontIcon FontFamily="{StaticResource SegoeFluent}" Glyph="&#xE103;" />
-                                </Button>
-                                <Button
-                                    x:Name="PlayBtnSettingsDanmaku"
-                                    Width="48"
-                                    Height="48"
-                                    Background="Transparent"
-                                    BorderThickness="0"
-                                    ToolTipService.ToolTip="弹幕设置">
-                                    <FontIcon FontFamily="{StaticResource SegoeFluent}" Glyph="&#xE713;" />
-                                    <Button.Flyout>
-                                        <Flyout>
-                                            <StackPanel Width="240">
-                                                <TextBlock Margin="0,4,0,0">
-                                                    弹幕顶部距离<Run Text="{x:Bind Path=DanmuControl.Margin.Top, Mode=OneWay, Converter={StaticResource numberToStringConvert}}" /></TextBlock>
-                                                <Slider
-                                                    x:Name="DanmuTopMargin"
-                                                    Minimum="0"
-                                                    StepFrequency="4"
-                                                    Value="0" />
-                                                <TextBlock Margin="0,4,0,0">
-                                                    弹幕显示区域<Run Text="{x:Bind Path=DanmuControl.DanmakuArea, Mode=OneWay, Converter={StaticResource numberToStringConvert}}" /></TextBlock>
-                                                <Slider
-                                                    x:Name="DanmuSettingArea"
-                                                    Maximum="1"
-                                                    Minimum="0.1"
-                                                    StepFrequency="0.1"
-                                                    Value="{x:Bind Path=DanmuControl.DanmakuArea, Mode=TwoWay}" />
-                                                <TextBlock Margin="0,4,0,0">
-                                                    弹幕缩放<Run Text="{x:Bind Path=DanmuControl.DanmakuSizeZoom, Mode=OneWay, Converter={StaticResource numberToStringConvert}}" /></TextBlock>
-                                                <Slider
-                                                    x:Name="DanmuSettingFontZoom"
-                                                    Maximum="2"
-                                                    Minimum="0.1"
-                                                    StepFrequency="0.05"
-                                                    Value="{x:Bind Path=DanmuControl.DanmakuSizeZoom, Mode=TwoWay}" />
-                                                <TextBlock Margin="0,4,0,0">
-                                                    弹幕速度<Run Text="{x:Bind Path=DanmuControl.DanmakuDuration, Mode=OneWay, Converter={StaticResource numberToStringConvert}}" /></TextBlock>
-                                                <Slider
-                                                    x:Name="DanmuSettingSpeed"
-                                                    Maximum="25"
-                                                    Minimum="1"
-                                                    StepFrequency="1"
-                                                    Value="{x:Bind Path=DanmuControl.DanmakuDuration, Mode=TwoWay}" />
-                                                <TextBlock Margin="0,4,0,0">
-                                                    弹幕透明度<Run Text="{x:Bind Path=DanmuControl.Opacity, Mode=OneWay, Converter={StaticResource numberToStringConvert}}" /></TextBlock>
-                                                <Slider
-                                                    x:Name="DanmuSettingOpacity"
-                                                    Maximum="1"
-                                                    Minimum="0.1"
-                                                    StepFrequency="0.1"
-                                                    Value="{x:Bind Path=DanmuControl.Opacity, Mode=TwoWay}" />
-                                                <TextBlock Margin="0,4">弹幕样式</TextBlock>
-                                                <ComboBox
-                                                    x:Name="DanmuSettingStyle"
-                                                    HorizontalAlignment="Stretch"
-                                                    SelectedIndex="{x:Bind Path=DanmuControl.DanmakuStyle, Converter={StaticResource styleConvert}, Mode=TwoWay}">
-                                                    <ComboBox.Items>
-                                                        <ComboBoxItem>重叠</ComboBoxItem>
-                                                        <ComboBoxItem>无边</ComboBoxItem>
-                                                        <ComboBoxItem>描边</ComboBoxItem>
-                                                    </ComboBox.Items>
-                                                </ComboBox>
-                                                <ToggleSwitch
-                                                    x:Name="DanmuSettingBold"
-                                                    Margin="0,8,0,0"
-                                                    IsOn="{x:Bind Path=DanmuControl.DanmakuBold, Mode=TwoWay}">
-                                                    <ToggleSwitch.Header>
-                                                        <TextBlock>字体加粗</TextBlock>
-                                                    </ToggleSwitch.Header>
-                                                </ToggleSwitch>
-                                                <ToggleSwitch x:Name="DanmuSettingColourful" Margin="0,8,0,0">
-                                                    <ToggleSwitch.Header>
-                                                        <TextBlock>彩色弹幕</TextBlock>
-                                                    </ToggleSwitch.Header>
-                                                </ToggleSwitch>
+                                    Padding="8"
+                                    Foreground="White"
+                                    Visibility="{Binding ElementName=PlayBtnPlay, Path=Visibility, Mode=OneWay}">
+                                    <PathIcon
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        Data="{StaticResource ResourceKey=IconPlay}" />
+                                </HyperlinkButton>
 
-
-                                            </StackPanel>
-                                        </Flyout>
-                                    </Button.Flyout>
-                                </Button>
                                 <ToggleSwitch
-                                    x:Name="PlaySWDanmu"
                                     Width="110"
                                     Margin="8,2,8,0"
                                     VerticalAlignment="Center"
+                                    IsOn="{Binding ElementName=PlaySWDanmu, Path=IsOn, Mode=TwoWay}"
                                     OffContent="关闭弹幕"
                                     OnContent="开启弹幕" />
 
                             </StackPanel>
-
-
-                            <StackPanel Grid.Column="2" Orientation="Horizontal">
-                                <Button
-                                    x:Name="PlayBtnVolume"
-                                    Width="48"
-                                    Height="48"
-                                    Background="Transparent"
-                                    BorderThickness="0"
-                                    ToolTipService.ToolTip="音量">
-                                    <FontIcon FontFamily="{StaticResource SegoeFluent}" Glyph="&#xE15D;" />
-                                    <Button.Flyout>
-                                        <Flyout>
-                                            <StackPanel>
-                                                <TextBlock>音量</TextBlock>
-                                                <Slider
-                                                    x:Name="SliderVolume"
-                                                    Width="200"
-                                                    Maximum="1"
-                                                    Minimum="0"
-                                                    StepFrequency="0.1"
-                                                    Value="1" />
-                                            </StackPanel>
-                                        </Flyout>
-                                    </Button.Flyout>
-                                </Button>
-
-                                <ComboBox
-                                    x:Name="PlayQuality"
-                                    MinWidth="80"
+                            <HyperlinkButton
+                                x:Name="BottomBtnExitMiniWindows"
+                                Width="48"
+                                Height="48"
+                                Padding="8"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Bottom"
+                                Click="BottomBtnExitMiniWindows_Click"
+                                Foreground="White"
+                                ToolTipService.ToolTip="恢复窗口">
+                                <PathIcon
+                                    HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
-                                    HorizontalContentAlignment="Center"
-                                    Background="Transparent"
-                                    BorderThickness="0"
-                                    DisplayMemberPath="Quality"
-                                    FontSize="16"
-                                    Foreground="White"
-                                    ItemsSource="{x:Bind Path=liveRoomVM.Qualities, Mode=OneWay}"
-                                    SelectedItem="{x:Bind Path=liveRoomVM.CurrentQuality, Mode=TwoWay}"
-                                    ToolTipService.ToolTip="线路" />
-                                <ComboBox
-                                    x:Name="PlayLine"
-                                    MinWidth="80"
-                                    Margin="8,0,0,0"
+                                    Data="{StaticResource ResourceKey=IconFullWindow}" />
+                            </HyperlinkButton>
+                        </Grid>
+                        <Grid x:Name="XBoxControl">
+                            <Grid
+                                Padding="12"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Top">
+                                <Grid.Background>
+                                    <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
+                                        <GradientStop Color="#C8000000" />
+                                        <GradientStop Offset="1" Color="#00000000" />
+                                    </LinearGradientBrush>
+                                </Grid.Background>
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock FontSize="18" Text="{x:Bind Path=liveRoomVM.Title, Mode=OneWay}" />
+                                    <Grid>
+                                        <TextBlock
+                                            Margin="0,4,0,0"
+                                            FontSize="14"
+                                            Text="{x:Bind Path=liveRoomVM.Name, Mode=OneWay}" />
+                                        <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                                            <Viewbox Width="14" VerticalAlignment="Center">
+                                                <PathIcon Data="{StaticResource ResourceKey=IconHot}" Foreground="Orange" />
+                                            </Viewbox>
+
+                                            <TextBlock
+                                                Margin="8,0,0,0"
+                                                VerticalAlignment="Center"
+                                                FontSize="13"
+                                                Opacity=".6"
+                                                Text="{x:Bind Path=liveRoomVM.Online, Mode=OneWay, Converter={StaticResource numberToStringConvert}}" />
+                                        </StackPanel>
+                                    </Grid>
+                                </StackPanel>
+                            </Grid>
+                            <Grid
+                                Height="56"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Bottom">
+                                <Grid.Background>
+                                    <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
+                                        <GradientStop Color="#00000000" />
+                                        <GradientStop Offset="1" Color="#C8000000" />
+                                    </LinearGradientBrush>
+                                </Grid.Background>
+                                <StackPanel
+                                    HorizontalAlignment="Left"
                                     VerticalAlignment="Center"
-                                    HorizontalContentAlignment="Center"
-                                    Background="Transparent"
-                                    BorderThickness="0"
-                                    DisplayMemberPath="Name"
-                                    FontSize="16"
-                                    Foreground="White"
-                                    ItemsSource="{x:Bind Path=liveRoomVM.Lines, Mode=OneWay}"
-                                    SelectedItem="{x:Bind Path=liveRoomVM.CurrentLine, Mode=TwoWay}"
-                                    ToolTipService.ToolTip="线路" />
-                                <Button
-                                    x:Name="PlayBtnMinWindow"
-                                    Width="48"
-                                    Height="48"
-                                    Background="Transparent"
-                                    BorderThickness="0"
-                                    Click="PlayBtnMinWindow_Click"
-                                    ToolTipService.ToolTip="小窗">
-                                    <FontIcon FontFamily="{StaticResource SegoeFluent}" Glyph="&#xE17C;" />
-                                </Button>
-                                <Button
-                                    x:Name="PlayBtnFullWindow"
-                                    Width="48"
-                                    Height="48"
-                                    Background="Transparent"
-                                    BorderThickness="0"
-                                    Click="PlayBtnFullWindow_Click"
-                                    ToolTipService.ToolTip="铺满窗口">
-                                    <FontIcon FontFamily="{StaticResource SegoeFluent}" Glyph="&#xE9A6;" />
-                                </Button>
-                                <Button
-                                    x:Name="PlayBtnExitFullWindow"
-                                    Width="48"
-                                    Height="48"
-                                    Background="Transparent"
-                                    BorderThickness="0"
-                                    Click="PlayBtnExitFullWindow_Click"
-                                    ToolTipService.ToolTip="取消铺满窗口"
-                                    Visibility="Collapsed">
-                                    <FontIcon FontFamily="{StaticResource SegoeFluent}" Glyph="&#xE146;" />
-                                </Button>
-                                <Button
-                                    x:Name="PlayBtnFullScreen"
-                                    Width="48"
-                                    Height="48"
-                                    Background="Transparent"
-                                    BorderThickness="0"
-                                    Click="PlayBtnFullScreen_Click"
-                                    ToolTipService.ToolTip="全屏">
-                                    <FontIcon FontFamily="{StaticResource SegoeFluent}" Glyph="&#xE1D9;" />
-                                </Button>
-                                <Button
-                                    x:Name="PlayBtnExitFullScreen"
-                                    Width="48"
-                                    Height="48"
-                                    Background="Transparent"
-                                    BorderThickness="0"
-                                    Click="PlayBtnExitFullScreen_Click"
-                                    ToolTipService.ToolTip="退出全屏"
-                                    Visibility="Collapsed">
-                                    <FontIcon FontFamily="{StaticResource SegoeFluent}" Glyph="&#xE1D8;" />
-                                </Button>
-                            </StackPanel>
+                                    Orientation="Horizontal">
+                                    <FontIcon
+                                        Margin="12,0"
+                                        FontFamily="{StaticResource SegoeFluent}"
+                                        Glyph="&#xF094;" />
+                                    <TextBlock Margin="0,0,12,0">退出播放</TextBlock>
+                                    <FontIcon
+                                        Margin="12,0"
+                                        FontFamily="{StaticResource SegoeFluent}"
+                                        Glyph="&#xF093;" />
+                                    <TextBlock Margin="0,0,12,0">显示/隐藏信息</TextBlock>
+                                    <FontIcon
+                                        Margin="12,0"
+                                        FontFamily="{StaticResource SegoeFluent}"
+                                        Glyph="&#xEDE3;" />
+                                    <TextBlock Margin="0,0,12,0">打开设置</TextBlock>
+                                    <FontIcon
+                                        Margin="12,0"
+                                        FontFamily="{StaticResource SegoeFluent}"
+                                        Glyph="&#xF10B;" />
+                                    <TextBlock Margin="0,0,12,0" Visibility="{x:Bind Path=liveRoomVM.IsFavorite, Mode=OneWay, Converter={StaticResource displayConvert}}">关注主播</TextBlock>
+                                    <TextBlock Margin="0,0,12,0" Visibility="{x:Bind Path=liveRoomVM.IsFavorite, Mode=OneWay}">取消关注</TextBlock>
+                                    <FontIcon
+                                        Margin="12,0"
+                                        FontFamily="{StaticResource SegoeFluent}"
+                                        Glyph="&#xF10A;" />
+                                    <TextBlock Margin="0,0,12,0">保存截图</TextBlock>
+                                    <FontIcon
+                                        Margin="12,0"
+                                        FontFamily="{StaticResource SegoeFluent}"
+                                        Glyph="&#xF096;" />
+                                    <TextBlock Margin="0,0,12,0" Visibility="{Binding ElementName=DanmuControl, Path=Visibility, Converter={StaticResource displayConvert}, Mode=OneWay}">打开弹幕</TextBlock>
+                                    <TextBlock Margin="0,0,12,0" Visibility="{Binding ElementName=DanmuControl, Path=Visibility, Mode=OneWay}">关闭弹幕</TextBlock>
+                                    <FontIcon
+                                        Margin="12,0"
+                                        FontFamily="{StaticResource SegoeFluent}"
+                                        Glyph="&#xF095;" />
+                                    <TextBlock Margin="0,0,12,0">刷新直播</TextBlock>
+                                </StackPanel>
+                            </Grid>
+
                         </Grid>
                     </Grid>
-                    <Grid
-                        x:Name="MiniControl"
-                        VerticalAlignment="Bottom"
-                        Visibility="Collapsed">
-                        <Grid.Background>
-                            <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
-                                <GradientStop Color="#00000000" />
-                                <GradientStop Offset="1" Color="#C8000000" />
-                            </LinearGradientBrush>
-                        </Grid.Background>
-                        <StackPanel
-                            HorizontalAlignment="Left"
-                            VerticalAlignment="Bottom"
-                            Orientation="Horizontal">
-                            <HyperlinkButton
-                                Width="48"
-                                Height="48"
-                                Padding="8"
-                                Foreground="White"
-                                Visibility="{Binding ElementName=PlayBtnPause, Path=Visibility, Mode=OneWay}">
-                                <PathIcon
-                                    HorizontalAlignment="Center"
-                                    VerticalAlignment="Center"
-                                    Data="{StaticResource ResourceKey=IconPause}" />
-                            </HyperlinkButton>
-                            <HyperlinkButton
-                                Width="48"
-                                Height="48"
-                                Padding="8"
-                                Foreground="White"
-                                Visibility="{Binding ElementName=PlayBtnPlay, Path=Visibility, Mode=OneWay}">
-                                <PathIcon
-                                    HorizontalAlignment="Center"
-                                    VerticalAlignment="Center"
-                                    Data="{StaticResource ResourceKey=IconPlay}" />
-                            </HyperlinkButton>
 
-                            <ToggleSwitch
-                                Width="110"
-                                Margin="8,2,8,0"
-                                VerticalAlignment="Center"
-                                IsOn="{Binding ElementName=PlaySWDanmu, Path=IsOn, Mode=TwoWay}"
-                                OffContent="关闭弹幕"
-                                OnContent="开启弹幕" />
-
-                        </StackPanel>
-                        <HyperlinkButton
-                            x:Name="BottomBtnExitMiniWindows"
-                            Width="48"
-                            Height="48"
-                            Padding="8"
-                            HorizontalAlignment="Right"
-                            VerticalAlignment="Bottom"
-                            Click="BottomBtnExitMiniWindows_Click"
-                            Foreground="White"
-                            ToolTipService.ToolTip="恢复窗口">
-                            <PathIcon
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center"
-                                Data="{StaticResource ResourceKey=IconFullWindow}" />
-                        </HyperlinkButton>
-                    </Grid>
                 </Grid>
+            </SplitView>
 
-            </Grid>
             <Grid Grid.Row="1" Background="{ThemeResource NavigationViewTopPaneBackground}">
                 <CommandBar HorizontalAlignment="Left" DefaultLabelPosition="Right">
                     <AppBarButton
