@@ -143,6 +143,7 @@
     <Compile Include="Controls\MyAdaptiveGridView.cs" />
     <Compile Include="Converters\DanmakuStyleConvert.cs" />
     <Compile Include="Converters\DisplayConvert.cs" />
+    <Compile Include="Converters\DoublePrecisionConvert.cs" />
     <Compile Include="Converters\ImageCovert.cs" />
     <Compile Include="Converters\NumberToStringConvert.cs" />
     <Compile Include="Helper\BiliAccount.cs" />
@@ -294,6 +295,10 @@
     <Page Include="MainPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="ValueDictionary.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\CategoryDetailPage.xaml">
       <SubType>Designer</SubType>

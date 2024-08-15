@@ -34,7 +34,6 @@ using Windows.UI.Core;
 using FFmpegInteropX;
 using Windows.Media.Playback;
 using System.Text;
-
 // https://go.microsoft.com/fwlink/?LinkId=234238 上介绍了“空白页”项模板
 
 namespace AllLive.UWP.Views
@@ -80,7 +79,7 @@ namespace AllLive.UWP.Views
             mediaPlayer.PlaybackSession.BufferingProgressChanged += PlaybackSession_BufferingProgressChanged;
             mediaPlayer.PlaybackSession.BufferingEnded += PlaybackSession_BufferingEnded;
             mediaPlayer.MediaOpened += MediaPlayer_MediaOpened;
-            mediaPlayer.MediaEnded += MediaPlayer_MediaEnded; ;
+            mediaPlayer.MediaEnded += MediaPlayer_MediaEnded;
             mediaPlayer.MediaFailed += MediaPlayer_MediaFailed;
 
             timer_focus.Start();
@@ -93,13 +92,24 @@ namespace AllLive.UWP.Views
             else
             {
                 XBoxControl.Visibility = Visibility.Collapsed;
+                ClearXboxSettingBind();
                 StandardControl.Visibility = Visibility.Visible;
             }
          
 
         }
 
-
+        private void ClearXboxSettingBind()
+        {
+            xboxSettingsDMSize.ClearValue(ComboBox.SelectedValueProperty);
+            xboxSettingsDecoder.ClearValue(ToggleSwitch.IsOnProperty);
+            xboxSettingsDMArea.ClearValue(ComboBox.SelectedIndexProperty);
+            xboxSettingsDMOpacity.ClearValue(ComboBox.SelectedValueProperty);
+            xboxSettingsDMSpeed.ClearValue(ComboBox.SelectedValueProperty);
+            xboxSettingsDMStyle.ClearValue(ComboBox.SelectedValueProperty);
+            xboxSettingsDMColorful.ClearValue(ToggleSwitch.IsOnProperty);
+            xboxSettingsDMBold.ClearValue(ToggleSwitch.IsOnProperty);
+        }
 
         #region 播放器事件
         private async void MediaPlayer_MediaEnded(MediaPlayer sender, object args)
@@ -414,7 +424,7 @@ namespace AllLive.UWP.Views
 
                 var config = new MediaSourceConfig();
                 config.FFmpegOptions.Add("rtsp_transport", "tcp");
-                var decoder = SettingHelper.GetValue<int>(SettingHelper.VIDEO_DECODER, 0);
+                var decoder = SettingHelper.GetValue<int>(SettingHelper.VIDEO_DECODER, Utils.IsXbox ? 1 : 0);
                 switch (decoder)
                 {
                     case 1:
@@ -691,7 +701,7 @@ namespace AllLive.UWP.Views
             //        Utils.ShowMessageToast("更改清晰度或刷新后生效");
             //    });
             //});
-            cbDecoder.SelectedIndex = SettingHelper.GetValue<int>(SettingHelper.VIDEO_DECODER, 0);
+            cbDecoder.SelectedIndex = SettingHelper.GetValue<int>(SettingHelper.VIDEO_DECODER, Utils.IsXbox?1: 0);
             cbDecoder.Loaded += new RoutedEventHandler((sender, e) =>
             {
                 cbDecoder.SelectionChanged += new SelectionChangedEventHandler((obj, args) =>
@@ -771,7 +781,8 @@ namespace AllLive.UWP.Views
                 if (isMini) return;
                 SettingHelper.SetValue<double>(SettingHelper.LiveDanmaku.SPEED, DanmuSettingSpeed.Value);
             });
-            //弹幕透明度
+          
+            //保留一位小数
             DanmuControl.Opacity = SettingHelper.GetValue<double>(SettingHelper.LiveDanmaku.OPACITY, 1.0);
             DanmuSettingOpacity.ValueChanged += new RangeBaseValueChangedEventHandler((e, args) =>
             {
@@ -816,7 +827,7 @@ namespace AllLive.UWP.Views
         private void LoadXboxSetting()
         {
 
-            xboxSettingsDecoder.SelectedIndex = SettingHelper.GetValue<int>(SettingHelper.VIDEO_DECODER, 0);
+            xboxSettingsDecoder.SelectedIndex = SettingHelper.GetValue<int>(SettingHelper.VIDEO_DECODER, Utils.IsXbox ? 1 : 0);
             xboxSettingsDecoder.Loaded += new RoutedEventHandler((sender, e) =>
             {
                 xboxSettingsDecoder.SelectionChanged += new SelectionChangedEventHandler((obj, args) =>
@@ -828,7 +839,7 @@ namespace AllLive.UWP.Views
 
             //弹幕开关
             var state = SettingHelper.GetValue<bool>(SettingHelper.LiveDanmaku.SHOW, true) ? Visibility.Visible : Visibility.Collapsed;
-            DanmuControl.Visibility = state;
+          
             PlaySWDanmu.IsOn = state == Visibility.Visible;
             PlaySWDanmu.Toggled += new RoutedEventHandler((e, args) =>
             {
@@ -839,7 +850,6 @@ namespace AllLive.UWP.Views
 
             ////音量
             var volume = SettingHelper.GetValue<double>(SettingHelper.PLAYER_VOLUME, 1.0);
-            mediaPlayer.Volume = volume;
             SliderVolume.Value = volume;
             SliderVolume.ValueChanged += new RangeBaseValueChangedEventHandler((e, args) =>
             {
@@ -847,18 +857,12 @@ namespace AllLive.UWP.Views
                 SettingHelper.SetValue<double>(SettingHelper.PLAYER_VOLUME, SliderVolume.Value);
             });
 
-            //亮度
-            _brightness = SettingHelper.GetValue<double>(SettingHelper.PLAYER_BRIGHTNESS, 0);
-            BrightnessShield.Opacity = _brightness;
-
-
 
             //弹幕关键词
             LiveDanmuSettingListWords.ItemsSource = settingVM.ShieldWords;
 
-
             //弹幕大小
-            DanmuControl.DanmakuSizeZoom = SettingHelper.GetValue<double>(SettingHelper.LiveDanmaku.FONT_ZOOM, 1);
+            //DanmuControl.DanmakuSizeZoom = SettingHelper.GetValue<double>(SettingHelper.LiveDanmaku.FONT_ZOOM, 1);
             xboxSettingsDMSize.SelectionChanged += new SelectionChangedEventHandler((e, args) =>
             {
                 if (xboxSettingsDMSize.SelectedValue == null)
@@ -869,7 +873,7 @@ namespace AllLive.UWP.Views
             });
 
             //弹幕速度
-            DanmuControl.DanmakuDuration = SettingHelper.GetValue<int>(SettingHelper.LiveDanmaku.SPEED, 10);
+            //DanmuControl.DanmakuDuration = SettingHelper.GetValue<int>(SettingHelper.LiveDanmaku.SPEED, 10);
             xboxSettingsDMSpeed.SelectionChanged += new SelectionChangedEventHandler((e, args) =>
             {
                 if (xboxSettingsDMSpeed.SelectedValue == null)
@@ -880,7 +884,7 @@ namespace AllLive.UWP.Views
             });
 
             //弹幕透明度
-            DanmuControl.Opacity = SettingHelper.GetValue<double>(SettingHelper.LiveDanmaku.OPACITY, 1.0);
+            //DanmuControl.Opacity = SettingHelper.GetValue<double>(SettingHelper.LiveDanmaku.OPACITY, 1.0);
             xboxSettingsDMOpacity.SelectionChanged += new SelectionChangedEventHandler((e, args) =>
             {
                 if (xboxSettingsDMOpacity.SelectedValue == null)
@@ -892,7 +896,7 @@ namespace AllLive.UWP.Views
 
 
             //弹幕加粗
-            DanmuControl.DanmakuBold = SettingHelper.GetValue<bool>(SettingHelper.LiveDanmaku.BOLD, false);
+            //DanmuControl.DanmakuBold = SettingHelper.GetValue<bool>(SettingHelper.LiveDanmaku.BOLD, false);
             xboxSettingsDMBold.Toggled += new RoutedEventHandler((e, args) =>
             {
                 SettingHelper.SetValue<bool>(SettingHelper.LiveDanmaku.BOLD, xboxSettingsDMBold.IsOn);
@@ -904,7 +908,7 @@ namespace AllLive.UWP.Views
             {
                 danmuStyle = 2;
             }
-            DanmuControl.DanmakuStyle = (DanmakuBorderStyle)danmuStyle;
+            //DanmuControl.DanmakuStyle = (DanmakuBorderStyle)danmuStyle;
             xboxSettingsDMStyle.SelectionChanged += new SelectionChangedEventHandler((e, args) =>
             {
                 if (xboxSettingsDMStyle.SelectedIndex != -1)
@@ -915,7 +919,7 @@ namespace AllLive.UWP.Views
 
 
             //弹幕显示区域
-            DanmuControl.DanmakuArea = SettingHelper.GetValue<double>(SettingHelper.LiveDanmaku.AREA, 1);
+            //DanmuControl.DanmakuArea = SettingHelper.GetValue<double>(SettingHelper.LiveDanmaku.AREA, 1);
             xboxSettingsDMArea.SelectionChanged += new SelectionChangedEventHandler((e, args) =>
             {
                 if (xboxSettingsDMArea.SelectedValue == null)

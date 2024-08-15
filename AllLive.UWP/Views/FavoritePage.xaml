@@ -18,6 +18,15 @@
         <Grid Padding="16,8">
             <TextBlock FontSize="24">我的关注</TextBlock>
             <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                <Button Command="{x:Bind Path=favoriteVM.RefreshCommand}" Visibility="{x:Bind Path=favoriteVM.LoaddingLiveStatus, Mode=OneWay, Converter={StaticResource displayConvert}}">
+                    <StackPanel Orientation="Horizontal">
+                        <FontIcon
+                            FontFamily="{StaticResource SegoeFluent}"
+                            FontSize="14"
+                            Glyph="&#xE72C;" />
+                        <TextBlock Margin="8,0,0,0">刷新列表</TextBlock>
+                    </StackPanel>
+                </Button>
                 <Button Margin="8,0" Command="{x:Bind Path=favoriteVM.InputCommand}">导入列表</Button>
                 <Button Command="{x:Bind Path=favoriteVM.OutputCommand}">导出列表</Button>
                 <HyperlinkButton

@@ -148,7 +148,7 @@
                                     HorizontalContentAlignment="Center"
                                     DisplayMemberPath="Name"
                                     ItemsSource="{x:Bind Path=liveRoomVM.DanmakuOpacityItems, Mode=OneWay}"
-                                    SelectedValue="{x:Bind Path=DanmuControl.Opacity, Mode=TwoWay}"
+                                    SelectedValue="{Binding ElementName=DanmuControl, Path=Opacity, Mode=TwoWay, Converter={StaticResource doublePrecisionConvert}}"
                                     SelectedValuePath="Value"
                                     ToolTipService.ToolTip="透明度" />
                             </Grid>
@@ -170,7 +170,7 @@
                                     HorizontalContentAlignment="Center"
                                     DisplayMemberPath="Name"
                                     ItemsSource="{x:Bind Path=liveRoomVM.DanmakuSpeedItems, Mode=OneWay}"
-                                    SelectedValue="{x:Bind Path=DanmuControl.DanmakuDuration, Mode=TwoWay}"
+                                    SelectedValue="{Binding ElementName=DanmuControl, Path=DanmakuDuration, Mode=TwoWay}"
                                     SelectedValuePath="Value"
                                     ToolTipService.ToolTip="弹幕速度" />
                             </Grid>
@@ -192,7 +192,7 @@
                                     HorizontalContentAlignment="Center"
                                     DisplayMemberPath="Name"
                                     ItemsSource="{x:Bind Path=liveRoomVM.DnamakuFontZoomItems, Mode=OneWay}"
-                                    SelectedValue="{x:Bind Path=DanmuControl.DanmakuSizeZoom, Mode=TwoWay}"
+                                    SelectedValue="{Binding ElementName=DanmuControl, Path=DanmakuSizeZoom, Mode=TwoWay}"
                                     SelectedValuePath="Value"
                                     ToolTipService.ToolTip="字体大小" />
                             </Grid>
@@ -214,7 +214,7 @@
                                     HorizontalContentAlignment="Center"
                                     DisplayMemberPath="Name"
                                     ItemsSource="{x:Bind Path=liveRoomVM.DanmakuDiaplayAreaItems, Mode=OneWay}"
-                                    SelectedValue="{x:Bind Path=DanmuControl.DanmakuArea, Mode=TwoWay}"
+                                    SelectedValue="{Binding ElementName=DanmuControl, Path=DanmakuArea, Mode=TwoWay}"
                                     SelectedValuePath="Value"
                                     ToolTipService.ToolTip="显示区域" />
                             </Grid>
@@ -234,7 +234,7 @@
                                     HorizontalAlignment="Right"
                                     VerticalAlignment="Center"
                                     HorizontalContentAlignment="Center"
-                                    SelectedIndex="{x:Bind Path=DanmuControl.DanmakuStyle, Converter={StaticResource styleConvert}, Mode=TwoWay}"
+                                    SelectedIndex="{Binding ElementName=DanmuControl, Path=DanmakuStyle, Converter={StaticResource styleConvert}, Mode=TwoWay}"
                                     ToolTipService.ToolTip="显示样式">
                                     <ComboBox.Items>
                                         <ComboBoxItem>重叠</ComboBoxItem>
@@ -258,7 +258,7 @@
                                     MinWidth="72"
                                     HorizontalAlignment="Right"
                                     VerticalAlignment="Center"
-                                    IsOn="{x:Bind Path=DanmuControl.DanmakuBold, Mode=TwoWay}" />
+                                    IsOn="{Binding ElementName=DanmuControl, Path=DanmakuBold, Mode=TwoWay}" />
                             </Grid>
                             <Grid
                                 Margin="0,8,0,0"
