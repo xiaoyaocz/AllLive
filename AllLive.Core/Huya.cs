@@ -416,6 +416,10 @@ namespace AllLive.Core
             var roomInfo = await GetRoomInfo(roomId.ToString());
             return roomInfo["roomInfo"]["eLiveStatus"].ToInt32() == 2;
         }
+        public Task<List<LiveSuperChatMessage>> GetSuperChatMessages(object roomId)
+        {
+            return Task.FromResult(new List<LiveSuperChatMessage>());
+        }
     }
     public class HuyaUrlDataModel
     {

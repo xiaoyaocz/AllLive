@@ -101,6 +101,7 @@ namespace AllLive.UWP.Views
 
         private void ClearXboxSettingBind()
         {
+            XboxSuperChat.ClearValue(ListView.ItemsSourceProperty);
             xboxSettingsDMSize.ClearValue(ComboBox.SelectedValueProperty);
             xboxSettingsDecoder.ClearValue(ToggleSwitch.IsOnProperty);
             xboxSettingsDMArea.ClearValue(ComboBox.SelectedIndexProperty);
@@ -269,6 +270,10 @@ namespace AllLive.UWP.Views
                 }
                 if (args.VirtualKey == Windows.System.VirtualKey.GamepadB)
                 {
+                    if (XboxSuperChat.Visibility==Visibility.Visible)
+                    {
+                        XBoxSplitView.IsPaneOpen = false;
+                    }
                     args.Handled = true;
                     return;
                 }
@@ -349,7 +354,6 @@ namespace AllLive.UWP.Views
                     SetFullScreen(PlayBtnFullScreen.Visibility == Visibility.Visible);
                     break;
                 case Windows.System.VirtualKey.F10:
-                case Windows.System.VirtualKey.GamepadLeftTrigger:
                     await CaptureVideo();
                     break;
                 case Windows.System.VirtualKey.F9:
@@ -371,15 +375,23 @@ namespace AllLive.UWP.Views
                     break;
                 case Windows.System.VirtualKey.GamepadMenu:
                     //打开设置
+                    XBoxSettings.Visibility = Visibility.Visible;
+                    XboxSuperChat.Visibility = Visibility.Collapsed;
                     XBoxSplitView.IsPaneOpen = true;
                     break;
-                case Windows.System.VirtualKey.GamepadY:
+                case Windows.System.VirtualKey.GamepadLeftTrigger:
                     //刷新直播间
                     BottomBtnRefresh_Click(this,null);
                     break;
                 case Windows.System.VirtualKey.GamepadB:
                     //退出直播间
                     this.Frame.GoBack();
+                    break;
+                case Windows.System.VirtualKey.GamepadY:
+                    //查看SC
+                    XBoxSettings.Visibility = Visibility.Collapsed;
+                    XboxSuperChat.Visibility = Visibility.Visible;
+                    XBoxSplitView.IsPaneOpen = true;
                     break;
                 case Windows.System.VirtualKey.GamepadRightTrigger:
                     //关注/取消关注
@@ -719,6 +731,16 @@ namespace AllLive.UWP.Views
                 var visibility = PlaySWDanmu.IsOn ? Visibility.Visible : Visibility.Collapsed;
                 DanmuControl.Visibility = visibility;
                 SettingHelper.SetValue(SettingHelper.LiveDanmaku.SHOW, PlaySWDanmu.IsOn);
+            });
+
+            // 保留醒目留言
+            var keepSC= SettingHelper.GetValue<bool>(SettingHelper.LiveDanmaku.KEEP_SUPER_CHAT, true);
+            swKeepSC.IsOn = keepSC;
+            liveRoomVM.SetSCTimer();
+            swKeepSC.Toggled += new RoutedEventHandler((e, args) =>
+            {
+                SettingHelper.SetValue(SettingHelper.LiveDanmaku.KEEP_SUPER_CHAT, swKeepSC.IsOn);
+                liveRoomVM.SetSCTimer();
             });
 
             //音量
@@ -1312,6 +1334,23 @@ namespace AllLive.UWP.Views
             liveRoomVM.LoadData(pageArgs.Site, liveRoomVM.RoomID);
         }
 
-
+        private void XboxSuperChat_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            var item = e.ClickedItem as SuperChatItem;
+            ContentDialog dialog = new ContentDialog
+            {
+                Title = item.UserName,
+                Content = new TextBlock
+                {
+                    Text = item.Message,
+                    TextWrapping = TextWrapping.Wrap,
+                    FontSize = 20
+                },
+                IsPrimaryButtonEnabled = true,
+                IsSecondaryButtonEnabled = false,
+                PrimaryButtonText = "确定"
+            };
+            _=dialog.ShowAsync();
+        }
     }
 }

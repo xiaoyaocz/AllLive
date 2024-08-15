@@ -294,6 +294,11 @@ namespace AllLive.Core
             var roomInfo = await GetRoomInfo(roomId.ToString());
             return roomInfo["show_status"].ToInt32() == 1 && roomInfo["videoLoop"].ToInt32() != 1;
         }
+        public Task<List<LiveSuperChatMessage>> GetSuperChatMessages(object roomId)
+        {
+            return Task.FromResult(new List<LiveSuperChatMessage>());
+        }
+
         private int ParseHotNum(string hn)
         {
             try

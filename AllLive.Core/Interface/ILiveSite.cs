@@ -60,6 +60,13 @@ namespace AllLive.Core.Interface
         Task<List<string>> GetPlayUrls(LiveRoomDetail roomDetail, LivePlayQuality qn);
 
         /// <summary>
+        /// 读取SC
+        /// </summary>
+        /// <param name="roomId">房间ID</param>
+        /// <returns></returns>
+        Task<List<LiveSuperChatMessage>> GetSuperChatMessages(object roomId);
+
+        /// <summary>
         /// 读取直播状态
         /// </summary>
         /// <param name="roomId">房间ID</param>

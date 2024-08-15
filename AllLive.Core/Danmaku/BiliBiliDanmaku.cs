@@ -209,11 +209,37 @@ namespace AllLive.Core.Danmaku
                             });
                         }
                     }
+                }else if (cmd.Contains("SUPER_CHAT_MESSAGE"))
+                {
+                    if (obj["data"].Type==JTokenType.Null)
+                    {
+                        return;
+                    }
+                    var message = new LiveSuperChatMessage()
+                    {
+                        BackgroundBottomColor = obj["data"]["background_bottom_color"].ToString(),
+                        BackgroundColor = obj["data"]["background_color"].ToString(),
+                        EndTime = Utils.TimestampToDateTime(obj["data"]["end_time"].ToInt64()),
+                        StartTime = Utils.TimestampToDateTime(obj["data"]["start_time"].ToInt64()),
+                        Face = $"{obj["data"]["user_info"]["face"]}@200w.jpg",
+                        Message = obj["data"]["message"].ToString(),
+                        Price = obj["data"]["price"].ToInt32(),
+                        UserName = obj["data"]["user_info"]["uname"].ToString(),
+                    };
+                    NewMessage?.Invoke(this, new LiveMessage()
+                    {
+                        Color = DanmakuColor.White,
+                        Message = message.Message,
+                        Type = LiveMessageType.SuperChat,
+                        Data = message,
+                        UserName = message.UserName,
+                    });
+
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
+                Debug.WriteLine(ex.Message);
             }
 
         }

@@ -195,6 +195,23 @@
                             VerticalAlignment="Center" />
                     </Grid>
                     <Grid
+                        Margin="0,8,0,0"
+                        Padding="8,12"
+                        Background="{ThemeResource LayerFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        CornerRadius="4">
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock>保留醒目留言</TextBlock>
+                            <TextBlock FontSize="12" Foreground="Gray">开启后不自动清理到期醒目留言</TextBlock>
+                        </StackPanel>
+                        <ToggleSwitch
+                            x:Name="SettingKeepSC"
+                            MinWidth="72"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center" />
+                    </Grid>
+                    <Grid
                         x:Name="SettingsFontSize"
                         Margin="0,8,0,0"
                         Padding="8,12"

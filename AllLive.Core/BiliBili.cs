@@ -322,6 +322,34 @@ namespace AllLive.Core
             return obj["data"]["live_status"].ToObject<int>() == 1;
         }
 
+        public async Task<List<LiveSuperChatMessage>> GetSuperChatMessages(object roomId)
+        {
+            
+            var resp = await HttpUtil.GetString($"https://api.live.bilibili.com/av/v1/SuperChat/getMessageList?room_id={roomId}", headers: GetRequestHeader());
+            var obj = JObject.Parse(resp);
+            List<LiveSuperChatMessage> list = new List<LiveSuperChatMessage>();
+            if (obj["data"]["list"].Type== JTokenType.Array)
+            {
+                foreach (var item in obj["data"]["list"])
+                {
+                    list.Add(new LiveSuperChatMessage()
+                    {
+                        BackgroundBottomColor = item["background_bottom_color"].ToString(),
+                        BackgroundColor = item["background_color"].ToString(),
+                        EndTime = Utils.TimestampToDateTime(item["end_time"].ToInt64()),
+                        StartTime = Utils.TimestampToDateTime(item["start_time"].ToInt64()),
+                        Face = $"{item["user_info"]["face"]}@200w.jpg",
+                        Message = item["message"].ToString(),
+                        Price = item["price"].ToInt32(),
+                        UserName = item["user_info"]["uname"].ToString(),
+                    });
+                }
+            }
+
+           return list;
+        }
+
+
         private string _imgKey;
         private string _subKey;
         private int[] mixinKeyEncTab = new int[] {

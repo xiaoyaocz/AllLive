@@ -20,6 +20,10 @@ namespace AllLive.Core.Models
         /// 在线人数
         /// </summary>
         Online,
+        /// <summary>
+        /// 醒目留言
+        /// </summary>
+        SuperChat
     }
     public class LiveMessage
     {
@@ -44,5 +48,17 @@ namespace AllLive.Core.Models
         /// 弹幕颜色
         /// </summary>
         public DanmakuColor Color { get; set; }= DanmakuColor.White;
+    }
+
+    public class LiveSuperChatMessage
+    {
+        public string UserName { get; set; }
+        public string Face { get; set; }
+        public string Message { get; set; }
+        public int Price { get; set; }
+        public DateTime StartTime { get; set; }
+        public DateTime EndTime { get; set; }
+        public string BackgroundColor { get; set; }
+        public string BackgroundBottomColor { get; set; }
     }
 }

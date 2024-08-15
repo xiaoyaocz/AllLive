@@ -12,6 +12,8 @@ using System.Windows.Input;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.ApplicationModel.Core;
+using System.ComponentModel;
+using System.Timers;
 
 namespace AllLive.UWP.ViewModels
 {
@@ -24,14 +26,29 @@ namespace AllLive.UWP.ViewModels
         {
             this.settingVM = settingVM;
             Messages = new ObservableCollection<LiveMessage>();
+            SuperChatMessages = new ObservableCollection<SuperChatItem>();
             MessageCleanCount = SettingHelper.GetValue<int>(SettingHelper.LiveDanmaku.DANMU_CLEAN_COUNT, 200);
-
+            KeepSC = SettingHelper.GetValue<bool>(SettingHelper.LiveDanmaku.KEEP_SUPER_CHAT, true);
             AddFavoriteCommand = new RelayCommand(AddFavorite);
             RemoveFavoriteCommand = new RelayCommand(RemoveFavorite);
+            
         }
         public ICommand AddFavoriteCommand { get; set; }
         public ICommand RemoveFavoriteCommand { get; set; }
         public int MessageCleanCount { get; set; } = 200;
+
+        /// <summary>
+        /// 保留SC
+        /// </summary>
+        private bool _keepSC;
+
+        public bool KeepSC
+        {
+            get { return _keepSC; }
+            set { _keepSC = value; DoPropertyChanged("KeepSC"); }
+        }
+
+
 
         ILiveSite Site;
         ILiveDanmaku LiveDanmaku;
@@ -156,6 +173,7 @@ namespace AllLive.UWP.ViewModels
         }
 
         public ObservableCollection<LiveMessage> Messages { get; set; }
+        public ObservableCollection<SuperChatItem> SuperChatMessages { get; set; }
 
         public List<SettingsItem<double>> DanmakuOpacityItems { get; } = new List<SettingsItem<double>>()
         {
@@ -192,13 +210,13 @@ namespace AllLive.UWP.ViewModels
         public List<SettingsItem<double>> DnamakuFontZoomItems { get; } = new List<SettingsItem<double>>()
         {
             new SettingsItem<double>(){ Name="极小",Value=0.2},
-            new SettingsItem<double>(){ Name="很小",Value=0.4},
-            new SettingsItem<double>(){ Name="较小",Value=0.6},
-            new SettingsItem<double>(){ Name="小",Value=0.8},
+            new SettingsItem<double>(){ Name="很小",Value=0.6},
+            new SettingsItem<double>(){ Name="较小",Value=0.8},
+            new SettingsItem<double>(){ Name="小",Value=0.9},
             new SettingsItem<double>(){ Name="正常",Value=1.0},
-            new SettingsItem<double>(){ Name="大",Value=1.2},
-            new SettingsItem<double>(){ Name="较大",Value=1.4},
-            new SettingsItem<double>(){ Name="很大",Value=1.6},
+            new SettingsItem<double>(){ Name="大",Value=1.1},
+            new SettingsItem<double>(){ Name="较大",Value=1.2},
+            new SettingsItem<double>(){ Name="很大",Value=1.4},
             new SettingsItem<double>(){ Name="极大",Value=1.8},
             new SettingsItem<double>(){ Name="特大",Value=2.0},
         };
@@ -225,7 +243,8 @@ namespace AllLive.UWP.ViewModels
                     Photo = result.UserAvatar;
                 }
                 Living = result.Status;
-
+                //加载SC
+                LoadSuperChat();
                 //检查收藏情况
                 FavoriteID = DatabaseHelper.CheckFavorite(RoomID, Site.Name);
                 IsFavorite = FavoriteID != null;
@@ -264,6 +283,7 @@ namespace AllLive.UWP.ViewModels
                     SiteName = Site.Name,
                     UserName = Name
                 });
+               
             }
             catch (Exception ex)
             {
@@ -274,6 +294,55 @@ namespace AllLive.UWP.ViewModels
                 Loading = false;
             }
         }
+
+        Timer scTimer;
+        public void SetSCTimer()
+        {
+            KeepSC = SettingHelper.GetValue<bool>(SettingHelper.LiveDanmaku.KEEP_SUPER_CHAT, true);
+            if (KeepSC)
+            {
+               _= Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                {
+                    foreach (var item in SuperChatMessages)
+                    {
+                        item.ShowCountdown = false;
+                    }
+                });
+                scTimer?.Stop();
+                scTimer?.Dispose();
+                scTimer = null;
+            }
+            else
+            {
+                _ = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                {
+                    foreach (var item in SuperChatMessages)
+                    {
+                        item.ShowCountdown = true;
+                        item.CountdownTime = Convert.ToInt32(item.EndTime.Subtract(DateTime.Now).TotalSeconds);
+                    }
+                });
+                scTimer = new Timer(1000);
+                scTimer.Elapsed += (s, e) =>
+                {
+                    _ = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                    {
+                        for (var i = 0; i < SuperChatMessages.Count; i++)
+                        {
+                            var item = SuperChatMessages[i];
+                            item.CountdownTime--;
+                            if (item.CountdownTime <= 0)
+                            {
+                                SuperChatMessages.RemoveAt(i);
+                            }
+                        }
+                    });
+                    
+                };
+                scTimer.Start();
+            }
+        }
+
 
         private void AddFavorite()
         {
@@ -332,7 +401,26 @@ namespace AllLive.UWP.ViewModels
 
         }
 
+        public async void LoadSuperChat()
+        {
+            try
+            {
+                var data = await Site.GetSuperChatMessages(RoomID);
+                if (data.Count>0)
+                {
+                    foreach (var item in data)
+                    {
+                        SuperChatMessages.Insert(0, new SuperChatItem(item, KeepSC ? false : true));
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Log("加载SC失败", LogType.ERROR, ex);
+                Utils.ShowMessageToast("加载SC失败");
+            }
 
+        }
         private async void LiveDanmaku_OnClose(object sender, string e)
         {
 
@@ -356,6 +444,11 @@ namespace AllLive.UWP.ViewModels
                     Online = Convert.ToInt64(e.Data);
                     return;
                 }
+                if (e.Type == LiveMessageType.SuperChat)
+                {
+                    SuperChatMessages.Insert(0, new SuperChatItem(e.Data as LiveSuperChatMessage, KeepSC ? false : true));
+                    return;
+                }
                 if (e.Type == LiveMessageType.Chat)
                 {
                     if (Messages.Count >= MessageCleanCount)
@@ -371,7 +464,7 @@ namespace AllLive.UWP.ViewModels
                     {
                         Messages.Add(e);
                     }
-                   
+
                     AddDanmaku?.Invoke(this, e);
                     return;
                 }
@@ -402,5 +495,51 @@ namespace AllLive.UWP.ViewModels
 
         public string Name { get; set; }
         public T Value { get; set; }
+    }
+
+    public class SuperChatItem : LiveSuperChatMessage, INotifyPropertyChanged
+    {
+        public SuperChatItem(LiveSuperChatMessage message,bool showCountdown)
+        {
+            UserName = message.UserName;
+            Face = message.Face;
+            Message = message.Message;
+            Price = message.Price;
+            StartTime = message.StartTime;
+            EndTime = message.EndTime;
+            BackgroundColor = message.BackgroundColor;
+            BackgroundBottomColor = message.BackgroundBottomColor;
+            CountdownTime=Convert.ToInt32(EndTime.Subtract(DateTime.Now).TotalSeconds);
+            ShowCountdown = showCountdown;
+        }
+        public event PropertyChangedEventHandler PropertyChanged;
+        private void DoPropertyChanged(string name)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
+        private int _countdownTime = 0;
+        public int CountdownTime
+        {
+            get { return _countdownTime; }
+            set { _countdownTime = value; DoPropertyChanged("CountdownTime"); }
+        }
+
+        public string StartTimeStr
+        {
+            get
+            {
+                return StartTime.ToString("HH:mm:ss");
+            }
+        }
+
+        private bool showCountdown=false;
+
+        public bool ShowCountdown
+        {
+            get { return showCountdown; }
+            set { showCountdown=value; DoPropertyChanged("ShowCountdown"); }
+        }
+
+
     }
 }

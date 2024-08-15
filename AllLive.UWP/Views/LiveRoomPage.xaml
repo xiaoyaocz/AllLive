@@ -9,6 +9,7 @@
     xmlns:local="using:AllLive.UWP.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:models="using:AllLive.Core.Models"
+    xmlns:mvvm="using:AllLive.UWP.ViewModels"
     xmlns:my="using:Microsoft.UI.Xaml.Controls"
     xmlns:ui="using:Microsoft.Toolkit.Uwp.UI"
     xmlns:winui="using:Microsoft.UI.Xaml.Controls"
@@ -46,238 +47,305 @@
                 DisplayMode="Overlay"
                 PanePlacement="Right">
                 <SplitView.Pane>
-                    <ScrollViewer>
-                        <StackPanel Margin="8">
-                            <TextBlock Margin="4,12" FontSize="18">播放</TextBlock>
-                            <Grid
-                                Padding="8,4"
-                                Background="{ThemeResource LayerFillColorDefaultBrush}"
-                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                                BorderThickness="1"
-                                CornerRadius="4">
-                                <StackPanel VerticalAlignment="Center">
-                                    <TextBlock>清晰度</TextBlock>
-                                </StackPanel>
-                                <ComboBox
-                                    x:Name="xboxSettingsQuality"
-                                    MinWidth="80"
-                                    HorizontalAlignment="Right"
-                                    VerticalAlignment="Center"
-                                    HorizontalContentAlignment="Center"
-                                    DisplayMemberPath="Quality"
-                                    ItemsSource="{x:Bind Path=liveRoomVM.Qualities, Mode=OneWay}"
-                                    SelectedItem="{x:Bind Path=liveRoomVM.CurrentQuality, Mode=TwoWay}"
-                                    ToolTipService.ToolTip="清晰度" />
-                            </Grid>
-                            <Grid
-                                Margin="0,8,0,0"
-                                Padding="8,4"
-                                Background="{ThemeResource LayerFillColorDefaultBrush}"
-                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                                BorderThickness="1"
-                                CornerRadius="4">
-                                <StackPanel VerticalAlignment="Center">
-                                    <TextBlock>线路</TextBlock>
-                                </StackPanel>
-                                <ComboBox
-                                    x:Name="xboxSettingsLine"
-                                    MinWidth="80"
-                                    HorizontalAlignment="Right"
-                                    VerticalAlignment="Center"
-                                    HorizontalContentAlignment="Center"
-                                    DisplayMemberPath="Name"
-                                    ItemsSource="{x:Bind Path=liveRoomVM.Lines, Mode=OneWay}"
-                                    SelectedItem="{x:Bind Path=liveRoomVM.CurrentLine, Mode=TwoWay}"
-                                    ToolTipService.ToolTip="线路" />
-                            </Grid>
-                            <Grid
-                                Margin="0,8,0,0"
-                                Padding="8,4"
-                                Background="{ThemeResource LayerFillColorDefaultBrush}"
-                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                                BorderThickness="1"
-                                CornerRadius="4">
-                                <StackPanel VerticalAlignment="Center">
-                                    <TextBlock>解码器</TextBlock>
-                                </StackPanel>
-                                <ComboBox
-                                    x:Name="xboxSettingsDecoder"
-                                    MinWidth="80"
-                                    HorizontalAlignment="Right"
-                                    VerticalAlignment="Center"
-                                    HorizontalContentAlignment="Center">
-                                    <ComboBox.Items>
-                                        <ComboBoxItem>自动</ComboBoxItem>
-                                        <ComboBoxItem>强制硬解</ComboBoxItem>
-                                        <ComboBoxItem>强制软解</ComboBoxItem>
-                                    </ComboBox.Items>
-                                </ComboBox>
-                            </Grid>
-                            <TextBlock Margin="4,12" FontSize="18">弹幕</TextBlock>
-                            <Grid
-                                Padding="8,4"
-                                Background="{ThemeResource LayerFillColorDefaultBrush}"
-                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                                BorderThickness="1"
-                                CornerRadius="4">
-                                <StackPanel VerticalAlignment="Center">
-                                    <TextBlock>弹幕开关</TextBlock>
-                                </StackPanel>
-                                <ToggleSwitch
-                                    x:Name="xboxSettingsDMEnable"
-                                    MinWidth="72"
-                                    HorizontalAlignment="Right"
-                                    VerticalAlignment="Center"
-                                    IsOn="{Binding ElementName=PlaySWDanmu, Path=IsOn, Mode=TwoWay}" />
-                            </Grid>
-                            <Grid
-                                Margin="0,8,0,0"
-                                Padding="8,4"
-                                Background="{ThemeResource LayerFillColorDefaultBrush}"
-                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                                BorderThickness="1"
-                                CornerRadius="4">
-                                <StackPanel VerticalAlignment="Center">
-                                    <TextBlock>透明度</TextBlock>
-                                </StackPanel>
-                                <ComboBox
-                                    x:Name="xboxSettingsDMOpacity"
-                                    MinWidth="80"
-                                    HorizontalAlignment="Right"
-                                    VerticalAlignment="Center"
-                                    HorizontalContentAlignment="Center"
-                                    DisplayMemberPath="Name"
-                                    ItemsSource="{x:Bind Path=liveRoomVM.DanmakuOpacityItems, Mode=OneWay}"
-                                    SelectedValue="{Binding ElementName=DanmuControl, Path=Opacity, Mode=TwoWay, Converter={StaticResource doublePrecisionConvert}}"
-                                    SelectedValuePath="Value"
-                                    ToolTipService.ToolTip="透明度" />
-                            </Grid>
-                            <Grid
-                                Margin="0,8,0,0"
-                                Padding="8,4"
-                                Background="{ThemeResource LayerFillColorDefaultBrush}"
-                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                                BorderThickness="1"
-                                CornerRadius="4">
-                                <StackPanel VerticalAlignment="Center">
-                                    <TextBlock>弹幕速度</TextBlock>
-                                </StackPanel>
-                                <ComboBox
-                                    x:Name="xboxSettingsDMSpeed"
-                                    MinWidth="80"
-                                    HorizontalAlignment="Right"
-                                    VerticalAlignment="Center"
-                                    HorizontalContentAlignment="Center"
-                                    DisplayMemberPath="Name"
-                                    ItemsSource="{x:Bind Path=liveRoomVM.DanmakuSpeedItems, Mode=OneWay}"
-                                    SelectedValue="{Binding ElementName=DanmuControl, Path=DanmakuDuration, Mode=TwoWay}"
-                                    SelectedValuePath="Value"
-                                    ToolTipService.ToolTip="弹幕速度" />
-                            </Grid>
-                            <Grid
-                                Margin="0,8,0,0"
-                                Padding="8,4"
-                                Background="{ThemeResource LayerFillColorDefaultBrush}"
-                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                                BorderThickness="1"
-                                CornerRadius="4">
-                                <StackPanel VerticalAlignment="Center">
-                                    <TextBlock>字体大小</TextBlock>
-                                </StackPanel>
-                                <ComboBox
-                                    x:Name="xboxSettingsDMSize"
-                                    MinWidth="80"
-                                    HorizontalAlignment="Right"
-                                    VerticalAlignment="Center"
-                                    HorizontalContentAlignment="Center"
-                                    DisplayMemberPath="Name"
-                                    ItemsSource="{x:Bind Path=liveRoomVM.DnamakuFontZoomItems, Mode=OneWay}"
-                                    SelectedValue="{Binding ElementName=DanmuControl, Path=DanmakuSizeZoom, Mode=TwoWay}"
-                                    SelectedValuePath="Value"
-                                    ToolTipService.ToolTip="字体大小" />
-                            </Grid>
-                            <Grid
-                                Margin="0,8,0,0"
-                                Padding="8,4"
-                                Background="{ThemeResource LayerFillColorDefaultBrush}"
-                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                                BorderThickness="1"
-                                CornerRadius="4">
-                                <StackPanel VerticalAlignment="Center">
-                                    <TextBlock>显示区域</TextBlock>
-                                </StackPanel>
-                                <ComboBox
-                                    x:Name="xboxSettingsDMArea"
-                                    MinWidth="80"
-                                    HorizontalAlignment="Right"
-                                    VerticalAlignment="Center"
-                                    HorizontalContentAlignment="Center"
-                                    DisplayMemberPath="Name"
-                                    ItemsSource="{x:Bind Path=liveRoomVM.DanmakuDiaplayAreaItems, Mode=OneWay}"
-                                    SelectedValue="{Binding ElementName=DanmuControl, Path=DanmakuArea, Mode=TwoWay}"
-                                    SelectedValuePath="Value"
-                                    ToolTipService.ToolTip="显示区域" />
-                            </Grid>
-                            <Grid
-                                Margin="0,8,0,0"
-                                Padding="8,4"
-                                Background="{ThemeResource LayerFillColorDefaultBrush}"
-                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                                BorderThickness="1"
-                                CornerRadius="4">
-                                <StackPanel VerticalAlignment="Center">
-                                    <TextBlock>显示样式</TextBlock>
-                                </StackPanel>
-                                <ComboBox
-                                    x:Name="xboxSettingsDMStyle"
-                                    MinWidth="80"
-                                    HorizontalAlignment="Right"
-                                    VerticalAlignment="Center"
-                                    HorizontalContentAlignment="Center"
-                                    SelectedIndex="{Binding ElementName=DanmuControl, Path=DanmakuStyle, Converter={StaticResource styleConvert}, Mode=TwoWay}"
-                                    ToolTipService.ToolTip="显示样式">
-                                    <ComboBox.Items>
-                                        <ComboBoxItem>重叠</ComboBoxItem>
-                                        <ComboBoxItem>无边</ComboBoxItem>
-                                        <ComboBoxItem>描边</ComboBoxItem>
-                                    </ComboBox.Items>
-                                </ComboBox>
-                            </Grid>
-                            <Grid
-                                Margin="0,8,0,0"
-                                Padding="8,4"
-                                Background="{ThemeResource LayerFillColorDefaultBrush}"
-                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                                BorderThickness="1"
-                                CornerRadius="4">
-                                <StackPanel VerticalAlignment="Center">
-                                    <TextBlock>字体加粗</TextBlock>
-                                </StackPanel>
-                                <ToggleSwitch
-                                    x:Name="xboxSettingsDMBold"
-                                    MinWidth="72"
-                                    HorizontalAlignment="Right"
-                                    VerticalAlignment="Center"
-                                    IsOn="{Binding ElementName=DanmuControl, Path=DanmakuBold, Mode=TwoWay}" />
-                            </Grid>
-                            <Grid
-                                Margin="0,8,0,0"
-                                Padding="8,4"
-                                Background="{ThemeResource LayerFillColorDefaultBrush}"
-                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                                BorderThickness="1"
-                                CornerRadius="4">
-                                <StackPanel VerticalAlignment="Center">
-                                    <TextBlock>彩色弹幕</TextBlock>
-                                </StackPanel>
-                                <ToggleSwitch
-                                    x:Name="xboxSettingsDMColorful"
-                                    MinWidth="72"
-                                    HorizontalAlignment="Right"
-                                    VerticalAlignment="Center" />
-                            </Grid>
-                        </StackPanel>
-                    </ScrollViewer>
+                    <Grid>
+                        <ListView
+                            x:Name="XboxSuperChat"
+                            Margin="4"
+                            ItemsSource="{x:Bind Path=liveRoomVM.SuperChatMessages}"
+                            SelectionMode="None">
+                            <ListView.ItemContainerStyle>
+                                <Style TargetType="ListViewItem">
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                    <Setter Property="Padding" Value="0" />
+                                    <Setter Property="Margin" Value="8,8,8,0" />
+                                </Style>
+                            </ListView.ItemContainerStyle>
+                            <ListView.ItemTemplate>
+                                <DataTemplate x:DataType="mvvm:SuperChatItem">
+                                    <Border Background="{x:Bind Path=BackgroundColor, Converter={StaticResource colorConvert}}" CornerRadius="4">
+                                        <StackPanel>
+                                            <Grid Margin="8">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto" />
+                                                    <ColumnDefinition />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <PersonPicture
+                                                    Width="32"
+                                                    Height="32"
+                                                    Background="Gray"
+                                                    ProfilePicture="{x:Bind Path=Face}" />
+
+                                                <StackPanel Grid.Column="1" Margin="12,0,0,0">
+                                                    <TextBlock
+                                                        FontSize="14"
+                                                        Foreground="Black"
+                                                        Text="{x:Bind Path=UserName}" />
+                                                    <TextBlock FontSize="12" Foreground="Gray">
+                                                        ￥<Run Text="{x:Bind Path=Price}" /></TextBlock>
+                                                </StackPanel>
+                                                <TextBlock
+                                                    Grid.Column="2"
+                                                    VerticalAlignment="Center"
+                                                    FontSize="12"
+                                                    Foreground="Gray"
+                                                    Text="{x:Bind Path=StartTimeStr}"
+                                                    Visibility="{x:Bind Path=ShowCountdown, Mode=OneWay, Converter={StaticResource displayConvert}}" />
+                                                <TextBlock
+                                                    Grid.Column="2"
+                                                    VerticalAlignment="Center"
+                                                    FontSize="12"
+                                                    Foreground="Gray"
+                                                    Text="{x:Bind Path=CountdownTime, Mode=OneWay}"
+                                                    Visibility="{x:Bind Path=ShowCountdown, Mode=OneWay}" />
+                                            </Grid>
+                                            <Grid Padding="8" Background="{x:Bind Path=BackgroundBottomColor, Converter={StaticResource colorConvert}}">
+                                                <TextBlock
+                                                    Foreground="White"
+                                                    Text="{x:Bind Path=Message}"
+                                                    TextWrapping="Wrap" />
+                                            </Grid>
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+
+                        </ListView>
+
+                        <ScrollViewer x:Name="XBoxSettings">
+                            <StackPanel Margin="8">
+                                <TextBlock Margin="4,12" FontSize="18">播放</TextBlock>
+                                <Grid
+                                    Padding="8,4"
+                                    Background="{ThemeResource LayerFillColorDefaultBrush}"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="4">
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock>清晰度</TextBlock>
+                                    </StackPanel>
+                                    <ComboBox
+                                        x:Name="xboxSettingsQuality"
+                                        MinWidth="80"
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Center"
+                                        HorizontalContentAlignment="Center"
+                                        DisplayMemberPath="Quality"
+                                        ItemsSource="{x:Bind Path=liveRoomVM.Qualities, Mode=OneWay}"
+                                        SelectedItem="{x:Bind Path=liveRoomVM.CurrentQuality, Mode=TwoWay}"
+                                        ToolTipService.ToolTip="清晰度" />
+                                </Grid>
+                                <Grid
+                                    Margin="0,8,0,0"
+                                    Padding="8,4"
+                                    Background="{ThemeResource LayerFillColorDefaultBrush}"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="4">
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock>线路</TextBlock>
+                                    </StackPanel>
+                                    <ComboBox
+                                        x:Name="xboxSettingsLine"
+                                        MinWidth="80"
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Center"
+                                        HorizontalContentAlignment="Center"
+                                        DisplayMemberPath="Name"
+                                        ItemsSource="{x:Bind Path=liveRoomVM.Lines, Mode=OneWay}"
+                                        SelectedItem="{x:Bind Path=liveRoomVM.CurrentLine, Mode=TwoWay}"
+                                        ToolTipService.ToolTip="线路" />
+                                </Grid>
+                                <Grid
+                                    Margin="0,8,0,0"
+                                    Padding="8,4"
+                                    Background="{ThemeResource LayerFillColorDefaultBrush}"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="4">
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock>解码器</TextBlock>
+                                    </StackPanel>
+                                    <ComboBox
+                                        x:Name="xboxSettingsDecoder"
+                                        MinWidth="80"
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Center"
+                                        HorizontalContentAlignment="Center">
+                                        <ComboBox.Items>
+                                            <ComboBoxItem>自动</ComboBoxItem>
+                                            <ComboBoxItem>强制硬解</ComboBoxItem>
+                                            <ComboBoxItem>强制软解</ComboBoxItem>
+                                        </ComboBox.Items>
+                                    </ComboBox>
+                                </Grid>
+                                <TextBlock Margin="4,12" FontSize="18">弹幕</TextBlock>
+                                <Grid
+                                    Padding="8,4"
+                                    Background="{ThemeResource LayerFillColorDefaultBrush}"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="4">
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock>弹幕开关</TextBlock>
+                                    </StackPanel>
+                                    <ToggleSwitch
+                                        x:Name="xboxSettingsDMEnable"
+                                        MinWidth="72"
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Center"
+                                        IsOn="{Binding ElementName=PlaySWDanmu, Path=IsOn, Mode=TwoWay}" />
+                                </Grid>
+                                <Grid
+                                    Margin="0,8,0,0"
+                                    Padding="8,4"
+                                    Background="{ThemeResource LayerFillColorDefaultBrush}"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="4">
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock>透明度</TextBlock>
+                                    </StackPanel>
+                                    <ComboBox
+                                        x:Name="xboxSettingsDMOpacity"
+                                        MinWidth="80"
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Center"
+                                        HorizontalContentAlignment="Center"
+                                        DisplayMemberPath="Name"
+                                        ItemsSource="{x:Bind Path=liveRoomVM.DanmakuOpacityItems, Mode=OneWay}"
+                                        SelectedValue="{Binding ElementName=DanmuControl, Path=Opacity, Mode=TwoWay, Converter={StaticResource doublePrecisionConvert}}"
+                                        SelectedValuePath="Value"
+                                        ToolTipService.ToolTip="透明度" />
+                                </Grid>
+                                <Grid
+                                    Margin="0,8,0,0"
+                                    Padding="8,4"
+                                    Background="{ThemeResource LayerFillColorDefaultBrush}"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="4">
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock>弹幕速度</TextBlock>
+                                    </StackPanel>
+                                    <ComboBox
+                                        x:Name="xboxSettingsDMSpeed"
+                                        MinWidth="80"
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Center"
+                                        HorizontalContentAlignment="Center"
+                                        DisplayMemberPath="Name"
+                                        ItemsSource="{x:Bind Path=liveRoomVM.DanmakuSpeedItems, Mode=OneWay}"
+                                        SelectedValue="{Binding ElementName=DanmuControl, Path=DanmakuDuration, Mode=TwoWay}"
+                                        SelectedValuePath="Value"
+                                        ToolTipService.ToolTip="弹幕速度" />
+                                </Grid>
+                                <Grid
+                                    Margin="0,8,0,0"
+                                    Padding="8,4"
+                                    Background="{ThemeResource LayerFillColorDefaultBrush}"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="4">
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock>字体大小</TextBlock>
+                                    </StackPanel>
+                                    <ComboBox
+                                        x:Name="xboxSettingsDMSize"
+                                        MinWidth="80"
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Center"
+                                        HorizontalContentAlignment="Center"
+                                        DisplayMemberPath="Name"
+                                        ItemsSource="{x:Bind Path=liveRoomVM.DnamakuFontZoomItems, Mode=OneWay}"
+                                        SelectedValue="{Binding ElementName=DanmuControl, Path=DanmakuSizeZoom, Mode=TwoWay}"
+                                        SelectedValuePath="Value"
+                                        ToolTipService.ToolTip="字体大小" />
+                                </Grid>
+                                <Grid
+                                    Margin="0,8,0,0"
+                                    Padding="8,4"
+                                    Background="{ThemeResource LayerFillColorDefaultBrush}"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="4">
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock>显示区域</TextBlock>
+                                    </StackPanel>
+                                    <ComboBox
+                                        x:Name="xboxSettingsDMArea"
+                                        MinWidth="80"
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Center"
+                                        HorizontalContentAlignment="Center"
+                                        DisplayMemberPath="Name"
+                                        ItemsSource="{x:Bind Path=liveRoomVM.DanmakuDiaplayAreaItems, Mode=OneWay}"
+                                        SelectedValue="{Binding ElementName=DanmuControl, Path=DanmakuArea, Mode=TwoWay}"
+                                        SelectedValuePath="Value"
+                                        ToolTipService.ToolTip="显示区域" />
+                                </Grid>
+                                <Grid
+                                    Margin="0,8,0,0"
+                                    Padding="8,4"
+                                    Background="{ThemeResource LayerFillColorDefaultBrush}"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="4">
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock>显示样式</TextBlock>
+                                    </StackPanel>
+                                    <ComboBox
+                                        x:Name="xboxSettingsDMStyle"
+                                        MinWidth="80"
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Center"
+                                        HorizontalContentAlignment="Center"
+                                        SelectedIndex="{Binding ElementName=DanmuControl, Path=DanmakuStyle, Converter={StaticResource styleConvert}, Mode=TwoWay}"
+                                        ToolTipService.ToolTip="显示样式">
+                                        <ComboBox.Items>
+                                            <ComboBoxItem>重叠</ComboBoxItem>
+                                            <ComboBoxItem>无边</ComboBoxItem>
+                                            <ComboBoxItem>描边</ComboBoxItem>
+                                        </ComboBox.Items>
+                                    </ComboBox>
+                                </Grid>
+                                <Grid
+                                    Margin="0,8,0,0"
+                                    Padding="8,4"
+                                    Background="{ThemeResource LayerFillColorDefaultBrush}"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="4">
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock>字体加粗</TextBlock>
+                                    </StackPanel>
+                                    <ToggleSwitch
+                                        x:Name="xboxSettingsDMBold"
+                                        MinWidth="72"
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Center"
+                                        IsOn="{Binding ElementName=DanmuControl, Path=DanmakuBold, Mode=TwoWay}" />
+                                </Grid>
+                                <Grid
+                                    Margin="0,8,0,0"
+                                    Padding="8,4"
+                                    Background="{ThemeResource LayerFillColorDefaultBrush}"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="4">
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock>彩色弹幕</TextBlock>
+                                    </StackPanel>
+                                    <ToggleSwitch
+                                        x:Name="xboxSettingsDMColorful"
+                                        MinWidth="72"
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Center" />
+                                </Grid>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Grid>
+
                 </SplitView.Pane>
                 <Grid
                     ui:UIElementExtensions.ClipToBounds="True"
@@ -720,7 +788,7 @@
                                         Margin="12,0"
                                         FontFamily="{StaticResource SegoeFluent}"
                                         Glyph="&#xF10A;" />
-                                    <TextBlock Margin="0,0,12,0">保存截图</TextBlock>
+                                    <TextBlock Margin="0,0,12,0">刷新直播</TextBlock>
                                     <FontIcon
                                         Margin="12,0"
                                         FontFamily="{StaticResource SegoeFluent}"
@@ -731,7 +799,8 @@
                                         Margin="12,0"
                                         FontFamily="{StaticResource SegoeFluent}"
                                         Glyph="&#xF095;" />
-                                    <TextBlock Margin="0,0,12,0">刷新直播</TextBlock>
+                                    <TextBlock Margin="0,0,12,0">
+                                        醒目留言<Run Text="{x:Bind Path=liveRoomVM.SuperChatMessages.Count, Mode=OneWay, Converter={StaticResource countTextConvert}}" /></TextBlock>
                                 </StackPanel>
                             </Grid>
 
@@ -916,6 +985,71 @@
                         </PivotItem>
                         <PivotItem Margin="0">
                             <PivotItem.Header>
+                                <TextBlock FontSize="15">
+                                    醒目留言<Run Text="{x:Bind Path=liveRoomVM.SuperChatMessages.Count, Mode=OneWay, Converter={StaticResource countTextConvert}}" /></TextBlock>
+                            </PivotItem.Header>
+                            <ListView ItemsSource="{x:Bind Path=liveRoomVM.SuperChatMessages}" SelectionMode="None">
+                                <ListView.ItemContainerStyle>
+                                    <Style TargetType="ListViewItem">
+                                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                        <Setter Property="Padding" Value="0" />
+                                        <Setter Property="Margin" Value="8,8,8,0" />
+                                    </Style>
+                                </ListView.ItemContainerStyle>
+                                <ListView.ItemTemplate>
+                                    <DataTemplate x:DataType="mvvm:SuperChatItem">
+                                        <Border Background="{x:Bind Path=BackgroundColor, Converter={StaticResource colorConvert}}" CornerRadius="4">
+                                            <StackPanel>
+                                                <Grid Margin="8">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="Auto" />
+                                                        <ColumnDefinition />
+                                                        <ColumnDefinition Width="Auto" />
+                                                    </Grid.ColumnDefinitions>
+                                                    <PersonPicture
+                                                        Width="32"
+                                                        Height="32"
+                                                        Background="Gray"
+                                                        ProfilePicture="{x:Bind Path=Face}" />
+
+                                                    <StackPanel Grid.Column="1" Margin="12,0,0,0">
+                                                        <TextBlock
+                                                            FontSize="14"
+                                                            Foreground="Black"
+                                                            Text="{x:Bind Path=UserName}" />
+                                                        <TextBlock FontSize="12" Foreground="Gray">
+                                                            ￥<Run Text="{x:Bind Path=Price}" /></TextBlock>
+                                                    </StackPanel>
+                                                    <TextBlock
+                                                        Grid.Column="2"
+                                                        VerticalAlignment="Center"
+                                                        FontSize="12"
+                                                        Foreground="Gray"
+                                                        Text="{x:Bind Path=StartTimeStr}"
+                                                        Visibility="{x:Bind Path=ShowCountdown, Mode=OneWay, Converter={StaticResource displayConvert}}" />
+                                                    <TextBlock
+                                                        Grid.Column="2"
+                                                        VerticalAlignment="Center"
+                                                        FontSize="12"
+                                                        Foreground="Gray"
+                                                        Text="{x:Bind Path=CountdownTime, Mode=OneWay}"
+                                                        Visibility="{x:Bind Path=ShowCountdown, Mode=OneWay}" />
+                                                </Grid>
+                                                <Grid Padding="8" Background="{x:Bind Path=BackgroundBottomColor, Converter={StaticResource colorConvert}}">
+                                                    <TextBlock
+                                                        Foreground="White"
+                                                        Text="{x:Bind Path=Message}"
+                                                        TextWrapping="Wrap" />
+                                                </Grid>
+                                            </StackPanel>
+                                        </Border>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+
+                            </ListView>
+                        </PivotItem>
+                        <PivotItem Margin="0">
+                            <PivotItem.Header>
                                 <TextBlock FontSize="15">设置与屏蔽</TextBlock>
                             </PivotItem.Header>
                             <ScrollViewer>
@@ -937,6 +1071,8 @@
                                             <ComboBoxItem>强制软解</ComboBoxItem>
                                         </ComboBox.Items>
                                     </ComboBox>
+                                    <TextBlock Margin="0,12,0,0">保留醒目留言</TextBlock>
+                                    <ToggleSwitch x:Name="swKeepSC" Margin="0,4,0,0" />
                                     <TextBlock Margin="0,12,0,0">互动文字大小</TextBlock>
                                     <my:NumberBox
                                         x:Name="numFontsize"

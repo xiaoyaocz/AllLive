@@ -633,7 +633,10 @@ namespace AllLive.Core
             return result.Status;
 
         }
-
+        public Task<List<LiveSuperChatMessage>> GetSuperChatMessages(object roomId)
+        {
+            return Task.FromResult(new List<LiveSuperChatMessage>());
+        }
         private string GenerateRandomNumber(int length)
         {
             var random = new Random();

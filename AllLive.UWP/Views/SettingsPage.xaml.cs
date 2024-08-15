@@ -154,6 +154,15 @@ namespace AllLive.UWP.Views
             {
                 SettingHelper.SetValue(SettingHelper.LiveDanmaku.SHOW, DanmuSettingState.IsOn);
             });
+
+            // 保留醒目留言
+            var keepSC = SettingHelper.GetValue<bool>(SettingHelper.LiveDanmaku.KEEP_SUPER_CHAT, true);
+            SettingKeepSC.IsOn = keepSC;
+            SettingKeepSC.Toggled += new RoutedEventHandler((e, args) =>
+            {
+                SettingHelper.SetValue(SettingHelper.LiveDanmaku.KEEP_SUPER_CHAT, SettingKeepSC.IsOn);
+            });
+
             //弹幕清理
             numCleanCount.Value = SettingHelper.GetValue<int>(SettingHelper.LiveDanmaku.DANMU_CLEAN_COUNT, 200);
             numCleanCount.Loaded += new RoutedEventHandler((sender, e) =>

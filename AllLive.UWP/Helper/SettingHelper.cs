@@ -132,6 +132,11 @@ namespace AllLive.UWP.Helper
             /// 直播弹幕清理
             /// </summary>
             public const string DANMU_CLEAN_COUNT = "LiveCleanCount";
+
+            /// <summary>
+            /// 保留醒目留言
+            /// </summary>
+            public const string KEEP_SUPER_CHAT = "KeepSuperChat";
         }
     }
 }

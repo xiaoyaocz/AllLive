@@ -112,5 +112,10 @@ namespace AllLive.Core.Helper
             }
             return sb.ToString().TrimEnd('&');
         }
+
+        public static DateTime TimestampToDateTime(long timestamp)
+        {
+            return new DateTime(1970, 1, 1, 0, 0, 0, 0).AddSeconds(timestamp).ToLocalTime();
+        }
     }
 }

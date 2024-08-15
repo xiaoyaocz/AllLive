@@ -141,6 +141,8 @@
       <DependentUpon>MessageToast.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\MyAdaptiveGridView.cs" />
+    <Compile Include="Converters\ColorConvert.cs" />
+    <Compile Include="Converters\CountTextConvert.cs" />
     <Compile Include="Converters\DanmakuStyleConvert.cs" />
     <Compile Include="Converters\DisplayConvert.cs" />
     <Compile Include="Converters\DoublePrecisionConvert.cs" />
