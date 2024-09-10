@@ -40,6 +40,7 @@ namespace AllLive.UWP.Views
                 SettingsFontSize.Visibility = Visibility.Collapsed;
                 SettingsAutoClean.Visibility = Visibility.Collapsed;
                 SettingsXboxMode.Visibility = Visibility.Visible;
+                SettingsNewWindow.Visibility = Visibility.Collapsed;
             }
             BiliAccount.Instance.OnAccountChanged += BiliAccount_OnAccountChanged; 
             LoadUI();

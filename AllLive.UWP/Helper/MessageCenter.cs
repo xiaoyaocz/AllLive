@@ -68,7 +68,7 @@ namespace AllLive.UWP.Helper
                 return;
             }
 
-            //if (SettingHelper.GetValue(SettingHelper.NEW_WINDOW_LIVEROOM,false))
+            //if (SettingHelper.GetValue(SettingHelper.NEW_WINDOW_LIVEROOM, false))
             //{
             //    CoreApplicationView newView = CoreApplication.CreateNewView();
             //    int newViewId = 0;
@@ -89,16 +89,43 @@ namespace AllLive.UWP.Helper
             //}
             //else
             //{
-            NavigatePage(typeof(LiveRoomPage), arg);
-            //(Window.Current.Content as Frame).Navigate(typeof(LiveRoomPage), arg);
-            //}
+                NavigatePage(typeof(LiveRoomPage), arg);
+                //(Window.Current.Content as Frame).Navigate(typeof(LiveRoomPage), arg);
+           // }
 
         }
 
-        public static void NavigatePage(Type page, object data)
+        public async static void NavigatePage(Type page, object data)
         {
-            NavigatePageEvent?.Invoke(page, data);
+            if(SettingHelper.GetValue(SettingHelper.NEW_WINDOW_LIVEROOM, false)&& page == typeof(LiveRoomPage))
+            {
+                CoreApplicationView newView = CoreApplication.CreateNewView();
+                int newViewId = 0;
+                await newView.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                {
+                    Frame frame = new Frame();
+                    frame.RequestedTheme = (ElementTheme)SettingHelper.GetValue<int>(SettingHelper.THEME, 0);
+                    frame.Navigate(typeof(LiveRoomPage), data);
+                    Window.Current.Content = frame;
+                    Window.Current.Activate();
+                    newViewId = ApplicationView.GetForCurrentView().Id;
+                    //ApplicationView.GetForCurrentView().Consolidated += (sender, args) =>
+                    //{
+                    //    frame.Navigate(typeof(BlankPage));
+                      
+                    //    //newView.CoreWindow.Close();
+                    //};
+                });
+                bool viewShown = await ApplicationViewSwitcher.TryShowAsStandaloneAsync(newViewId);
+            }
+            else
+            {
+                NavigatePageEvent?.Invoke(page, data);
+            }
+            
         }
+
+        
 
         public static void ChangeTitle(string title, ILiveSite site = null)
         {

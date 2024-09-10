@@ -31,7 +31,7 @@ namespace AllLive.UWP.ViewModels
             KeepSC = SettingHelper.GetValue<bool>(SettingHelper.LiveDanmaku.KEEP_SUPER_CHAT, true);
             AddFavoriteCommand = new RelayCommand(AddFavorite);
             RemoveFavoriteCommand = new RelayCommand(RemoveFavorite);
-            
+
         }
         public ICommand AddFavoriteCommand { get; set; }
         public ICommand RemoveFavoriteCommand { get; set; }
@@ -236,6 +236,8 @@ namespace AllLive.UWP.ViewModels
 
                 Online = result.Online;
                 Title = result.Title;
+                SetWindowTitle();
+
                 Name = result.UserName;
                 MessageCenter.ChangeTitle(Title + " - " + Name, Site);
                 if (!string.IsNullOrEmpty(result.UserAvatar))
@@ -283,7 +285,7 @@ namespace AllLive.UWP.ViewModels
                     SiteName = Site.Name,
                     UserName = Name
                 });
-               
+
             }
             catch (Exception ex)
             {
@@ -301,13 +303,13 @@ namespace AllLive.UWP.ViewModels
             KeepSC = SettingHelper.GetValue<bool>(SettingHelper.LiveDanmaku.KEEP_SUPER_CHAT, true);
             if (KeepSC)
             {
-               _= Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-                {
-                    foreach (var item in SuperChatMessages)
-                    {
-                        item.ShowCountdown = false;
-                    }
-                });
+                _ = Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                 {
+                     foreach (var item in SuperChatMessages)
+                     {
+                         item.ShowCountdown = false;
+                     }
+                 });
                 scTimer?.Stop();
                 scTimer?.Dispose();
                 scTimer = null;
@@ -337,12 +339,19 @@ namespace AllLive.UWP.ViewModels
                             }
                         }
                     });
-                    
+
                 };
                 scTimer.Start();
             }
         }
 
+        private void SetWindowTitle()
+        {
+            if (SettingHelper.GetValue(SettingHelper.NEW_WINDOW_LIVEROOM, false))
+            {
+                Windows.UI.ViewManagement.ApplicationView.GetForCurrentView().Title = $"{Title} - {SiteName}";
+            }
+        }
 
         private void AddFavorite()
         {
@@ -406,7 +415,7 @@ namespace AllLive.UWP.ViewModels
             try
             {
                 var data = await Site.GetSuperChatMessages(RoomID);
-                if (data.Count>0)
+                if (data.Count > 0)
                 {
                     foreach (var item in data)
                     {
@@ -499,7 +508,7 @@ namespace AllLive.UWP.ViewModels
 
     public class SuperChatItem : LiveSuperChatMessage, INotifyPropertyChanged
     {
-        public SuperChatItem(LiveSuperChatMessage message,bool showCountdown)
+        public SuperChatItem(LiveSuperChatMessage message, bool showCountdown)
         {
             UserName = message.UserName;
             Face = message.Face;
@@ -509,7 +518,7 @@ namespace AllLive.UWP.ViewModels
             EndTime = message.EndTime;
             BackgroundColor = message.BackgroundColor;
             BackgroundBottomColor = message.BackgroundBottomColor;
-            CountdownTime=Convert.ToInt32(EndTime.Subtract(DateTime.Now).TotalSeconds);
+            CountdownTime = Convert.ToInt32(EndTime.Subtract(DateTime.Now).TotalSeconds);
             ShowCountdown = showCountdown;
         }
         public event PropertyChangedEventHandler PropertyChanged;
@@ -532,12 +541,12 @@ namespace AllLive.UWP.ViewModels
             }
         }
 
-        private bool showCountdown=false;
+        private bool showCountdown = false;
 
         public bool ShowCountdown
         {
             get { return showCountdown; }
-            set { showCountdown=value; DoPropertyChanged("ShowCountdown"); }
+            set { showCountdown = value; DoPropertyChanged("ShowCountdown"); }
         }
 
 

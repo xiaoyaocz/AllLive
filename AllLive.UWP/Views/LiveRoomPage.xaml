@@ -19,9 +19,52 @@
         <convert:DanmakuStyleConvert x:Key="styleConvert" />
     </Page.Resources>
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <Grid x:Name="TitleBarGrid">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
 
+            <Grid
+                x:Name="TitleBar"
+                Grid.Column="1"
+                Height="32"
+                Background="#00FFFFFF"
+                Visibility="Collapsed">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
 
-        <Grid>
+                <Image
+                    x:Name="AppIcon"
+                    Grid.Column="1"
+                    Width="20"
+                    Height="20"
+                    Margin="12,0,0,0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    Source="{x:Bind Path=liveRoomVM.SiteLogo, Mode=OneWay}" />
+                <Grid Grid.Column="2" Background="#00FFFFFF">
+                    <TextBlock
+                        x:Name="Title"
+                        Margin="12,0"
+                        VerticalAlignment="Center"
+                        FontSize="12">
+                        <Run Text="{x:Bind Path=liveRoomVM.Title, Mode=OneWay}" />
+                        <Run Text=" - " />
+                        <Run Text="{x:Bind Path=liveRoomVM.Name, Mode=OneWay}" />
+                    </TextBlock>
+                </Grid>
+
+            </Grid>
+        </Grid>
+        <Grid x:Name="GridContent" Grid.Row="1">
             <Grid.RowDefinitions>
                 <RowDefinition />
                 <RowDefinition x:Name="BottomInfo" Height="Auto" />

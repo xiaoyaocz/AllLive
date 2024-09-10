@@ -101,22 +101,22 @@
 
                     <TextBlock Margin="4,12" FontSize="18">播放</TextBlock>
                     <Grid
+                        x:Name="SettingsNewWindow"
+                        Margin="0,0,0,12"
                         Padding="8,12"
                         Background="{ThemeResource LayerFillColorDefaultBrush}"
                         BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                         BorderThickness="1"
-                        CornerRadius="4"
-                        Visibility="Collapsed">
+                        CornerRadius="4">
                         <StackPanel VerticalAlignment="Center">
-                            <TextBlock>新窗口播放(暂不可用)</TextBlock>
+                            <TextBlock>新窗口播放(实验)</TextBlock>
                             <TextBlock FontSize="12" Foreground="Gray">使用新窗口打开直播间</TextBlock>
                         </StackPanel>
                         <ToggleSwitch
                             x:Name="swNewWindow"
                             MinWidth="72"
                             HorizontalAlignment="Right"
-                            VerticalAlignment="Center"
-                            IsEnabled="False" />
+                            VerticalAlignment="Center" />
                     </Grid>
                     <Grid
                         Padding="8,12"
