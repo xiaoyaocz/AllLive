@@ -265,7 +265,13 @@ namespace AllLive.Core
                 Rooms = new List<LiveRoomItem>(),
 
             };
-            var result = await HttpUtil.GetUtf8String($"https://search.cdn.huya.com/?m=Search&do=getSearchContent&q={Uri.EscapeDataString(keyword)}&uid=0&v=4&typ=-5&livestate=0&rows=20&start={(page - 1) * 20}");
+            var headers = new Dictionary<string, string>()
+            {
+                { "user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 Edg/131.0.0.0"},
+                { "referer", "https://www.huya.com/"}
+            };
+
+            var result = await HttpUtil.GetUtf8String($"https://search.cdn.huya.com/?m=Search&do=getSearchContent&q={Uri.EscapeDataString(keyword)}&uid=0&v=4&typ=-5&livestate=0&rows=20&start={(page - 1) * 20}", headers);
             var obj = JObject.Parse(result);
 
             foreach (var item in obj["response"]["3"]["docs"])
