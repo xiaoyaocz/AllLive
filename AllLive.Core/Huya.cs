@@ -382,8 +382,8 @@ namespace AllLive.Core
         {
             // https://github.com/iceking2nd/real-url/blob/master/huya.py
             var query = HttpUtility.ParseQueryString(anticode);
-            query["t"] = "102";
-            query["ctype"] = "tars_mp";
+            query["t"] = "103";
+            query["ctype"] = "tars_mobile";
             var wsTime = (Utils.GetTimestamp() + 21600).ToString("x");
             var seqId = (Utils.GetTimestampMs() + long.Parse(uid)).ToString();
             var fm = Encoding.UTF8.GetString(Convert.FromBase64String(Uri.UnescapeDataString(query["fm"])));
@@ -399,14 +399,20 @@ namespace AllLive.Core
             map.Add("ctype", query["ctype"]);
             map.Add("ver", "1");
             map.Add("fs", query["fs"]);
-            map.Add("sphdcdn", query["sphdcdn"] ?? "");
-            map.Add("sphdDC", query["sphdDC"] ?? "");
-            map.Add("sphd", query["sphd"] ?? "");
-            map.Add("exsphd", query["exsphd"] ?? "");
+            //map.Add("sphdcdn", query["sphdcdn"] ?? "");
+            //map.Add("sphdDC", query["sphdDC"] ?? "");
+            //map.Add("sphd", query["sphd"] ?? "");
+            //map.Add("exsphd", query["exsphd"] ?? "");
             map.Add("uid", uid);
             map.Add("uuid", GetUuid().ToString());
             map.Add("t", query["t"]);
-            map.Add("sv", "2401310322");
+            map.Add("sv", "202411221719");
+ 
+            map.Add("dMod", "mseh-0");
+            map.Add("sdkPcdn", "1_1");
+            map.Add("sdk_sid", "1732862566708");
+            map.Add("a_block", "0");
+
 
             //将map转为字符串
             var param = string.Join("&", map.AllKeys.Select(x => $"{x}={Uri.EscapeDataString(map[x])}"));
