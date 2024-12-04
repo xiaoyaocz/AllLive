@@ -30,21 +30,27 @@ namespace AllLive.Core
 
         private Dictionary<string, string> GetRequestHeader(bool withBuvid3 = false)
         {
+            var headers = new Dictionary<string, string>()
+            {
+                {"user-agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 Edg/131.0.0.0" },
+                {"referer","https://live.bilibili.com/" }
+            };
             if (string.IsNullOrEmpty(Cookie))
             {
-                var headers = new Dictionary<string, string>();
+             
                 if (withBuvid3)
                 {
                     headers.Add("cookie", "buvid3=infoc;");
                 }
-                return headers;
             }
             else
             {
-                return new Dictionary<string, string>() {
-                    { "cookie",Cookie },
-                };
+                headers.Add("cookie", Cookie);
+                //return new Dictionary<string, string>() {
+                //    { "cookie",Cookie },
+                //};
             }
+            return headers;
         }
 
         public async Task<List<LiveCategory>> GetCategores()
