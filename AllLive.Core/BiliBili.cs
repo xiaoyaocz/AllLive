@@ -88,7 +88,11 @@ namespace AllLive.Core
                 Rooms = new List<LiveRoomItem>(),
 
             };
-            var result = await HttpUtil.GetString($"https://api.live.bilibili.com/xlive/web-interface/v1/second/getList?platform=web&parent_area_id={category.ParentID}&area_id={category.ID}&sort_type=&page={page}", headers: GetRequestHeader());
+            var url = $"https://api.live.bilibili.com/xlive/web-interface/v1/second/getList";
+            var query = $"platform=web&parent_area_id={category.ParentID}&area_id={category.ID}&sort_type=&page={page}";
+            query = await GetWbiSign(query);
+            var result = await HttpUtil.GetString($"{url}?{query}", headers: GetRequestHeader());
+
             var obj = JObject.Parse(result);
             categoryResult.HasMore = obj["data"]["has_more"].ToInt32() == 1;
             foreach (var item in obj["data"]["list"])
@@ -111,10 +115,13 @@ namespace AllLive.Core
                 Rooms = new List<LiveRoomItem>(),
 
             };
-            var result = await HttpUtil.GetString($"https://api.live.bilibili.com/room/v1/Area/getListByAreaID?areaId=0&sort=online&pageSize=30&page={page}", headers: GetRequestHeader());
+            var url = $"https://api.live.bilibili.com/xlive/web-interface/v1/second/getListByArea";
+            var query = $"platform=web&sort=online&page_size=30&page={page}";
+            query = await GetWbiSign(query);
+            var result = await HttpUtil.GetString($"{url}?{query}", headers: GetRequestHeader());
             var obj = JObject.Parse(result);
-            categoryResult.HasMore = ((JArray)obj["data"]).Count > 0;
-            foreach (var item in obj["data"])
+            categoryResult.HasMore = ((JArray)obj["data"]["list"]).Count > 0;
+            foreach (var item in obj["data"]["list"])
             {
                 categoryResult.Rooms.Add(new LiveRoomItem()
                 {
