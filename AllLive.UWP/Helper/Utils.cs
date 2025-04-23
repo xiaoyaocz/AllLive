@@ -136,6 +136,12 @@ namespace AllLive.UWP.Helper
             }
         }
 
+        public static long GetTimeStamp()
+        {
+            DateTime dt = DateTime.Now;
+            TimeSpan ts = dt - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+            return (long)ts.TotalMilliseconds;
+        }
     }
     public class NewVersion
     {
