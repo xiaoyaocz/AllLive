@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -68,6 +69,12 @@ namespace AllLive.Core.Danmaku
                     //有些直播间存在阴间弹幕，不知道什么情况
                     if (type == "chatmsg")
                     {
+                        // 屏蔽机器人弹幕
+                        if (json["dms"] == null)
+                        {
+                            return;
+                        }
+
                         NewMessage?.Invoke(this, new LiveMessage()
                         {
                             UserName = json["nn"].ToString(),
