@@ -520,8 +520,14 @@ namespace AllLive.UWP.Views
                 {
                     //config.FFmpegOptions.Add("user_agent", "Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1");
                     //config.FFmpegOptions.Add("referer", "https://m.huya.com");
-                    var currentTs = Utils.GetTimeStamp() / 1000;
-                    config.FFmpegOptions.Add("user_agent", $"HYSDK(Windows, {currentTs})");
+
+                    // from stream-rec url:https://github.com/stream-rec/stream-rec
+                    //var sysTs = Utils.GetTimeStamp() / 1000;
+                    //var validTs = 20000308;
+                    //var last8 = sysTs % 100000000;
+                    //var currentTs = last8 > validTs ? last8 : (validTs + sysTs / 100);
+                    //config.FFmpegOptions.Add("user_agent", $"HYSDK(Windows, {currentTs})");
+                    config.FFmpegOptions.Add("user_agent", "HYSDK(Windows, 30000002)_APP(pc_exe&6080100&official)_SDK(trans&2.23.0.4969)");
                 }
                 try
                 {
