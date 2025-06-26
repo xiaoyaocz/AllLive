@@ -96,7 +96,8 @@ namespace AllLive.Core
 
             };
             var url = $"https://api.live.bilibili.com/xlive/web-interface/v1/second/getList";
-            var query = $"platform=web&parent_area_id={category.ParentID}&area_id={category.ID}&sort_type=&page={page}";
+            var accessId = await GetAssessId();
+            var query = $"platform=web&parent_area_id={category.ParentID}&area_id={category.ID}&sort_type=&page={page}&w_webid={accessId}";
             query = await GetWbiSign(query);
             var result = await HttpUtil.GetString($"{url}?{query}", headers: await GetRequestHeader());
 
@@ -369,7 +370,7 @@ namespace AllLive.Core
             return list;
         }
 
-
+        private string _accessId;
         private string _imgKey;
         private string _subKey;
         private int[] mixinKeyEncTab = new int[] {
@@ -447,6 +448,29 @@ namespace AllLive.Core
             catch (Exception)
             {
                 return ("","");
+            }
+        }
+
+        private async Task<string> GetAssessId()
+        {
+            if (!string.IsNullOrEmpty(_accessId))
+            {
+                return _accessId;
+            }
+            
+            var response = await HttpUtil.GetString(
+                "https://live.bilibili.com/lol",
+                headers: await GetRequestHeader());
+            // 通过正则表达式"access_id":"(.*?)"提取
+            var match = Regex.Match(response, "\"access_id\":\"(.*?)\"");
+            if (match.Success)
+            {
+                _accessId = match.Groups[1].Value;
+                return _accessId;
+            }
+            else
+            {
+                throw new Exception("无法获取 access_id");
             }
         }
     }

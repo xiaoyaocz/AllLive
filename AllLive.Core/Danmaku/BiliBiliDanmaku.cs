@@ -28,6 +28,12 @@ namespace AllLive.Core.Danmaku
         public long UserId { get; set; } = 0;
         public string Cookie { get; set; }
     }
+    public enum SslProtocolsHack
+    {
+        Tls = 192,
+        Tls11 = 768,
+        Tls12 = 3072
+    }
     public class BiliBiliDanmaku : ILiveDanmaku
     {
         public event EventHandler<LiveMessage> NewMessage;
@@ -53,11 +59,11 @@ namespace AllLive.Core.Danmaku
                 ws.Send(EncodeData(JsonConvert.SerializeObject(new
                 {
                     roomid = roomId,
-                    uid =Args.UserId,
+                    uid = Args.UserId,
                     protover = 2,
                     key = danmuInfo.token,
                     platform = "web",
-                    type=2,
+                    type = 2,
                     buvid,
                 }), 7));
 
@@ -78,7 +84,19 @@ namespace AllLive.Core.Danmaku
 
         private void Ws_OnClose(object sender, CloseEventArgs e)
         {
-            OnClose?.Invoke(this, e.Reason);
+            // https://github.com/sta/websocket-sharp/issues/219
+            var sslProtocolHack = (System.Security.Authentication.SslProtocols)(SslProtocolsHack.Tls12 | SslProtocolsHack.Tls11 | SslProtocolsHack.Tls);
+            //TlsHandshakeFailure
+            if (e.Code == 1015 && ws.SslConfiguration.EnabledSslProtocols != sslProtocolHack)
+            {
+                ws.SslConfiguration.EnabledSslProtocols = sslProtocolHack;
+                ws.Connect();
+            }
+            else
+            {
+                OnClose?.Invoke(this, e.Reason);
+            }
+            
         }
 
         private void Ws_OnError(object sender, WebSocketSharp.ErrorEventArgs e)
@@ -101,15 +119,17 @@ namespace AllLive.Core.Danmaku
                 return;
             }
             danmuInfo = info;
-            var host = info.host_list.First();
+            var host = info.host_list.Last();
             ws = new WebSocket($"wss://{host.host}/sub");
+          
             if (!string.IsNullOrEmpty(Args.Cookie))
             {
                 ws.CustomHeaders = new Dictionary<string, string>() {
+                 
                     {"Cookie", Args.Cookie},
                 };
             }
-
+            ws.Compression = CompressionMethod.Deflate;
             ws.OnOpen += Ws_OnOpen;
             ws.OnError += Ws_OnError;
             ws.OnMessage += Ws_OnMessage;
@@ -210,9 +230,10 @@ namespace AllLive.Core.Danmaku
                             });
                         }
                     }
-                }else if (cmd.Contains("SUPER_CHAT_MESSAGE"))
+                }
+                else if (cmd.Contains("SUPER_CHAT_MESSAGE"))
                 {
-                    if (obj["data"].Type==JTokenType.Null)
+                    if (obj["data"].Type == JTokenType.Null)
                     {
                         return;
                     }
@@ -321,7 +342,7 @@ namespace AllLive.Core.Danmaku
         /// <returns></returns>
         private byte[] DecompressDataWithBrotli(byte[] data)
         {
-            
+
             //using (var decompressedStream = new BrotliStream(new MemoryStream(data), CompressionMode.Decompress))
             //{
             //    using (var outBuffer = new MemoryStream())
@@ -345,7 +366,7 @@ namespace AllLive.Core.Danmaku
         {
             try
             {
-                if (!string.IsNullOrEmpty(Args.Cookie) &&Args.Cookie.Contains("buvid3"))
+                if (!string.IsNullOrEmpty(Args.Cookie) && Args.Cookie.Contains("buvid3"))
                 {
                     var regex = new Regex("buvid3=(.*?);");
                     var match = regex.Match(Args.Cookie);
