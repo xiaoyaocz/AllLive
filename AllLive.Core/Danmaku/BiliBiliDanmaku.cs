@@ -96,7 +96,7 @@ namespace AllLive.Core.Danmaku
             {
                 OnClose?.Invoke(this, e.Reason);
             }
-            
+
         }
 
         private void Ws_OnError(object sender, WebSocketSharp.ErrorEventArgs e)
@@ -111,7 +111,7 @@ namespace AllLive.Core.Danmaku
             roomId = Args.RoomId;
 
             var _buvid = await GetBuvid();
-            buvid = _buvid;
+            buvid = _buvid.buvid3;
             var info = await GetDanmuInfo(roomId);
             if (info == null)
             {
@@ -121,11 +121,11 @@ namespace AllLive.Core.Danmaku
             danmuInfo = info;
             var host = info.host_list.Last();
             ws = new WebSocket($"wss://{host.host}/sub");
-          
+
             if (!string.IsNullOrEmpty(Args.Cookie))
             {
                 ws.CustomHeaders = new Dictionary<string, string>() {
-                 
+
                     {"Cookie", Args.Cookie},
                 };
             }
@@ -362,20 +362,27 @@ namespace AllLive.Core.Danmaku
 
 
         }
-        private async Task<string> GetBuvid()
+        private async Task<(string buvid3, string buvid4)> GetBuvid()
         {
             try
             {
-                if (!string.IsNullOrEmpty(Args.Cookie) && Args.Cookie.Contains("buvid3"))
+                if (!string.IsNullOrEmpty(Args.Cookie))
                 {
-                    var regex = new Regex("buvid3=(.*?);");
-                    var match = regex.Match(Args.Cookie);
-                    if (match.Success)
+                    var b3 = "";
+                    var b4 = "";
+                    if (Args.Cookie.Contains("buvid3"))
                     {
-                        return match.Groups[1].Value;
+                        b3 = new Regex("buvid3=(.*?);").Match(Args.Cookie).Groups[1].Value;
+                    }
+                    if (Args.Cookie.Contains("buvid4"))
+                    {
+                        b4 = new Regex("buvid4=(.*?);").Match(Args.Cookie).Groups[1].Value;
+                    }
+                    if (!string.IsNullOrEmpty(b3) && !string.IsNullOrEmpty(b4))
+                    {
+                        return (b3, b4);
                     }
                 }
-
                 var result = await HttpUtil.GetString($"https://api.bilibili.com/x/frontend/finger/spi",
                     headers: string.IsNullOrEmpty(Args.Cookie) ? null : new Dictionary<string, string>
                     {
@@ -384,11 +391,11 @@ namespace AllLive.Core.Danmaku
                   );
                 var obj = JObject.Parse(result);
 
-                return obj["data"]["b_3"].ToString();
+                return (obj["data"]["b_3"].ToString(), obj["data"]["b_4"].ToString());
             }
             catch (Exception)
             {
-                return "";
+                return ("", "");
             }
         }
 
@@ -396,8 +403,9 @@ namespace AllLive.Core.Danmaku
         {
             try
             {
+
                 var url = $"https://api.live.bilibili.com/xlive/web-room/v1/index/getDanmuInfo";
-                var query = $"id={roomId}";
+                var query = $"id={roomId}&type=0&web_location=444.8";
                 query = await GetWbiSign(query);
 
                 var result = await HttpUtil.GetString($"{url}?{query}",
@@ -487,8 +495,7 @@ namespace AllLive.Core.Danmaku
             var wbi_sign = Utils.ToMD5($"{query}{mixinKey}");
 
             return $"{query}&w_rid={wbi_sign}";
-        }
-
+        } 
     }
 
 

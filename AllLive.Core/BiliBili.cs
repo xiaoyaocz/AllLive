@@ -44,20 +44,25 @@ namespace AllLive.Core
             var headers = new Dictionary<string, string>()
             {
                 {"user-agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 Edg/131.0.0.0" },
-                {"referer","https://live.bilibili.com/" }
+                {"referer","https://live.bilibili.com/" },
+                { "cookie",GetCookie()}
             };
+
+            return headers;
+        }
+
+        private string GetCookie()
+        {
+            var _cookie = "";
             if (string.IsNullOrEmpty(Cookie))
             {
-                headers.Add("cookie", $"buvid3={buvid3};buvid4={buvid4};");
+                _cookie = $"buvid3={buvid3};buvid4={buvid4};";
             }
             else
             {
-                headers.Add("cookie", Cookie.Contains("buvid3") ? Cookie : $"{Cookie};buvid3={buvid3};buvid4={buvid4};");
-                //return new Dictionary<string, string>() {
-                //    { "cookie",Cookie },
-                //};
+                _cookie = Cookie.Contains("buvid3") ? Cookie : $"{Cookie};buvid3={buvid3};buvid4={buvid4}";
             }
-            return headers;
+            return _cookie;
         }
 
         public async Task<List<LiveCategory>> GetCategores()
@@ -165,7 +170,7 @@ namespace AllLive.Core
                 {
                     RoomId = obj["data"]["room_info"]["room_id"].ToInt32(),
                     UserId = UserId,
-                    Cookie = Cookie,
+                    Cookie = GetCookie(),
                 },
                 Url = "https://live.bilibili.com/" + roomId
             };
@@ -215,7 +220,7 @@ namespace AllLive.Core
 
             List<LivePlayQuality> qualities = new List<LivePlayQuality>();
             var result = await HttpUtil.GetString($"https://api.live.bilibili.com/xlive/web-room/v2/index/getRoomPlayInfo",
-                headers:await GetRequestHeader(),
+                headers: await GetRequestHeader(),
                 queryParameters: new Dictionary<string, string>() {
                     { "room_id", roomID } ,
                     { "protocol", "0,1" },
@@ -431,7 +436,7 @@ namespace AllLive.Core
             return $"{query}&w_rid={wbi_sign}";
         }
 
-        private async Task<(string,string)> GetBuvid()
+        private async Task<(string, string)> GetBuvid()
         {
             try
             {
@@ -447,7 +452,7 @@ namespace AllLive.Core
             }
             catch (Exception)
             {
-                return ("","");
+                return ("", "");
             }
         }
 
@@ -457,7 +462,7 @@ namespace AllLive.Core
             {
                 return _accessId;
             }
-            
+
             var response = await HttpUtil.GetString(
                 "https://live.bilibili.com/lol",
                 headers: await GetRequestHeader());
