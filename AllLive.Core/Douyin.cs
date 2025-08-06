@@ -440,7 +440,8 @@ namespace AllLive.Core
                     {"browser_language","zh-CN" },
                     {"browser_platform","Win32" },
                     {"browser_name","Edge" },
-                    {"browser_version","125.0.0.0" }
+                    {"browser_version","125.0.0.0" },
+                    {"a_bogus","0" }
                 }
             );
             return JObject.Parse(resp)["data"];
