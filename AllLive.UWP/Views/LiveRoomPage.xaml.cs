@@ -1282,11 +1282,15 @@ namespace AllLive.UWP.Views
             {
                 PlayBtnFullScreen.Visibility = Visibility.Visible;
                 PlayBtnExitFullScreen.Visibility = Visibility.Collapsed;
-                var width = SettingHelper.GetValue<double>(SettingHelper.RIGHT_DETAIL_WIDTH, 280);
-                ColumnRight.Width = new GridLength(width, GridUnitType.Pixel);
-                //ColumnRight.Width = new GridLength(280, GridUnitType.Pixel);
-                ColumnRight.MinWidth = 100;
-                BottomInfo.Height = GridLength.Auto;
+                // 在恢复布局前，检查“铺满窗口”状态。
+                if (PlayBtnFullWindow.Visibility == Visibility.Visible)
+                {
+                    var width = SettingHelper.GetValue<double>(SettingHelper.RIGHT_DETAIL_WIDTH, 280);
+                    ColumnRight.Width = new GridLength(width, GridUnitType.Pixel);
+                    //ColumnRight.Width = new GridLength(280, GridUnitType.Pixel);
+                    ColumnRight.MinWidth = 100;
+                    BottomInfo.Height = GridLength.Auto;
+                }
                 //退出全屏
                 if (view.IsFullScreenMode)
                 {
