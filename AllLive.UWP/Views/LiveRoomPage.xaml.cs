@@ -54,6 +54,7 @@ namespace AllLive.UWP.Views
         PageArgs pageArgs;
         //当前处于小窗
         private bool isMini = false;
+        private bool isNavigatingAway = false;
         DispatcherTimer timer_focus;
         DispatcherTimer controlTimer;
 
@@ -532,6 +533,13 @@ namespace AllLive.UWP.Views
                 try
                 {
                     interopMSS = await FFmpegMediaSource.CreateFromUriAsync(url, config);
+
+                    if (isNavigatingAway)
+                    {
+                        interopMSS?.Dispose(); // 清理刚刚创建的资源
+                        interopMSS = null;
+                        return; // 提前退出，不再设置播放源
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -645,6 +653,7 @@ namespace AllLive.UWP.Views
         //}
         protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
         {
+            isNavigatingAway = true;
 
             liveRoomVM.AddDanmaku -= LiveRoomVM_AddDanmaku;
             StopPlay();
