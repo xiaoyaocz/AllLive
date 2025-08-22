@@ -34,6 +34,8 @@ Global
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{10694A88-BC36-4C31-9C1D-49B316320765}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{10694A88-BC36-4C31-9C1D-49B316320765}.Debug|Any CPU.Build.0 = Debug|x86
+		{10694A88-BC36-4C31-9C1D-49B316320765}.Debug|Any CPU.Deploy.0 = Debug|x86
 		{10694A88-BC36-4C31-9C1D-49B316320765}.Debug|ARM.ActiveCfg = Debug|ARM
 		{10694A88-BC36-4C31-9C1D-49B316320765}.Debug|ARM.Build.0 = Debug|ARM
 		{10694A88-BC36-4C31-9C1D-49B316320765}.Debug|ARM.Deploy.0 = Debug|ARM
@@ -62,6 +64,8 @@ Global
 		{10694A88-BC36-4C31-9C1D-49B316320765}.Nuget_Release|x86.Build.0 = Release|x86
 		{10694A88-BC36-4C31-9C1D-49B316320765}.Nuget_Release|x86.Deploy.0 = Release|x86
 		{10694A88-BC36-4C31-9C1D-49B316320765}.Release|Any CPU.ActiveCfg = Release|x86
+		{10694A88-BC36-4C31-9C1D-49B316320765}.Release|Any CPU.Build.0 = Release|x86
+		{10694A88-BC36-4C31-9C1D-49B316320765}.Release|Any CPU.Deploy.0 = Release|x86
 		{10694A88-BC36-4C31-9C1D-49B316320765}.Release|ARM.ActiveCfg = Release|ARM
 		{10694A88-BC36-4C31-9C1D-49B316320765}.Release|ARM.Build.0 = Release|ARM
 		{10694A88-BC36-4C31-9C1D-49B316320765}.Release|ARM.Deploy.0 = Release|ARM
