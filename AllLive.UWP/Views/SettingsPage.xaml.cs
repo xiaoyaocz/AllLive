@@ -148,6 +148,15 @@ namespace AllLive.UWP.Views
                     SettingHelper.SetValue(SettingHelper.NEW_WINDOW_LIVEROOM, swNewWindow.IsOn);
                 });
             });
+            //默认铺满窗口
+            swDefaultFullWindow.IsOn = SettingHelper.GetValue<bool>(SettingHelper.DEFAULT_FULL_WINDOW, false);
+            swDefaultFullWindow.Loaded += new RoutedEventHandler((sender, e) =>
+            {
+                swDefaultFullWindow.Toggled += new RoutedEventHandler((obj, args) =>
+                {
+                    SettingHelper.SetValue(SettingHelper.DEFAULT_FULL_WINDOW, swDefaultFullWindow.IsOn);
+                });
+            });
             //弹幕开关
             var state = SettingHelper.GetValue<bool>(SettingHelper.LiveDanmaku.SHOW, true);
             DanmuSettingState.IsOn = state;
