@@ -678,6 +678,11 @@ namespace AllLive.UWP.Views
                     LoadSetting();
                 }
 
+                if (SettingHelper.GetValue<bool>(SettingHelper.DEFAULT_FULL_WINDOW, false))
+                {
+                    SetFullWindow(true);
+                }
+
                 var siteInfo = MainVM.Sites.FirstOrDefault(x => x.LiveSite.Equals(pageArgs.Site));
 
                 liveRoomVM.SiteLogo = siteInfo.Logo;
