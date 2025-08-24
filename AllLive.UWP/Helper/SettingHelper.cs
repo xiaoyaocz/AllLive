@@ -44,6 +44,10 @@ namespace AllLive.UWP.Helper
         /// </summary>
         public const string NEW_WINDOW_LIVEROOM = "newWindowLiveRoom";
         /// <summary>
+        /// 直播默认铺满窗口
+        /// </summary>
+        public const string DEFAULT_FULL_WINDOW = "defaultFullWindow";
+        /// <summary>
         /// 鼠标功能键返回、关闭页面
         /// </summary>
         public const string MOUSE_BACK = "MouseBack";
