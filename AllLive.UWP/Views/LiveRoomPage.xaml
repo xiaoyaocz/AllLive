@@ -500,6 +500,16 @@
                                         <FontIcon FontFamily="{StaticResource SegoeFluent}" Glyph="&#xE103;" />
                                     </Button>
                                     <Button
+                                        x:Name="PlayBtnRefresh"
+                                        Width="48"
+                                        Height="48"
+                                        Background="Transparent"
+                                        BorderThickness="0"
+                                        Click="PlayBtnRefresh_Click"
+                                        ToolTipService.ToolTip="刷新">
+                                        <FontIcon FontFamily="{StaticResource SegoeFluent}" Glyph="&#xE72C;" />
+                                    </Button>
+                                    <Button
                                         x:Name="PlayBtnSettingsDanmaku"
                                         Width="48"
                                         Height="48"
@@ -732,6 +742,19 @@
                                         HorizontalAlignment="Center"
                                         VerticalAlignment="Center"
                                         Data="{StaticResource ResourceKey=IconPlay}" />
+                                </HyperlinkButton>
+                                <HyperlinkButton
+                                    x:Name="MiniBtnRefresh"
+                                    Width="48"
+                                    Height="48"
+                                    Padding="8"
+                                    Click="PlayBtnRefresh_Click"
+                                    Foreground="White"
+                                    ToolTipService.ToolTip="刷新">
+                                    <PathIcon
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        Data="{StaticResource ResourceKey=IconRefresh}" />
                                 </HyperlinkButton>
 
                                 <ToggleSwitch

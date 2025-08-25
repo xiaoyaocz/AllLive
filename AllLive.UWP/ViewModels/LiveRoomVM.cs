@@ -377,7 +377,7 @@ namespace AllLive.UWP.ViewModels
             MessageCenter.UpdateFavorite();
         }
 
-        public async void LoadPlayUrl()
+        public async Task LoadPlayUrl()
         {
             try
             {

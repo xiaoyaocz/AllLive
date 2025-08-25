@@ -1367,6 +1367,25 @@ namespace AllLive.UWP.Views
             mediaPlayer.Pause();
         }
 
+        private async void PlayBtnRefresh_Click(object sender, RoutedEventArgs e)
+        {
+            var refreshButton = sender as Button;
+            if (refreshButton == null || !refreshButton.IsEnabled || liveRoomVM.Loading)
+            {
+                return;
+            }
+
+            try
+            {
+                refreshButton.IsEnabled = false; 
+                
+                await liveRoomVM.LoadPlayUrl();
+            }
+            finally
+            {
+                refreshButton.IsEnabled = true;
+            }
+        }
 
         #endregion
 
