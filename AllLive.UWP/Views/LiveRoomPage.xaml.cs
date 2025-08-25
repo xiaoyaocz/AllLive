@@ -54,6 +54,7 @@ namespace AllLive.UWP.Views
         PageArgs pageArgs;
         //当前处于小窗
         private bool isMini = false;
+        private bool _isNavigatingAway = false; // 新增标志位
         DispatcherTimer timer_focus;
         DispatcherTimer controlTimer;
 
@@ -532,6 +533,13 @@ namespace AllLive.UWP.Views
                 try
                 {
                     interopMSS = await FFmpegMediaSource.CreateFromUriAsync(url, config);
+
+                    if (_isNavigatingAway)
+                    {
+                        interopMSS?.Dispose(); // 清理刚刚创建的资源
+                        interopMSS = null;
+                        return; // 提前退出，不再设置播放源
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -645,6 +653,7 @@ namespace AllLive.UWP.Views
         //}
         protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
         {
+            _isNavigatingAway = true; // 在所有清理操作之前设置标志位
 
             liveRoomVM.AddDanmaku -= LiveRoomVM_AddDanmaku;
             StopPlay();
@@ -667,6 +676,11 @@ namespace AllLive.UWP.Views
                 else
                 {
                     LoadSetting();
+                }
+
+                if (SettingHelper.GetValue<bool>(SettingHelper.DEFAULT_FULL_WINDOW, false))
+                {
+                    SetFullWindow(true);
                 }
 
                 var siteInfo = MainVM.Sites.FirstOrDefault(x => x.LiveSite.Equals(pageArgs.Site));
@@ -1273,11 +1287,15 @@ namespace AllLive.UWP.Views
             {
                 PlayBtnFullScreen.Visibility = Visibility.Visible;
                 PlayBtnExitFullScreen.Visibility = Visibility.Collapsed;
-                var width = SettingHelper.GetValue<double>(SettingHelper.RIGHT_DETAIL_WIDTH, 280);
-                ColumnRight.Width = new GridLength(width, GridUnitType.Pixel);
-                //ColumnRight.Width = new GridLength(280, GridUnitType.Pixel);
-                ColumnRight.MinWidth = 100;
-                BottomInfo.Height = GridLength.Auto;
+                // 在恢复布局前，检查“铺满窗口”状态。
+                if (PlayBtnFullWindow.Visibility == Visibility.Visible)
+                {
+                    var width = SettingHelper.GetValue<double>(SettingHelper.RIGHT_DETAIL_WIDTH, 280);
+                    ColumnRight.Width = new GridLength(width, GridUnitType.Pixel);
+                    //ColumnRight.Width = new GridLength(280, GridUnitType.Pixel);
+                    ColumnRight.MinWidth = 100;
+                    BottomInfo.Height = GridLength.Auto;
+                }
                 //退出全屏
                 if (view.IsFullScreenMode)
                 {
