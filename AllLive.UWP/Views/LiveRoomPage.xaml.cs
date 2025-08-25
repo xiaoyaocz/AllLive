@@ -1366,6 +1366,17 @@ namespace AllLive.UWP.Views
         {
             mediaPlayer.Pause();
         }
+        private void PlayBtnRefresh_Click(object sender, RoutedEventArgs e)
+        {
+            if (liveRoomVM.CurrentLine != null && !string.IsNullOrEmpty(liveRoomVM.CurrentLine.Url))
+            {
+                _ = SetPlayer(liveRoomVM.CurrentLine.Url);
+            }
+            else
+            {
+                Utils.ShowMessageToast("没有可用的播放链接");
+            }
+        }
 
 
         #endregion
