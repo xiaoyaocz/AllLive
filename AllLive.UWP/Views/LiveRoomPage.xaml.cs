@@ -54,6 +54,7 @@ namespace AllLive.UWP.Views
         PageArgs pageArgs;
         //当前处于小窗
         private bool isMini = false;
+        private bool isFullWindow = false; 
         private bool isNavigatingAway = false;
         DispatcherTimer timer_focus;
         DispatcherTimer controlTimer;
@@ -1240,6 +1241,7 @@ namespace AllLive.UWP.Views
         }
         private void SetFullWindow(bool e)
         {
+            isFullWindow = e;
 
             if (e)
             {
@@ -1282,15 +1284,9 @@ namespace AllLive.UWP.Views
             {
                 PlayBtnFullScreen.Visibility = Visibility.Visible;
                 PlayBtnExitFullScreen.Visibility = Visibility.Collapsed;
-                // 在恢复布局前，检查“铺满窗口”状态。
-                if (PlayBtnFullWindow.Visibility == Visibility.Visible)
-                {
-                    var width = SettingHelper.GetValue<double>(SettingHelper.RIGHT_DETAIL_WIDTH, 280);
-                    ColumnRight.Width = new GridLength(width, GridUnitType.Pixel);
-                    //ColumnRight.Width = new GridLength(280, GridUnitType.Pixel);
-                    ColumnRight.MinWidth = 100;
-                    BottomInfo.Height = GridLength.Auto;
-                }
+
+                SetFullWindow(isFullWindow);
+
                 //退出全屏
                 if (view.IsFullScreenMode)
                 {
@@ -1327,7 +1323,7 @@ namespace AllLive.UWP.Views
             }
             else
             {
-                SetFullWindow(false);
+                SetFullWindow(isFullWindow);
                 if (Utils.IsXbox && SettingHelper.GetValue<int>(SettingHelper.XBOX_MODE, 0) == 0)
                 {
                     XBoxControl.Visibility = Visibility.Visible;
