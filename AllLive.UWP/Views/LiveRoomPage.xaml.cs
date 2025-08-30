@@ -443,6 +443,11 @@ namespace AllLive.UWP.Views
                     XboxSuperChat.Visibility = Visibility.Collapsed;
                     XBoxSplitView.IsPaneOpen = true;
                     break;
+                case Windows.System.VirtualKey.R:
+                    //刷新直播流
+                    PlayBtnRefresh_Click(this, null);
+                    break;
+                case Windows.System.VirtualKey.F5:
                 case Windows.System.VirtualKey.GamepadLeftTrigger:
                     //刷新直播间
                     BottomBtnRefresh_Click(this, null);
@@ -1370,20 +1375,32 @@ namespace AllLive.UWP.Views
         private async void PlayBtnRefresh_Click(object sender, RoutedEventArgs e)
         {
             var refreshButton = sender as Button;
-            if (refreshButton == null || !refreshButton.IsEnabled || liveRoomVM.Loading)
+
+            if (liveRoomVM.Loading)
+            {
+                return;
+            }
+
+            if (refreshButton != null && !refreshButton.IsEnabled)
             {
                 return;
             }
 
             try
             {
-                refreshButton.IsEnabled = false; 
+                if (refreshButton != null)
+                {
+                    refreshButton.IsEnabled = false;
+                }
                 
                 await liveRoomVM.LoadPlayUrl();
             }
             finally
             {
-                refreshButton.IsEnabled = true;
+                if (refreshButton != null)
+                {
+                    refreshButton.IsEnabled = true;
+                }
             }
         }
 
