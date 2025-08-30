@@ -443,6 +443,11 @@ namespace AllLive.UWP.Views
                     XboxSuperChat.Visibility = Visibility.Collapsed;
                     XBoxSplitView.IsPaneOpen = true;
                     break;
+                case Windows.System.VirtualKey.R:
+                    //刷新直播流
+                    PlayBtnRefresh_Click(this, null);
+                    break;
+                case Windows.System.VirtualKey.F5:
                 case Windows.System.VirtualKey.GamepadLeftTrigger:
                     //刷新直播间
                     BottomBtnRefresh_Click(this, null);
