@@ -54,6 +54,8 @@ namespace AllLive.UWP.Views
         PageArgs pageArgs;
         //当前处于小窗
         private bool isMini = false;
+        private bool isFullWindow = false; 
+        private bool _isNavigatingAway = false; // 新增标志位
         DispatcherTimer timer_focus;
         DispatcherTimer controlTimer;
 
@@ -432,6 +434,10 @@ namespace AllLive.UWP.Views
                     //}
                     PlaySWDanmu.IsOn = DanmuControl.Visibility != Visibility.Visible;
                     break;
+                case Windows.System.VirtualKey.F5:
+                case Windows.System.VirtualKey.R:
+                    PlayBtnRefresh_Click(null, null);
+                    break;
                 case Windows.System.VirtualKey.GamepadA:
                     ShowControl(control.Visibility == Visibility.Collapsed);
                     break;
@@ -532,6 +538,13 @@ namespace AllLive.UWP.Views
                 try
                 {
                     interopMSS = await FFmpegMediaSource.CreateFromUriAsync(url, config);
+
+                    if (_isNavigatingAway)
+                    {
+                        interopMSS?.Dispose(); // 清理刚刚创建的资源
+                        interopMSS = null;
+                        return; // 提前退出，不再设置播放源
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -645,6 +658,12 @@ namespace AllLive.UWP.Views
         //}
         protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
         {
+            _isNavigatingAway = true;
+
+            if (e.SourcePageType == typeof(MainPage) && MainPage.CurrentPageTag == "FavoritePage")
+            {
+                MessageCenter.UpdateFavorite();
+            }
 
             liveRoomVM.AddDanmaku -= LiveRoomVM_AddDanmaku;
             StopPlay();
@@ -667,6 +686,11 @@ namespace AllLive.UWP.Views
                 else
                 {
                     LoadSetting();
+                }
+
+                if (SettingHelper.GetValue<bool>(SettingHelper.DEFAULT_FULL_WINDOW, false))
+                {
+                    SetFullWindow(true);
                 }
 
                 var siteInfo = MainVM.Sites.FirstOrDefault(x => x.LiveSite.Equals(pageArgs.Site));
@@ -1231,6 +1255,7 @@ namespace AllLive.UWP.Views
         }
         private void SetFullWindow(bool e)
         {
+            isFullWindow = e;
 
             if (e)
             {
@@ -1273,11 +1298,9 @@ namespace AllLive.UWP.Views
             {
                 PlayBtnFullScreen.Visibility = Visibility.Visible;
                 PlayBtnExitFullScreen.Visibility = Visibility.Collapsed;
-                var width = SettingHelper.GetValue<double>(SettingHelper.RIGHT_DETAIL_WIDTH, 280);
-                ColumnRight.Width = new GridLength(width, GridUnitType.Pixel);
-                //ColumnRight.Width = new GridLength(280, GridUnitType.Pixel);
-                ColumnRight.MinWidth = 100;
-                BottomInfo.Height = GridLength.Auto;
+
+                SetFullWindow(isFullWindow);
+
                 //退出全屏
                 if (view.IsFullScreenMode)
                 {
@@ -1314,7 +1337,7 @@ namespace AllLive.UWP.Views
             }
             else
             {
-                SetFullWindow(false);
+                SetFullWindow(isFullWindow);
                 if (Utils.IsXbox && SettingHelper.GetValue<int>(SettingHelper.XBOX_MODE, 0) == 0)
                 {
                     XBoxControl.Visibility = Visibility.Visible;
@@ -1351,6 +1374,17 @@ namespace AllLive.UWP.Views
         private void PlayBtnPause_Click(object sender, RoutedEventArgs e)
         {
             mediaPlayer.Pause();
+        }
+        private void PlayBtnRefresh_Click(object sender, RoutedEventArgs e)
+        {
+            if (liveRoomVM.CurrentLine != null && !string.IsNullOrEmpty(liveRoomVM.CurrentLine.Url))
+            {
+                _ = SetPlayer(liveRoomVM.CurrentLine.Url);
+            }
+            else
+            {
+                Utils.ShowMessageToast("没有可用的播放链接");
+            }
         }
 
 

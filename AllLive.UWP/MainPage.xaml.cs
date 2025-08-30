@@ -90,14 +90,17 @@ namespace AllLive.UWP
             _ = CheckUpdate();
         }
 
+        public static string CurrentPageTag { get; private set; } = "RecommendPage";
+
         private void NavigationView_SelectionChanged(Microsoft.UI.Xaml.Controls.NavigationView sender, Microsoft.UI.Xaml.Controls.NavigationViewSelectionChangedEventArgs args)
         {
             var item = args.SelectedItem as Microsoft.UI.Xaml.Controls.NavigationViewItem;
-            if (item.Tag.ToString() == "设置" || item.Tag.ToString() == "Settings")
+            CurrentPageTag = item.Tag.ToString();
+            if (CurrentPageTag == "设置" || CurrentPageTag == "Settings")
             {
-                item.Tag = "SettingsPage";
+                CurrentPageTag = "SettingsPage";
             }
-            frame.Navigate(Type.GetType("AllLive.UWP.Views." + item.Tag));
+            frame.Navigate(Type.GetType("AllLive.UWP.Views." + CurrentPageTag));
 
         }
 

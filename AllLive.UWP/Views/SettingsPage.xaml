@@ -102,7 +102,6 @@
                     <TextBlock Margin="4,12" FontSize="18">播放</TextBlock>
                     <Grid
                         x:Name="SettingsNewWindow"
-                        Margin="0,0,0,12"
                         Padding="8,12"
                         Background="{ThemeResource LayerFillColorDefaultBrush}"
                         BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
@@ -119,6 +118,25 @@
                             VerticalAlignment="Center" />
                     </Grid>
                     <Grid
+                        x:Name="SettingsDefaultFullWindow"
+                        Margin="0,8,0,0"
+                        Padding="8,12"
+                        Background="{ThemeResource LayerFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        CornerRadius="4">
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock>默认满窗口</TextBlock>
+                            <TextBlock FontSize="12" Foreground="Gray">进入直播间时视频铺满窗口</TextBlock>
+                        </StackPanel>
+                        <ToggleSwitch
+                            x:Name="swDefaultFullWindow"
+                            MinWidth="72"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center" />
+                    </Grid>
+                    <Grid
+                        Margin="0,8,0,0"
                         Padding="8,12"
                         Background="{ThemeResource LayerFillColorDefaultBrush}"
                         BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
