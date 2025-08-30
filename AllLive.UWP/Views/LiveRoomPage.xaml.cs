@@ -434,6 +434,10 @@ namespace AllLive.UWP.Views
                     //}
                     PlaySWDanmu.IsOn = DanmuControl.Visibility != Visibility.Visible;
                     break;
+                case Windows.System.VirtualKey.F5:
+                case Windows.System.VirtualKey.R:
+                    PlayBtnRefresh_Click(null, null);
+                    break;
                 case Windows.System.VirtualKey.GamepadA:
                     ShowControl(control.Visibility == Visibility.Collapsed);
                     break;
