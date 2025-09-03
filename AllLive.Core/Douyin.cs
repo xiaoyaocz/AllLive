@@ -2,8 +2,10 @@
 using AllLive.Core.Helper;
 using AllLive.Core.Interface;
 using AllLive.Core.Models;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -103,19 +105,32 @@ namespace AllLive.Core
             var ids = category.ID.Split(',');
             var partitionId = ids[0];
             var partitionType = ids[1];
-            var resp = await HttpUtil.GetString("https://live.douyin.com/webcast/web/partition/detail/room/",
-                headers: await GetRequestHeaders(),
-                queryParameters: new Dictionary<string, string> {
+            var reqParams = new Dictionary<string, string> {
                     {"aid","6383"},
                     {"app_name","douyin_web" },
                     {"live_id", "1"},
                     {"device_platform","web" },
-                    {"count","15" },
+                    { "language", "zh-CN"},
+                    { "enter_from", "link_share"},
+                    { "cookie_enabled", "true"},
+                    { "screen_width", "1980"},
+                    { "screen_height", "1080"},
+                    { "browser_language", "zh-CN"},
+                    { "browser_platform", "Win32"},
+                    { "browser_name", "Edge"},
+                    { "browser_version", "125.0.0.0"},
+                    {"browser_online", "true"},
+                    { "count","15" },
                     { "offset", ((page - 1) * 15).ToString()},
                     {"partition",partitionId},
                     {"partition_type",partitionType},
                     {"req_from","2" }
-                }
+                };
+            var url = $"https://live.douyin.com/webcast/web/partition/detail/room/v2/?{Utils.BuildQueryString(reqParams)}";
+
+            var requestUrl = await GetABougs(url);
+            var resp = await HttpUtil.GetString(requestUrl,
+                headers: await GetRequestHeaders()
             );
             var json = JObject.Parse(resp);
             var hasMore = (json["data"]["data"] as JArray).Count >= 15;
@@ -128,7 +143,7 @@ namespace AllLive.Core
                     Title = item["room"]["title"].ToString(),
                     Cover = item["room"]["cover"]["url_list"][0].ToString(),
                     UserName = item["room"]["owner"]["nickname"].ToString(),
-                    Online = item["room"]["room_view_stats"]?["display_value"]?.ToObject<int>()??0,
+                    Online = item["room"]["room_view_stats"]?["display_value"]?.ToObject<int>() ?? 0,
                 };
                 items.Add(roomItem);
             }
@@ -140,19 +155,34 @@ namespace AllLive.Core
         }
         public async Task<LiveCategoryResult> GetRecommendRooms(int page = 1)
         {
-            var resp = await HttpUtil.GetString("https://live.douyin.com/webcast/web/partition/detail/room/",
-                headers: await GetRequestHeaders(),
-                queryParameters: new Dictionary<string, string> {
+            var reqParams = new Dictionary<string, string> {
                     {"aid","6383"},
                     {"app_name","douyin_web" },
                     {"live_id", "1"},
                     {"device_platform","web" },
-                    {"count","15" },
+                    { "language", "zh-CN"},
+                    { "enter_from", "link_share"},
+                    { "cookie_enabled", "true"},
+                    { "screen_width", "1980"},
+                    { "screen_height", "1080"},
+                    { "browser_language", "zh-CN"},
+                    { "browser_platform", "Win32"},
+                    { "browser_name", "Edge"},
+                    { "browser_version", "125.0.0.0"},
+                    {"browser_online", "true"},
+                    { "count","15" },
                     { "offset", ((page - 1) * 15).ToString()},
                     {"partition","720" },
                     {"partition_type","1"},
-                }
+                    {"req_from","2" }
+                };
+            var url = $"https://live.douyin.com/webcast/web/partition/detail/room/v2/?{Utils.BuildQueryString(reqParams)}";
+
+            var requestUrl = await GetABougs(url);
+            var resp = await HttpUtil.GetString(requestUrl,
+                headers: await GetRequestHeaders()
             );
+
             var json = JObject.Parse(resp);
             var hasMore = (json["data"]["data"] as JArray).Count >= 15;
             var items = new List<LiveRoomItem>();
@@ -164,7 +194,7 @@ namespace AllLive.Core
                     Title = item["room"]["title"].ToString(),
                     Cover = item["room"]["cover"]["url_list"][0].ToString(),
                     UserName = item["room"]["owner"]["nickname"].ToString(),
-                    Online = item["room"]["room_view_stats"]?["display_value"]?.ToObject<int>()??0,
+                    Online = item["room"]["room_view_stats"]?["display_value"]?.ToObject<int>() ?? 0,
                 };
                 items.Add(roomItem);
             }
@@ -228,7 +258,7 @@ namespace AllLive.Core
                 UserName = owner["nickname"].ToString(),
                 UserAvatar = owner["avatar_thumb"]["url_list"][0].ToString(),
                 Online = roomStatus
-                  ? (room["room_view_stats"]?["display_value"]?.ToObject<int>()??0)
+                  ? (room["room_view_stats"]?["display_value"]?.ToObject<int>() ?? 0)
                   : 0,
                 Status = roomStatus,
                 Url = $"https://live.douyin.com/{webRid}",
@@ -301,7 +331,7 @@ namespace AllLive.Core
                     ? owner["avatar_thumb"]["url_list"][0].ToString()
                     : userData["avatar_thumb"]["url_list"][0].ToString(),
                 Online = roomStatus
-                    ? (roomData["room_view_stats"]?["display_value"]?.ToObject<int>()??0)
+                    ? (roomData["room_view_stats"]?["display_value"]?.ToObject<int>() ?? 0)
                     : 0,
                 Status = roomStatus,
                 Url = $"https://live.douyin.com/{webRid}",
@@ -345,7 +375,7 @@ namespace AllLive.Core
                     ? owner["avatar_thumb"]["url_list"][0].ToString()
                     : anchor["avatar_thumb"]["url_list"][0].ToString(),
                 Online = roomStatus
-                    ? (room["room_view_stats"]?["display_value"]?.ToObject<int>()??0)
+                    ? (room["room_view_stats"]?["display_value"]?.ToObject<int>() ?? 0)
                     : 0,
                 Status = roomStatus,
                 Url = $"https://live.douyin.com/{webRid}",
@@ -420,10 +450,7 @@ namespace AllLive.Core
 
         private async Task<JToken> GetRoomDataApi(string webRid)
         {
-            var resp = await HttpUtil.GetString($"https://live.douyin.com/webcast/room/web/enter/",
-                headers: await GetRequestHeaders(),
-                queryParameters: new Dictionary<string, string>
-                {
+            var reqParams = new Dictionary<string, string> {
                     {"aid","6383" },
                     {"app_name","douyin_web" },
                     {"live_id","1" },
@@ -442,8 +469,16 @@ namespace AllLive.Core
                     {"browser_name","Edge" },
                     {"browser_version","125.0.0.0" },
                     {"a_bogus","0" }
-                }
+                };
+            var url = $"https://live.douyin.com/webcast/room/web/enter/?{Utils.BuildQueryString(reqParams)}";
+
+            var requestUrl = await GetABougs(url);
+            var resp = await HttpUtil.GetString(requestUrl,
+                headers: await GetRequestHeaders()
             );
+
+
+           
             return JObject.Parse(resp)["data"];
         }
 
@@ -595,9 +630,9 @@ namespace AllLive.Core
             {
                 { "accept", "application/json, text/plain, */*" },
                 { "accept-language", "zh-CN,zh;q=0.9,en;q=0.8" },
-                { "cookie", cookie },  
+                { "cookie", cookie },
                 { "priority", "u=1, i" },
-                { "referer", $"https://www.douyin.com/search/{Uri.EscapeUriString(keyword)}?type=live" }, 
+                { "referer", $"https://www.douyin.com/search/{Uri.EscapeUriString(keyword)}?type=live" },
                 { "sec-ch-ua", "\"Microsoft Edge\";v=\"125\", \"Chromium\";v=\"125\", \"Not.A/Brand\";v=\"24\"" },
                 { "sec-ch-ua-mobile", "?0" },
                 { "sec-ch-ua-platform", "\"Windows\"" },
@@ -608,7 +643,7 @@ namespace AllLive.Core
             };
             var resp = await HttpUtil.GetString(requestUrl, headers);
             var json = JObject.Parse(resp);
-            var items =new List<LiveRoomItem>();
+            var items = new List<LiveRoomItem>();
             foreach (var item in json["data"])
             {
                 var itemData = JObject.Parse(item["lives"]["rawdata"].ToString());
@@ -655,6 +690,28 @@ namespace AllLive.Core
                 }
             }
             return sb.ToString();
+        }
+
+        private async Task<string> GetABougs(string url)
+        {
+            try
+            {
+                var resp = await HttpUtil.PostJsonString("https://dy.nsapps.cn/abogus",
+                   JsonConvert.SerializeObject(new
+                   {
+                       url,
+                       userAgent = USER_AGENT
+                   }
+               ));
+                var obj = JObject.Parse(resp);
+                return obj["data"]["url"].ToString();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+                return url;
+            }
+
         }
     }
 }
