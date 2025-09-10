@@ -437,15 +437,15 @@ namespace AllLive.Core
                     { "Cookie", dyCookie }
                 }
             );
-            Regex regex = new Regex("\\{\\\\\"state\\\\\":\\{\\\\\"isLiveModal.*?\\]\\\\n", RegexOptions.Singleline);
+            Regex regex = new Regex("\\{\\\\\"state\\\\\":\\{\\\\\"appStore.*?\\]\\\\n", RegexOptions.Singleline);
             Match match = regex.Match(resp);
-            string json = match.Success ? match.Groups[1].Value : "";
+            string json = match.Success ? match.Groups[0].Value : "";
             if (string.IsNullOrEmpty(json))
             {
                 throw new Exception("无法读取直播间数据");
             }
             json = json.Trim().Replace("\\\"", "\"").Replace("\\\\", "\\").Replace("]\\n", "");
-            return JObject.Parse(json);
+            return JObject.Parse(json)["state"];
         }
 
         private async Task<JToken> GetRoomDataApi(string webRid)
@@ -512,8 +512,8 @@ namespace AllLive.Core
 
             if (!streamData.StartsWith("{"))
             {
-                var flvList = (data["flv_pull_url"] as JToken).Values().Cast<string>().ToList();
-                var hlsList = (data["hls_pull_url_map"] as JToken).Values().Cast<string>().ToList();
+                var flvList = (data["flv_pull_url"] as JToken).Values().Select(c => c.ToString()).ToList();
+                var hlsList = (data["hls_pull_url_map"] as JToken).Values().Select(c => c.ToString()).ToList();
                 foreach (var quality in qulityList)
                 {
                     int level = quality["level"].ToObject<int>();
