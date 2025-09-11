@@ -54,6 +54,8 @@ namespace AllLive.UWP.Views
         PageArgs pageArgs;
         //当前处于小窗
         private bool isMini = false;
+        private bool isFullWindow = false; 
+        private bool isNavigatingAway = false;
         DispatcherTimer timer_focus;
         DispatcherTimer controlTimer;
 
@@ -441,6 +443,11 @@ namespace AllLive.UWP.Views
                     XboxSuperChat.Visibility = Visibility.Collapsed;
                     XBoxSplitView.IsPaneOpen = true;
                     break;
+                case Windows.System.VirtualKey.R:
+                    //刷新直播流
+                    PlayBtnRefresh_Click(this, null);
+                    break;
+                case Windows.System.VirtualKey.F5:
                 case Windows.System.VirtualKey.GamepadLeftTrigger:
                     //刷新直播间
                     BottomBtnRefresh_Click(this, null);
@@ -532,6 +539,13 @@ namespace AllLive.UWP.Views
                 try
                 {
                     interopMSS = await FFmpegMediaSource.CreateFromUriAsync(url, config);
+
+                    if (isNavigatingAway)
+                    {
+                        interopMSS?.Dispose(); // 清理刚刚创建的资源
+                        interopMSS = null;
+                        return; // 提前退出，不再设置播放源
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -645,6 +659,7 @@ namespace AllLive.UWP.Views
         //}
         protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
         {
+            isNavigatingAway = true;
 
             liveRoomVM.AddDanmaku -= LiveRoomVM_AddDanmaku;
             StopPlay();
@@ -667,6 +682,11 @@ namespace AllLive.UWP.Views
                 else
                 {
                     LoadSetting();
+                }
+
+                if (SettingHelper.GetValue<bool>(SettingHelper.DEFAULT_FULL_WINDOW, false))
+                {
+                    SetFullWindow(true);
                 }
 
                 var siteInfo = MainVM.Sites.FirstOrDefault(x => x.LiveSite.Equals(pageArgs.Site));
@@ -1231,6 +1251,7 @@ namespace AllLive.UWP.Views
         }
         private void SetFullWindow(bool e)
         {
+            isFullWindow = e;
 
             if (e)
             {
@@ -1273,11 +1294,9 @@ namespace AllLive.UWP.Views
             {
                 PlayBtnFullScreen.Visibility = Visibility.Visible;
                 PlayBtnExitFullScreen.Visibility = Visibility.Collapsed;
-                var width = SettingHelper.GetValue<double>(SettingHelper.RIGHT_DETAIL_WIDTH, 280);
-                ColumnRight.Width = new GridLength(width, GridUnitType.Pixel);
-                //ColumnRight.Width = new GridLength(280, GridUnitType.Pixel);
-                ColumnRight.MinWidth = 100;
-                BottomInfo.Height = GridLength.Auto;
+
+                SetFullWindow(isFullWindow);
+
                 //退出全屏
                 if (view.IsFullScreenMode)
                 {
@@ -1314,7 +1333,7 @@ namespace AllLive.UWP.Views
             }
             else
             {
-                SetFullWindow(false);
+                SetFullWindow(isFullWindow);
                 if (Utils.IsXbox && SettingHelper.GetValue<int>(SettingHelper.XBOX_MODE, 0) == 0)
                 {
                     XBoxControl.Visibility = Visibility.Visible;
@@ -1353,6 +1372,37 @@ namespace AllLive.UWP.Views
             mediaPlayer.Pause();
         }
 
+        private async void PlayBtnRefresh_Click(object sender, RoutedEventArgs e)
+        {
+            var refreshButton = sender as Button;
+
+            if (liveRoomVM.Loading)
+            {
+                return;
+            }
+
+            if (refreshButton != null && !refreshButton.IsEnabled)
+            {
+                return;
+            }
+
+            try
+            {
+                if (refreshButton != null)
+                {
+                    refreshButton.IsEnabled = false;
+                }
+                
+                await liveRoomVM.LoadPlayUrl();
+            }
+            finally
+            {
+                if (refreshButton != null)
+                {
+                    refreshButton.IsEnabled = true;
+                }
+            }
+        }
 
         #endregion
 

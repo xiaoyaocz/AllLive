@@ -34,9 +34,19 @@ namespace AllLive.UWP.Views
             this.InitializeComponent();
         }
 
-        private void MessageCenter_UpdateFavoriteEvent(object sender, EventArgs e)
+        private async void MessageCenter_UpdateFavoriteEvent(object sender, EventArgs e)
         {
-            favoriteVM.Refresh();
+            if (Dispatcher.HasThreadAccess)
+            {
+                favoriteVM.Refresh();
+            }
+            else
+            {
+                await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+                {
+                    favoriteVM.Refresh();
+                });
+            }
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)

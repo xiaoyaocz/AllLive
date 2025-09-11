@@ -107,6 +107,18 @@
                             </controls:MyAdaptiveGridView.Footer>
                         </controls:MyAdaptiveGridView>
 
+                        <Button
+                            Width="48"
+                            Height="48"
+                            Margin="12"
+                            Padding="0"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Bottom"
+                            Command="{x:Bind Path=RefreshCommand}"
+                            CornerRadius="24"
+                            Visibility="{x:Bind Path=Loading, Mode=OneWay, Converter={StaticResource displayConvert}}">
+                            <FontIcon FontFamily="{StaticResource SegoeFluent}" Glyph="&#xE72C;" />
+                        </Button>
                         <TextBlock
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"

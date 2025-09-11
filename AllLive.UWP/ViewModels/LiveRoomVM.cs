@@ -377,10 +377,12 @@ namespace AllLive.UWP.ViewModels
             MessageCenter.UpdateFavorite();
         }
 
-        public async void LoadPlayUrl()
+        public async Task LoadPlayUrl()
         {
             try
             {
+                int? currentIndex = currentLine != null ? Lines?.IndexOf(currentLine) : null;
+
                 var data = await Site.GetPlayUrls(detail, CurrentQuality);
                 if (data.Count == 0)
                 {
@@ -398,16 +400,21 @@ namespace AllLive.UWP.ViewModels
                 }
 
                 Lines = ls;
-                CurrentLine = Lines[0];
+
+                // 尝试恢复之前选择的线路
+                if (currentIndex.HasValue && currentIndex.Value < ls.Count)
+                {
+                    CurrentLine = ls[currentIndex.Value];  // 保持原线路
+                }
+                else
+                {
+                    CurrentLine = Lines[0];
+                }
             }
             catch (Exception)
             {
                 Utils.ShowMessageToast("加载播放地址失败");
             }
-
-
-
-
         }
 
         public async void LoadSuperChat()

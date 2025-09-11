@@ -53,7 +53,8 @@ namespace AllLive.UWP
 
                 navigationView.SelectedItem = navigationView.SettingsItem;
             }
-            else if (e.Key == Windows.System.VirtualKey.GamepadY)
+            else if (e.Key == Windows.System.VirtualKey.GamepadY ||
+                    (e.Key == Windows.System.VirtualKey.F && Window.Current.CoreWindow.GetKeyState(Windows.System.VirtualKey.Control).HasFlag(Windows.UI.Core.CoreVirtualKeyStates.Down)))
             {
                 e.Handled = true;
                 searchBox.Focus(FocusState.Programmatic);
